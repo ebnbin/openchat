@@ -1,5 +1,6 @@
 import React, {ChangeEvent, useState} from 'react';
 import {Configuration, Model, OpenAIApi} from "openai";
+import {Button, Divider, TextField} from "@mui/material";
 
 interface ApiKeyProps {
   apiKey: string;
@@ -16,8 +17,8 @@ function ApiKey({ apiKey, setApiKey }: ApiKeyProps) {
       <h2>
         API key
       </h2>
-      <input
-        placeholder={"OPENAI_API_KEY"}
+      <TextField
+        label={"OPENAI_API_KEY"}
         value={apiKey}
         onChange={handleApiKeyChange}
       />
@@ -72,12 +73,13 @@ function ListModels({ apiKey }: ListModelsProps) {
       <h2>
         List models
       </h2>
-      <button
+      <Button
+        variant={"contained"}
         disabled={apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}
-      </button>
+      </Button>
       <ol>
         {response}
       </ol>
@@ -128,17 +130,18 @@ function CreateCompletion({ apiKey }: CreateCompletionProps) {
       <h2>
         Create completion
       </h2>
-      <input
-        placeholder={"prompt"}
+      <TextField
+        label={"prompt"}
         value={prompt}
         onChange={handlePromptChange}
       />
-      <button
+      <Button
+        variant={"contained"}
         disabled={apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}
-      </button>
+      </Button>
       <div>
         {response}
       </div>
@@ -157,9 +160,11 @@ function App() {
         apiKey={apiKey}
         setApiKey={setApiKey}
       />
+      <Divider />
       <ListModels
         apiKey={apiKey}
       />
+      <Divider />
       <CreateCompletion
         apiKey={apiKey}
       />
