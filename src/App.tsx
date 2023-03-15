@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Configuration, Model, OpenAIApi} from "openai";
 import {Button, Divider, TextField} from "@mui/material";
 
@@ -10,6 +10,7 @@ interface ApiKeyProps {
 function ApiKey({ apiKey, setApiKey }: ApiKeyProps) {
   const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
     setApiKey(event.target.value)
+    localStorage.setItem('apiKey', event.target.value);
   };
 
   return (
@@ -151,6 +152,13 @@ function CreateCompletion({ apiKey }: CreateCompletionProps) {
 
 function App() {
   const [apiKey, setApiKey] = useState('');
+
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem('apiKey');
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+    }
+  }, []);
 
   return (
     <div
