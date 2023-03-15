@@ -1,6 +1,7 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Configuration, Model, OpenAIApi} from "openai";
 import {Button, Divider, TextField} from "@mui/material";
+import ResponsiveDrawer, {Page} from "./ResponsiveDrawer";
 
 interface ApiKeyProps {
   apiKey: string;
@@ -15,9 +16,6 @@ function ApiKey({ apiKey, setApiKey }: ApiKeyProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2>
-        API key
-      </h2>
       <TextField
         label={"OPENAI_API_KEY"}
         value={apiKey}
@@ -71,9 +69,6 @@ function ListModels({ apiKey }: ListModelsProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2>
-        List models
-      </h2>
       <Button
         variant={"contained"}
         disabled={apiKey.length === 0 || isLoading}
@@ -128,9 +123,6 @@ function CreateCompletion({ apiKey }: CreateCompletionProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2>
-        Create completion
-      </h2>
       <TextField
         label={"prompt"}
         value={prompt}
@@ -160,23 +152,40 @@ function App() {
     }
   }, []);
 
+  const pageList: Page[] = [
+    {
+      key: 'ApiKey',
+      title: 'API key',
+      element: (
+        <ApiKey
+          apiKey={apiKey}
+          setApiKey={setApiKey}
+        />
+      ) },
+    {
+      key: 'ListModels',
+      title: 'List models',
+      element: (
+        <ListModels
+          apiKey={apiKey}
+        />
+      ),
+    },
+    {
+      key: 'CreateCompletion',
+      title: 'Create completion',
+      element: (
+        <CreateCompletion
+          apiKey={apiKey}
+        />
+      ),
+    },
+  ]
+
   return (
-    <div
-      style={{ display: 'flex', flexDirection: 'column', padding: '8px' }}
-    >
-      <ApiKey
-        apiKey={apiKey}
-        setApiKey={setApiKey}
-      />
-      <Divider />
-      <ListModels
-        apiKey={apiKey}
-      />
-      <Divider />
-      <CreateCompletion
-        apiKey={apiKey}
-      />
-    </div>
+    <ResponsiveDrawer
+      pageList={pageList}
+    />
   );
 }
 
