@@ -1,4 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
+import {Configuration, Model, OpenAIApi} from "openai";
 
 interface ApiKeyProps {
   apiKey: string;
@@ -20,6 +21,66 @@ function ApiKey({ apiKey, setApiKey }: ApiKeyProps) {
         value={apiKey}
         onChange={handleApiKeyChange}
       />
+    </div>
+  );
+}
+
+function Json({ value }: { value: any }) {
+  return (
+    <div style={{ whiteSpace: 'pre-wrap' }}>
+      {JSON.stringify(value, null, 2)}
+    </div>
+  )
+}
+
+interface ListModelsProps {
+  apiKey: string;
+}
+
+// https://platform.openai.com/docs/api-reference/models/list
+function ListModels({ apiKey }: ListModelsProps) {
+  const [response, setResponse] = useState<JSX.Element[]>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { Configuration, OpenAIApi } = require("openai");
+
+  const configuration = new Configuration({
+    apiKey: apiKey,
+  });
+  const openai = new OpenAIApi(configuration);
+
+  const request = async () => {
+    setIsLoading(true)
+
+    const response = await openai
+      .listModels()
+      .catch(() => {
+        setIsLoading(false)
+      });
+    const listItems = response.data.data.map((item: Model) =>
+      <li key={item.id}>
+        <Json value={item} />
+      </li>
+    );
+    setResponse(listItems)
+
+    setIsLoading(false)
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2>
+        List models
+      </h2>
+      <button
+        disabled={apiKey.length === 0 || isLoading}
+        onClick={request}
+      >
+        {"Request"}
+      </button>
+      <ol>
+        {response}
+      </ol>
     </div>
   );
 }
@@ -49,13 +110,14 @@ function CreateCompletion({ apiKey }: CreateCompletionProps) {
     setResponse('[Loading]')
     setIsLoading(true)
 
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: prompt,
-    }).catch((error: any) => {
-      setResponse(`[${error}]`)
-      setIsLoading(false)
-    });
+    const response = await openai
+      .createCompletion({
+        model: "text-davinci-003",
+        prompt: prompt,
+      }).catch((error: any) => {
+        setResponse(`[${error}]`)
+        setIsLoading(false)
+      });
 
     setResponse(response.data.choices[0].text)
     setIsLoading(false)
@@ -77,9 +139,9 @@ function CreateCompletion({ apiKey }: CreateCompletionProps) {
       >
         {"Request"}
       </button>
-      <text>
+      <div>
         {response}
-      </text>
+      </div>
     </div>
   )
 }
@@ -94,6 +156,9 @@ function App() {
       <ApiKey
         apiKey={apiKey}
         setApiKey={setApiKey}
+      />
+      <ListModels
+        apiKey={apiKey}
       />
       <CreateCompletion
         apiKey={apiKey}
