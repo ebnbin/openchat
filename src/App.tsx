@@ -3,6 +3,7 @@ import ResponsiveDrawer, {Page} from "./ResponsiveDrawer";
 import {ListModels} from "./ListModels";
 import {CreateCompletion} from "./CreateCompletion";
 import {ApiKey} from "./ApiKey";
+import {CreateChatCompletion} from "./CreateChatCompletion";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -38,6 +39,15 @@ function App() {
       title: 'Create completion',
       element: (
         <CreateCompletion
+          apiKey={apiKey}
+        />
+      ),
+    },
+    {
+      key: 'CreateChatCompletion',
+      title: 'Create chat completion',
+      element: (
+        <CreateChatCompletion
           apiKey={apiKey}
         />
       ),
