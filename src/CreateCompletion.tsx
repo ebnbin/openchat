@@ -1,7 +1,7 @@
 import React, {ChangeEvent, useState} from "react";
 import {Configuration, OpenAIApi} from "openai";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
-import {Json} from "./util";
+import {JsonLog} from "./JsonLog";
 
 interface CreateCompletionProps {
   apiKey: string;
@@ -93,8 +93,8 @@ export function CreateCompletion({ apiKey }: CreateCompletionProps) {
       <div>
         {response}
       </div>
-      <Json
-        value={responseData}
+      <JsonLog
+        object={responseData}
       />
     </div>
   )

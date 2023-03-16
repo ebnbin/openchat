@@ -7,7 +7,7 @@ import {
   OpenAIApi
 } from "openai";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
-import {Json} from "./util";
+import {JsonLog} from "./JsonLog";
 
 interface CreateCompletionProps {
   apiKey: string;
@@ -127,8 +127,8 @@ export function CreateChatCompletion({ apiKey }: CreateCompletionProps) {
           return <li>{`[${message.role}] ${message.content}`}</li>
         })}
       </ul>
-      <Json
-        value={responseData}
+      <JsonLog
+        object={responseData}
       />
     </div>
   )

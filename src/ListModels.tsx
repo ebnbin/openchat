@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Configuration, Model, OpenAIApi} from "openai";
 import {Button} from "@mui/material";
-import {Json} from "./util";
+import {JsonLog} from "./JsonLog";
 
 interface ListModelsProps {
   apiKey: string;
@@ -29,7 +29,9 @@ export function ListModels({ apiKey }: ListModelsProps) {
       });
     const listItems = response.data.data.map((item: Model) =>
       <li key={item.id}>
-        <Json value={item} />
+        <JsonLog
+          object={item}
+        />
       </li>
     );
     setResponse(listItems)
