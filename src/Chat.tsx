@@ -7,9 +7,21 @@ import {
   OpenAIApi
 } from "openai";
 import Box from "@mui/material/Box";
-import {Card, IconButton, TextField} from "@mui/material";
+import {
+  Avatar,
+  Card, Divider,
+  IconButton, InputAdornment,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  TextField
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/SendRounded";
 import DownloadingIcon from "@mui/icons-material/DownloadingRounded";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccountsRounded";
+import FaceIcon from "@mui/icons-material/FaceRounded";
+import PsychologyAltIcon from "@mui/icons-material/PsychologyAltRounded";
 
 interface ChatProps {
   apiKey: string
@@ -140,18 +152,16 @@ export function Chat(props: ChatProps) {
         width={'100%'}
         flexGrow={1}
         overflow={'auto'}
-        padding={'16px'}
-        paddingBottom={'88px'}
+        padding={'0px'}
+        paddingBottom={'72px'}
       >
         <Box
           maxWidth={960}
           margin={'0 auto'}
         >
-          <ul>
-            {messages.map((message: Message) => {
-              return <li>{`[${message.message.role}, ${message.remember}] ${message.message.content}`}</li>
-            })}
-          </ul>
+          <MessageList
+            messages={messages}
+          />
         </Box>
       </Box>
       <Box
@@ -163,7 +173,7 @@ export function Chat(props: ChatProps) {
         <Card
           sx={{
             width: '100%',
-            maxWidth: 992,
+            maxWidth: 960,
             margin: '0 auto',
             padding: '16px',
             paddingTop: '8px',
@@ -211,4 +221,42 @@ export function Chat(props: ChatProps) {
       </Box>
     </Box>
   )
+}
+
+function MessageList({ messages }: { messages: Message[] }) {
+  return (
+    <List>
+      {
+        messages.map((message) => {
+          let icon;
+          switch (message.message.role) {
+            case ChatCompletionRequestMessageRoleEnum.User:
+              icon = <FaceIcon/>
+              break
+            case ChatCompletionRequestMessageRoleEnum.Assistant:
+              icon = <PsychologyAltIcon/>
+              break
+            default:
+              icon = <ManageAccountsIcon/>
+              break
+          }
+          return (
+            <Box>
+              <ListItem alignItems="flex-start">
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: message.remember ? 'primary.main' : undefined }}>
+                    {icon}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={message.message.content}
+                />
+              </ListItem>
+              <Divider variant="inset" />
+            </Box>
+          )
+        })
+      }
+    </List>
+  );
 }
