@@ -24,16 +24,11 @@ export class Page {
 }
 
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window?: () => Window;
   pageList: Page[];
 }
 
 export default function ResponsiveDrawer(props: Props) {
-  const { window, pageList } = props;
+  const { pageList } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const [selectedPage, setSelectedPage] = useState<Page>();
@@ -44,6 +39,7 @@ export default function ResponsiveDrawer(props: Props) {
 
   const handleItemClick = (page: Page) => {
     setSelectedPage(page)
+    setMobileOpen(false)
   }
 
   const drawer = (
@@ -66,8 +62,6 @@ export default function ResponsiveDrawer(props: Props) {
     </div>
   );
 
-  const container = window !== undefined ? () => window().document.body : undefined;
-
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -78,7 +72,6 @@ export default function ResponsiveDrawer(props: Props) {
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
-          container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
