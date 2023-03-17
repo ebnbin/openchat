@@ -4,6 +4,7 @@ import {ListModels} from "./ListModels";
 import {CreateCompletion} from "./CreateCompletion";
 import {ApiKey} from "./ApiKey";
 import {CreateChatCompletion} from "./CreateChatCompletion";
+import {createTheme, ThemeProvider} from "@mui/material";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -54,10 +55,24 @@ function App() {
     },
   ]
 
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  })
+
   return (
-    <ResponsiveDrawer
-      pageList={pageList}
-    />
+    <ThemeProvider theme={theme}>
+      <ResponsiveDrawer
+        pageList={pageList}
+      />
+    </ThemeProvider>
   );
 }
 
