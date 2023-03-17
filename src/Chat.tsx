@@ -14,6 +14,12 @@ import DownloadingIcon from "@mui/icons-material/DownloadingRounded";
 interface ChatProps {
   apiKey: string
   model: string
+  maxTokens: number,
+}
+
+class Message {
+  constructor(public message: ChatCompletionRequestMessage, public remember: boolean) {
+  }
 }
 
 function responseMessageToRequestMessage(responseMessage: ChatCompletionResponseMessage): ChatCompletionRequestMessage {
@@ -37,16 +43,46 @@ function responseMessageToRequestMessage(responseMessage: ChatCompletionResponse
   } as ChatCompletionRequestMessage
 }
 
-export function Chat(props: ChatProps) {
-  const { apiKey, model } = props
+function calcPromptMessages(messages: Message[], input: string, usedTokens: number, maxTokens: number): Message[] {
+  const charCount = messages
+    .filter((message) => message.remember)
+    .reduce((acc, cur) => acc + cur.message.content.length, 0)
+  const tokenPerChar = usedTokens / charCount
+  let currentTokens = 0
+  const result: Message[] = [
+    new Message(
+      {
+        role: ChatCompletionRequestMessageRoleEnum.User,
+        content: input,
+      } as ChatCompletionRequestMessage,
+      true,
+    )
+  ]
+  messages.reverse().forEach((message) => {
+    const token = message.message.content.length * tokenPerChar
+    currentTokens += token
+    const newMessage = {...message}
+    if (currentTokens <= maxTokens) {
+      newMessage.remember = true
+    } else {
+      newMessage.remember = false
+    }
+    result.unshift(newMessage)
+  })
+  return result
+}
 
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([])
+export function Chat(props: ChatProps) {
+  const { apiKey, model, maxTokens } = props
+
+  const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [usedTokens, setUsedTokens] = useState(0)
 
   const isInputEmpty = inputMessage === ''
 
-  const handleInputMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputMessage(event.target.value)
   };
 
@@ -61,15 +97,9 @@ export function Chat(props: ChatProps) {
     });
     const openai = new OpenAIApi(configuration);
 
-    const requestMessages = [
-      ...messages,
-      {
-        role: ChatCompletionRequestMessageRoleEnum.User,
-        content: inputMessage,
-      } as ChatCompletionRequestMessage,
-    ]
+    const nextMessages = calcPromptMessages(messages, inputMessage, usedTokens, maxTokens * 0.9)
 
-    setMessages(requestMessages)
+    setMessages(nextMessages)
     setInputMessage('')
 
     setIsLoading(true)
@@ -77,14 +107,19 @@ export function Chat(props: ChatProps) {
     const response = await openai
       .createChatCompletion({
         model: model,
-        messages: requestMessages,
+        messages: nextMessages
+          .filter((message) => message.remember)
+          .map((message) => {
+            return message.message
+          }),
       })
       .catch(() => {
         setIsLoading(false)
       })
     const responseMessage = responseMessageToRequestMessage(response.data.choices[0].message)
 
-    setMessages([...requestMessages, responseMessage])
+    setUsedTokens(response.data.usage.total_tokens)
+    setMessages([...nextMessages, new Message(responseMessage, true)])
 
     setIsLoading(false)
   }
@@ -98,6 +133,10 @@ export function Chat(props: ChatProps) {
       position={'relative'}
     >
       <Box
+        flexShrink={0}>
+        usedTokens={usedTokens}
+      </Box>
+      <Box
         width={'100%'}
         flexGrow={1}
         overflow={'auto'}
@@ -109,8 +148,8 @@ export function Chat(props: ChatProps) {
           margin={'0 auto'}
         >
           <ul>
-            {messages.map((message: ChatCompletionRequestMessage) => {
-              return <li>{`[${message.role}] ${message.content}`}</li>
+            {messages.map((message: Message) => {
+              return <li>{`[${message.message.role}, ${message.remember}] ${message.message.content}`}</li>
             })}
           </ul>
         </Box>
@@ -150,7 +189,7 @@ export function Chat(props: ChatProps) {
                 flexGrow: 1,
               }}
               value={inputMessage}
-              onChange={handleInputMessageChange}
+              onChange={handleInputChange}
             />
             <IconButton
               sx={{

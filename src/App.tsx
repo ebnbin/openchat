@@ -61,6 +61,7 @@ function App() {
         <Chat
           apiKey={apiKey}
           model={'gpt-3.5-turbo'}
+          maxTokens={4096}
         />
       ),
     },
