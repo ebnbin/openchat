@@ -5,6 +5,7 @@ import {CreateCompletion} from "./CreateCompletion";
 import {ApiKey} from "./ApiKey";
 import {CreateChatCompletion} from "./CreateChatCompletion";
 import {createTheme, ThemeProvider} from "@mui/material";
+import {Chat} from "./Chat";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -53,9 +54,22 @@ function App() {
         />
       ),
     },
+    {
+      key: 'Chat',
+      title: 'Chat',
+      element: (
+        <Chat
+          apiKey={apiKey}
+          model={'gpt-3.5-turbo'}
+        />
+      ),
+    },
   ]
 
   const theme = createTheme({
+    palette: {
+      mode: 'light',
+    },
     breakpoints: {
       values: {
         xs: 0,
