@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import ResponsiveDrawer, {Page} from "./ResponsiveDrawer";
 import {ListModels} from "./ListModels";
-import {CreateCompletion} from "./CreateCompletion";
-import {ApiKey} from "./ApiKey";
-import {CreateChatCompletion} from "./CreateChatCompletion";
+import {CreateCompletionPage} from "./CreateCompletionPage";
+import {ApiKeyPage} from "./ApiKeyPage";
+import {CreateChatCompletionPage} from "./CreateChatCompletionPage";
 import {createTheme, ThemeProvider} from "@mui/material";
-import {Chat} from "./Chat";
+import {ChatPage} from "./ChatPage";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -22,7 +22,7 @@ function App() {
       key: 'ApiKey',
       title: 'API key',
       element: (
-        <ApiKey
+        <ApiKeyPage
           apiKey={apiKey}
           setApiKey={setApiKey}
         />
@@ -40,7 +40,7 @@ function App() {
       key: 'CreateCompletion',
       title: 'Create completion',
       element: (
-        <CreateCompletion
+        <CreateCompletionPage
           apiKey={apiKey}
         />
       ),
@@ -49,7 +49,7 @@ function App() {
       key: 'CreateChatCompletion',
       title: 'Create chat completion',
       element: (
-        <CreateChatCompletion
+        <CreateChatCompletionPage
           apiKey={apiKey}
         />
       ),
@@ -58,7 +58,7 @@ function App() {
       key: 'Chat',
       title: 'Chat',
       element: (
-        <Chat
+        <ChatPage
           apiKey={apiKey}
           model={'gpt-3.5-turbo'}
           maxTokens={4096}

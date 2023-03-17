@@ -14,7 +14,7 @@ interface CreateCompletionProps {
 }
 
 // https://platform.openai.com/docs/api-reference/chat/create
-export function CreateChatCompletion({ apiKey }: CreateCompletionProps) {
+export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
   const modelList: string[] = [
     'gpt-4',
     'gpt-4-0314',

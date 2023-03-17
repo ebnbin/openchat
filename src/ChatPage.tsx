@@ -84,7 +84,7 @@ function calcPromptMessages(messages: Message[], input: string, usedTokens: numb
   return result
 }
 
-export function Chat(props: ChatProps) {
+export function ChatPage(props: ChatProps) {
   const { apiKey, model, maxTokens } = props
 
   const [messages, setMessages] = useState<Message[]>([])

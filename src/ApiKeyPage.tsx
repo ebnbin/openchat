@@ -6,7 +6,7 @@ interface ApiKeyProps {
   setApiKey: (apiKey: string) => void;
 }
 
-export function ApiKey({ apiKey, setApiKey }: ApiKeyProps) {
+export function ApiKeyPage({ apiKey, setApiKey }: ApiKeyProps) {
   const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
     setApiKey(event.target.value)
     localStorage.setItem('apiKey', event.target.value);

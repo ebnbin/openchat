@@ -8,7 +8,7 @@ interface CreateCompletionProps {
 }
 
 // https://platform.openai.com/docs/api-reference/completions/create
-export function CreateCompletion({ apiKey }: CreateCompletionProps) {
+export function CreateCompletionPage({ apiKey }: CreateCompletionProps) {
   const modelList: string[] = [
     'text-davinci-003',
     'text-davinci-002',
