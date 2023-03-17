@@ -1,12 +1,40 @@
-import {useState} from "react";
-import {ChatCompletionRequestMessage} from "openai";
+import React, {ChangeEvent, useState} from "react";
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+  ChatCompletionResponseMessage, ChatCompletionResponseMessageRoleEnum,
+  Configuration,
+  OpenAIApi
+} from "openai";
 import Box from "@mui/material/Box";
-import {Button, Card, IconButton, TextField} from "@mui/material";
+import {Card, IconButton, TextField} from "@mui/material";
 import SendIcon from "@mui/icons-material/SendRounded";
+import DownloadingIcon from "@mui/icons-material/DownloadingRounded";
 
 interface ChatProps {
   apiKey: string
   model: string
+}
+
+function responseMessageToRequestMessage(responseMessage: ChatCompletionResponseMessage): ChatCompletionRequestMessage {
+  let role: ChatCompletionRequestMessageRoleEnum = ChatCompletionRequestMessageRoleEnum.Assistant
+  switch (responseMessage.role) {
+    case ChatCompletionResponseMessageRoleEnum.System:
+      role = ChatCompletionRequestMessageRoleEnum.System;
+      break;
+    case ChatCompletionResponseMessageRoleEnum.User:
+      role = ChatCompletionRequestMessageRoleEnum.User;
+      break;
+    case ChatCompletionResponseMessageRoleEnum.Assistant:
+      role = ChatCompletionRequestMessageRoleEnum.Assistant;
+      break;
+    default:
+      break;
+  }
+  return {
+    role: role,
+    content: responseMessage.content,
+  } as ChatCompletionRequestMessage
 }
 
 export function Chat(props: ChatProps) {
@@ -14,8 +42,51 @@ export function Chat(props: ChatProps) {
 
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([])
   const [inputMessage, setInputMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const isInputEmpty = inputMessage === ''
+
+  const handleInputMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputMessage(event.target.value)
+  };
 
   const request = async () => {
+    if (isInputEmpty) {
+      return
+    }
+
+    const { Configuration, OpenAIApi } = require("openai");
+    const configuration = new Configuration({
+      apiKey: apiKey,
+    });
+    const openai = new OpenAIApi(configuration);
+
+    const requestMessages = [
+      ...messages,
+      {
+        role: ChatCompletionRequestMessageRoleEnum.User,
+        content: inputMessage,
+      } as ChatCompletionRequestMessage,
+    ]
+
+    setMessages(requestMessages)
+    setInputMessage('')
+
+    setIsLoading(true)
+
+    const response = await openai
+      .createChatCompletion({
+        model: model,
+        messages: requestMessages,
+      })
+      .catch(() => {
+        setIsLoading(false)
+      })
+    const responseMessage = responseMessageToRequestMessage(response.data.choices[0].message)
+
+    setMessages([...requestMessages, responseMessage])
+
+    setIsLoading(false)
   }
 
   return (
@@ -37,7 +108,11 @@ export function Chat(props: ChatProps) {
           maxWidth={960}
           margin={'0 auto'}
         >
-          {/* content */}
+          <ul>
+            {messages.map((message: ChatCompletionRequestMessage) => {
+              return <li>{`[${message.role}] ${message.content}`}</li>
+            })}
+          </ul>
         </Box>
       </Box>
       <Box
@@ -74,9 +149,23 @@ export function Chat(props: ChatProps) {
               sx={{
                 flexGrow: 1,
               }}
+              value={inputMessage}
+              onChange={handleInputMessageChange}
             />
-            <IconButton>
+            <IconButton
+              sx={{
+                display: isLoading ? 'none' : 'inline',
+              }}
+              onClick={request}
+            >
               <SendIcon/>
+            </IconButton>
+            <IconButton
+              sx={{
+                display: isLoading ? 'inline' : 'none',
+              }}
+            >
+              <DownloadingIcon/>
             </IconButton>
           </Box>
         </Card>
