@@ -71,28 +71,6 @@ export default function ResponsiveDrawer(props: Props) {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          ml: { md: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {selectedPage ? selectedPage.title : 'Responsive drawer'}
-          </Typography>
-        </Toolbar>
-      </AppBar>
       <Box
         component="nav"
         sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
@@ -129,7 +107,28 @@ export default function ResponsiveDrawer(props: Props) {
         component="main"
         sx={{ flexGrow: 1, width: { md: `calc(100% - ${drawerWidth}px)` }, height: '100vh', display: 'flex', flexDirection: 'column' }}
       >
-        <Toolbar />
+        <AppBar
+          position="static"
+          sx={{
+            width: '100%',
+            display: { md: 'none' },
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              {selectedPage ? selectedPage.title : 'Responsive drawer'}
+            </Typography>
+          </Toolbar>
+        </AppBar>
         <div style={{ width: '100%', flexGrow: 1, overflow: 'auto' }}>
           {selectedPage?.element}
         </div>
