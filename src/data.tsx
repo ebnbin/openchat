@@ -2,22 +2,14 @@ export interface Chat {
   model: string
   maxTokens: number
   historyThreshold: number
-  systemMessageList: SystemMessage[]
-  messagePairList: MessagePair[]
+  systemContent: string
+  conversationList: Conversation[]
   tokensPerChar: number
 }
 
-interface SystemMessage {
-  content: string
-}
-
-interface MessagePair {
-  content: string
-  assistantMessage?: AssistantMessage
-}
-
-interface AssistantMessage {
-  content: string
+export interface Conversation {
+  userContent: string
+  assistantContent: string
   incomplete: boolean
   timestamp: number
 }

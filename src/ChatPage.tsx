@@ -1,16 +1,11 @@
 import React, {ChangeEvent, useState} from "react";
-import {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-  ChatCompletionResponseMessage, ChatCompletionResponseMessageRoleEnum,
-  Configuration,
-  OpenAIApi
-} from "openai";
+import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi} from "openai";
 import Box from "@mui/material/Box";
 import {
   Avatar,
-  Card, Divider,
-  IconButton, InputAdornment,
+  Card,
+  Divider,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -22,80 +17,94 @@ import DownloadingIcon from "@mui/icons-material/DownloadingRounded";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccountsRounded";
 import FaceIcon from "@mui/icons-material/FaceRounded";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAltRounded";
+import {Chat, Conversation} from "./data";
+import {CreateChatCompletionResponse} from "openai/api";
 
 interface ChatProps {
   apiKey: string
-  model: string
-  maxTokens: number,
+  chat: Chat
+  setChat: (chat: Chat) => void
 }
 
 class Message {
-  constructor(public message: ChatCompletionRequestMessage, public remember: boolean) {
+  constructor(public message: ChatCompletionRequestMessage, public history: boolean) {
   }
 }
 
-function responseMessageToRequestMessage(responseMessage: ChatCompletionResponseMessage): ChatCompletionRequestMessage {
-  let role: ChatCompletionRequestMessageRoleEnum = ChatCompletionRequestMessageRoleEnum.Assistant
-  switch (responseMessage.role) {
-    case ChatCompletionResponseMessageRoleEnum.System:
-      role = ChatCompletionRequestMessageRoleEnum.System;
-      break;
-    case ChatCompletionResponseMessageRoleEnum.User:
-      role = ChatCompletionRequestMessageRoleEnum.User;
-      break;
-    case ChatCompletionResponseMessageRoleEnum.Assistant:
-      role = ChatCompletionRequestMessageRoleEnum.Assistant;
-      break;
-    default:
-      break;
-  }
-  return {
-    role: role,
-    content: responseMessage.content,
-  } as ChatCompletionRequestMessage
-}
-
-function calcPromptMessages(messages: Message[], input: string, usedTokens: number, maxTokens: number): Message[] {
-  const charCount = messages
-    .filter((message) => message.remember)
-    .reduce((acc, cur) => acc + cur.message.content.length, 0)
-  const tokenPerChar = usedTokens / charCount
-  let currentTokens = 0
-  const result: Message[] = [
-    new Message(
+function chatToMessageList(chat: Chat): Message[] {
+  const historyTokens = chat.maxTokens * chat.historyThreshold
+  let usedTokens = 0
+  const result: Message[] = []
+  chat.conversationList.slice().reverse().forEach((conversation) => {
+    const tokens = (conversation.assistantContent.length + conversation.userContent.length) * chat.tokensPerChar
+    usedTokens += tokens
+    const history = usedTokens <= historyTokens
+    const assistantMessage = new Message(
+      {
+        role: ChatCompletionRequestMessageRoleEnum.Assistant,
+        content: conversation.assistantContent,
+      } as ChatCompletionRequestMessage,
+      history,
+    )
+    result.unshift(assistantMessage)
+    const userMessage = new Message(
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
-        content: input,
+        content: conversation.userContent,
       } as ChatCompletionRequestMessage,
-      true,
+      history,
     )
-  ]
-  messages.reverse().forEach((message) => {
-    const token = message.message.content.length * tokenPerChar
-    currentTokens += token
-    const newMessage = {...message}
-    if (currentTokens <= maxTokens) {
-      newMessage.remember = true
-    } else {
-      newMessage.remember = false
-    }
-    result.unshift(newMessage)
+    result.unshift(userMessage)
   })
   return result
 }
 
+function onResponse(chat: Chat, requestMessageList: ChatCompletionRequestMessage[], response: CreateChatCompletionResponse): Chat {
+  const conversationList = [
+    ...chat.conversationList,
+    {
+      userContent: requestMessageList[requestMessageList.length - 1].content,
+      assistantContent: response.choices[0].message!!.content,
+      incomplete: response.choices[0].finish_reason === 'length',
+      timestamp: response.created,
+    } as Conversation
+  ]
+  const charCount = conversationList
+    .reduce((acc, cur) => acc + cur.userContent.length + cur.assistantContent.length, 0)
+  const tokenPerChar = (response.usage?.total_tokens ?? 0) / charCount
+  return {
+    ...chat,
+    conversationList: conversationList,
+    tokensPerChar: tokenPerChar,
+  } as Chat
+}
+
+function getRequestMessage(chat: Chat, messageList: Message[]): ChatCompletionRequestMessage[] {
+  const result = messageList
+    .filter((message) => message.history)
+    .map((message) => message.message)
+  if (chat.systemContent !== '') {
+    const systemMessage = {
+      role: ChatCompletionRequestMessageRoleEnum.System,
+      content: chat.systemContent,
+    } as ChatCompletionRequestMessage
+    result.unshift(systemMessage)
+  }
+  return result
+}
+
 export function ChatPage(props: ChatProps) {
-  const { apiKey, model, maxTokens } = props
+  const { apiKey, chat, setChat } = props
 
-  const [messages, setMessages] = useState<Message[]>([])
-  const [inputMessage, setInputMessage] = useState('')
+  const [messageList, setMessageList] = useState<Message[]>(chatToMessageList(chat))
+  const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [usedTokens, setUsedTokens] = useState(0)
+  const [log, setLog] = useState('')
 
-  const isInputEmpty = inputMessage === ''
+  const isInputEmpty = input === ''
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputMessage(event.target.value)
+    setInput(event.target.value)
   };
 
   const request = async () => {
@@ -109,29 +118,41 @@ export function ChatPage(props: ChatProps) {
     });
     const openai = new OpenAIApi(configuration);
 
-    const nextMessages = calcPromptMessages(messages, inputMessage, usedTokens, maxTokens * 0.9)
+    const inputMessage = new Message(
+      {
+        role: ChatCompletionRequestMessageRoleEnum.User,
+        content: input,
+      } as ChatCompletionRequestMessage,
+      true,
+    )
+    const nextMessageList = [
+      ...messageList,
+      inputMessage,
+    ]
 
-    setMessages(nextMessages)
-    setInputMessage('')
+    setMessageList(nextMessageList)
+    setInput('')
 
     setIsLoading(true)
 
+    const requestMessageList = getRequestMessage(chat, nextMessageList)
+
     const response = await openai
       .createChatCompletion({
-        model: model,
-        messages: nextMessages
-          .filter((message) => message.remember)
-          .map((message) => {
-            return message.message
-          }),
+        model: chat.model,
+        messages: requestMessageList,
       })
       .catch(() => {
         setIsLoading(false)
       })
-    const responseMessage = responseMessageToRequestMessage(response.data.choices[0].message)
 
-    setUsedTokens(response.data.usage.total_tokens)
-    setMessages([...nextMessages, new Message(responseMessage, true)])
+    const responseData: CreateChatCompletionResponse = response.data
+    const nextChat = onResponse(chat, requestMessageList, responseData)
+    setChat(nextChat)
+    const newMessageList = chatToMessageList(nextChat)
+    setMessageList(newMessageList)
+
+    setLog(`total_tokens=${response.data.usage.total_tokens}`)
 
     setIsLoading(false)
   }
@@ -146,7 +167,7 @@ export function ChatPage(props: ChatProps) {
     >
       <Box
         flexShrink={0}>
-        usedTokens={usedTokens}
+        log={log}
       </Box>
       <Box
         width={'100%'}
@@ -160,7 +181,7 @@ export function ChatPage(props: ChatProps) {
           margin={'0 auto'}
         >
           <MessageList
-            messages={messages}
+            messages={messageList}
           />
         </Box>
       </Box>
@@ -198,7 +219,7 @@ export function ChatPage(props: ChatProps) {
               sx={{
                 flexGrow: 1,
               }}
-              value={inputMessage}
+              value={input}
               onChange={handleInputChange}
             />
             <IconButton
@@ -244,7 +265,7 @@ function MessageList({ messages }: { messages: Message[] }) {
             <Box>
               <ListItem alignItems="flex-start">
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: message.remember ? 'primary.main' : undefined }}>
+                  <Avatar sx={{ bgcolor: message.history ? 'primary.main' : undefined }}>
                     {icon}
                   </Avatar>
                 </ListItemAvatar>

@@ -6,6 +6,7 @@ import {ApiKeyPage} from "./ApiKeyPage";
 import {CreateChatCompletionPage} from "./CreateChatCompletionPage";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {ChatPage} from "./ChatPage";
+import {Chat} from "./data";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -15,7 +16,18 @@ function App() {
     if (storedApiKey) {
       setApiKey(storedApiKey);
     }
-  }, []);
+  }, [apiKey]);
+
+  const [chat, setChat] = useState<Chat>(
+    {
+      model: 'gpt-3.5-turbo',
+      maxTokens: 4096,
+      historyThreshold: 0.7,
+      systemContent: '',
+      conversationList: [],
+      tokensPerChar: 0,
+    } as Chat
+  )
 
   const pageList: Page[] = [
     {
@@ -60,8 +72,8 @@ function App() {
       element: (
         <ChatPage
           apiKey={apiKey}
-          model={'gpt-3.5-turbo'}
-          maxTokens={4096}
+          chat={chat}
+          setChat={setChat}
         />
       ),
     },
