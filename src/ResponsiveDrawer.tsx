@@ -31,13 +31,13 @@ export default function ResponsiveDrawer(props: Props) {
   const { pageList } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const [selectedPage, setSelectedPage] = useState<Page>();
+  const [selectedPage, setSelectedPage] = useState<number>(0);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleItemClick = (page: Page) => {
+  const handleItemClick = (page: number) => {
     setSelectedPage(page)
     setMobileOpen(false)
   }
@@ -48,8 +48,8 @@ export default function ResponsiveDrawer(props: Props) {
         {pageList.map((page: Page, index) => (
           <ListItem key={page.key} disablePadding>
             <ListItemButton
-              onClick={() => handleItemClick(page)}
-              selected={selectedPage === page}
+              onClick={() => handleItemClick(index)}
+              selected={selectedPage === index}
             >
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -118,12 +118,12 @@ export default function ResponsiveDrawer(props: Props) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              {selectedPage ? selectedPage.title : 'Responsive drawer'}
+              {selectedPage ? pageList[selectedPage].title : 'Responsive drawer'}
             </Typography>
           </Toolbar>
         </AppBar>
         <div style={{ width: '100%', flexGrow: 1, overflow: 'auto' }}>
-          {selectedPage?.element}
+          {pageList[selectedPage].element}
         </div>
       </Box>
     </Box>
