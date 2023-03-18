@@ -26,6 +26,7 @@ function App() {
       systemContent: '',
       conversationList: [],
       tokensPerChar: 0,
+      extraCharsPerMessage: 0,
     } as Chat
   )
 

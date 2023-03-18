@@ -5,6 +5,7 @@ export interface Chat {
   systemContent: string
   conversationList: Conversation[]
   tokensPerChar: number
+  extraCharsPerMessage: number
 }
 
 export interface Conversation {

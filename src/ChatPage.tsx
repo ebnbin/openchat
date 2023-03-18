@@ -33,10 +33,10 @@ class Message {
 
 function chatToMessageList(chat: Chat): Message[] {
   const historyTokens = chat.maxTokens * chat.historyThreshold
-  let usedTokens = 0
+  let usedTokens = chat.systemContent === '' ? 0 : (chat.systemContent.length * chat.tokensPerChar + chat.extraCharsPerMessage)
   const result: Message[] = []
   chat.conversationList.slice().reverse().forEach((conversation) => {
-    const tokens = (conversation.assistantContent.length + conversation.userContent.length) * chat.tokensPerChar
+    const tokens = (conversation.assistantContent.length + conversation.userContent.length) * chat.tokensPerChar + 2 * chat.extraCharsPerMessage
     usedTokens += tokens
     const history = usedTokens <= historyTokens
     const assistantMessage = new Message(
@@ -69,13 +69,16 @@ function onResponse(chat: Chat, requestMessageList: ChatCompletionRequestMessage
       timestamp: response.created,
     } as Conversation
   ]
-  const charCount = conversationList
-    .reduce((acc, cur) => acc + cur.userContent.length + cur.assistantContent.length, 0)
-  const tokenPerChar = (response.usage?.total_tokens ?? 0) / charCount
+  const requestContentList = requestMessageList.map((message) => message.content)
+  const charCount = requestContentList.reduce((acc, cur) => acc + cur.length, 0)
+  const messageCount = requestMessageList.length
+  const tokenPerChar = Math.max(1, response.usage!!.completion_tokens - 1) / (response.choices[0].message!!.content.length)
+  const extraCharsPerMessage = (response.usage!!.prompt_tokens / tokenPerChar - charCount) / messageCount
   return {
     ...chat,
     conversationList: conversationList,
     tokensPerChar: tokenPerChar,
+    extraCharsPerMessage: extraCharsPerMessage,
   } as Chat
 }
 
