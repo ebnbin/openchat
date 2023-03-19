@@ -246,28 +246,7 @@ export function ChatPage(props: ChatProps) {
           </Box>
         </Card>
       </Box>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous
-            location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Disagree</Button>
-          <Button onClick={handleClose} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <InfoDialog apiKey={apiKey} chat={chat} setChat={setChat} open={open} handleClickOpen={handleClickOpen} handleClose={handleClose}/>
     </Box>
   )
 }
@@ -308,4 +287,64 @@ function MessageList({ messages }: { messages: Message[] }) {
       }
     </List>
   );
+}
+
+function InfoDialog(props: ChatProps) {
+  const { apiKey, chat, setChat, open, handleClickOpen, handleClose } = props
+
+  const [systemMessage, setSystemMessage] = useState(chat.systemContent)
+
+  const saveOnClick = () => {
+    handleClose()
+    setChat(
+      {
+        ...chat,
+        systemContent: systemMessage,
+      }
+    )
+  }
+
+  const cancelOnClick = () => {
+    handleClose()
+    setSystemMessage(chat.systemContent)
+  }
+
+  const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSystemMessage(event.target.value)
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Chat Info"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Chat info description
+        </DialogContentText>
+        <TextField
+          autoFocus
+          margin="normal"
+          id="name"
+          label="System message"
+          type="text"
+          fullWidth
+          variant="outlined"
+          multiline={true}
+          maxRows={8}
+          value={systemMessage}
+          onChange={handleSystemMessageChange}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={cancelOnClick}>Cancel</Button>
+        <Button onClick={saveOnClick} autoFocus>
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
 }
