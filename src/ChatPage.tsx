@@ -2,8 +2,8 @@ import React, {ChangeEvent, useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi} from "openai";
 import Box from "@mui/material/Box";
 import {
-  Avatar,
-  Card,
+  Avatar, Button,
+  Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   Divider,
   IconButton,
   List,
@@ -24,6 +24,9 @@ interface ChatProps {
   apiKey: string
   chat: Chat
   setChat: (chat: Chat) => void
+  open: boolean
+  handleClickOpen: () => void
+  handleClose: () => void
 }
 
 class Message {
@@ -97,7 +100,7 @@ function getRequestMessage(chat: Chat, messageList: Message[]): ChatCompletionRe
 }
 
 export function ChatPage(props: ChatProps) {
-  const { apiKey, chat, setChat } = props
+  const { apiKey, chat, setChat, open, handleClickOpen, handleClose } = props
 
   const [messageList, setMessageList] = useState<Message[]>(chatToMessageList(chat))
   const [input, setInput] = useState('')
@@ -243,6 +246,28 @@ export function ChatPage(props: ChatProps) {
           </Box>
         </Card>
       </Box>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous
+            location data to Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Disagree</Button>
+          <Button onClick={handleClose} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

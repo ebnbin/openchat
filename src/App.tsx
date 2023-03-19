@@ -4,7 +4,7 @@ import {ListModels} from "./ListModels";
 import {CreateCompletionPage} from "./CreateCompletionPage";
 import {ApiKeyPage} from "./ApiKeyPage";
 import {CreateChatCompletionPage} from "./CreateChatCompletionPage";
-import {createTheme, ThemeProvider} from "@mui/material";
+import {Box, Button, createTheme, ThemeProvider} from "@mui/material";
 import {ChatPage} from "./ChatPage";
 import {Chat} from "./data";
 
@@ -29,6 +29,16 @@ function App() {
       extraCharsPerMessage: 0,
     } as Chat
   )
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const pageList: Page[] = [
     {
@@ -75,8 +85,12 @@ function App() {
           apiKey={apiKey}
           chat={chat}
           setChat={setChat}
+          open={open}
+          handleClickOpen={handleClickOpen}
+          handleClose={handleClose}
         />
       ),
+      handleClickOpen: handleClickOpen,
     },
   ]
 

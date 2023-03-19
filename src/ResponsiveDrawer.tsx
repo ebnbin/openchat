@@ -12,6 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
+import InfoIcon from '@mui/icons-material/InfoRounded';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useState} from "react";
@@ -19,7 +20,7 @@ import {useState} from "react";
 const drawerWidth = 300;
 
 export class Page {
-  constructor(public key: string, public title: string, public element: JSX.Element) {
+  constructor(public key: string, public title: string, public element: JSX.Element, public handleClickOpen?: () => void) {
   }
 }
 
@@ -46,7 +47,19 @@ export default function ResponsiveDrawer(props: Props) {
     <div>
       <List>
         {pageList.map((page: Page, index) => (
-          <ListItem key={page.key} disablePadding>
+          <ListItem
+            key={page.key}
+            disablePadding
+            secondaryAction={
+              <IconButton
+                edge="end"
+                onClick={pageList[index].handleClickOpen}
+                sx={{display: pageList[index].handleClickOpen && selectedPage === index ? 'inline' : 'none', alignItems: 'center'}}
+              >
+                <InfoIcon />
+              </IconButton>
+            }
+          >
             <ListItemButton
               onClick={() => handleItemClick(index)}
               selected={selectedPage === index}
@@ -120,6 +133,15 @@ export default function ResponsiveDrawer(props: Props) {
             <Typography variant="h6" noWrap component="div">
               {selectedPage ? pageList[selectedPage].title : 'Responsive drawer'}
             </Typography>
+            <div style={{flexGrow: 1}} />
+            <IconButton
+              size="large"
+              onClick={pageList[selectedPage].handleClickOpen}
+              sx={{display: pageList[selectedPage].handleClickOpen ? 'inline' : 'none', alignItems: 'center'}}
+              color="inherit"
+            >
+              <InfoIcon />
+            </IconButton>
           </Toolbar>
         </AppBar>
         <div style={{ width: '100%', flexGrow: 1, overflow: 'auto' }}>
