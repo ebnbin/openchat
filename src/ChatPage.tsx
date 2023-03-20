@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, ReactNode, useState} from "react";
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
@@ -8,18 +8,17 @@ import {
 import Box from "@mui/material/Box";
 import {
   Avatar, Button,
-  Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Card, Dialog, DialogActions, DialogContent, DialogContentText, Divider,
   IconButton,
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
-  TextField, useTheme
+  ListItemText, Slider,
+  TextField, Typography, useTheme
 } from "@mui/material";
 import {Chat, ChatConversation} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
-import {grey} from "@mui/material/colors";
 
 //*********************************************************************************************************************
 
@@ -137,7 +136,7 @@ function MessageItem(props: MessageItemProps) {
 
   function itemColor(): string | undefined {
     return messageWrapper.message.role === ChatCompletionRequestMessageRoleEnum.Assistant
-      ? (theme.palette.mode === 'dark' ? grey[900] : grey[100])
+      ? theme.palette.action.hover
       : undefined
   }
 
@@ -277,6 +276,195 @@ function InputCard(props: InputCardProps) {
   )
 }
 
+interface DetailDialogProps {
+  chat: Chat,
+  setChat: (chat: Chat) => void
+  open: boolean
+  handleClose: () => void
+}
+
+function DetailDialog(props: DetailDialogProps) {
+  const { chat, setChat, open, handleClose } = props
+
+  const [title, setTitle] = useState(chat.title)
+  const [contextThreshold, setContextThreshold] = useState(chat.contextThreshold)
+  const [systemMessage, setSystemMessage] = useState(chat.systemMessage)
+
+  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value)
+  }
+
+  const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSystemMessage(event.target.value)
+  }
+
+  const handleSaveClick = () => {
+    setChat(
+      {
+        ...chat,
+        title: title,
+        contextThreshold: contextThreshold,
+        systemMessage: systemMessage,
+      },
+    )
+    handleClose()
+  }
+
+  const handleCancelClick = () => {
+    setTitle(chat.title)
+    setContextThreshold(chat.contextThreshold)
+    setSystemMessage(chat.systemMessage)
+    handleClose()
+  }
+
+  return (
+    <Dialog
+      fullWidth={true}
+      scroll={'paper'}
+      open={open}
+      onClose={handleCancelClick}
+    >
+      <DialogContent
+        sx={{
+          padding: 0,
+        }}
+      >
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            Title
+          </Typography>
+          <TextField
+            variant={'standard'}
+            fullWidth={true}
+            type={'text'}
+            placeholder={'New chat'}
+            value={title}
+            onChange={handleTitleChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            Context Threshold
+          </Typography>
+          <Typography
+            variant={'body2'}
+            color={'text.secondary'}
+            gutterBottom={true}
+          >
+            Conversation histories that can be remembered as context for the next conversation
+            <br />
+            Current value: {(contextThreshold * 100).toFixed(0)}% of maximum tokens (about {(chat.maxTokens * contextThreshold / 4 * 3).toFixed(0)} words)
+          </Typography>
+          <Box
+            sx={{
+              padding: '8px',
+              paddingBottom: '0px',
+            }}
+          >
+            <Slider
+              min={0}
+              max={0.95}
+              step={0.05}
+              marks={true}
+              value={contextThreshold}
+              onChange={(event, newValue) => {
+                setContextThreshold(newValue as number)
+              }}
+            />
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            System Message
+          </Typography>
+          <Typography
+            variant={'body2'}
+            color={'text.secondary'}
+            gutterBottom={true}
+          >
+            The system message helps set the behavior of the assistant
+          </Typography>
+          <TextField
+            variant={'outlined'}
+            fullWidth={true}
+            type={'text'}
+            multiline={true}
+            maxRows={8}
+            placeholder={'You are a helpful assistant.'}
+            value={systemMessage}
+            onChange={handleSystemMessageChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <DialogContentText>
+            Model: {chat.model} ({chat.maxTokens} tokens)
+            <br />
+            Cumulative tokens used: {chat.tokens}
+            <br />
+            Numbers of conversations: {chat.conversations.length}
+          </DialogContentText>
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Button
+            variant={'contained'}
+            color={'error'}
+            fullWidth={true}
+          >
+            Delete chat
+          </Button>
+        </Box>
+      </DialogContent>
+      <Divider />
+      <DialogActions>
+        <Button
+          onClick={handleCancelClick}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSaveClick}
+        >
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 //*********************************************************************************************************************
 
 interface ChatProps {
@@ -375,67 +563,7 @@ export function ChatPage(props: ChatProps) {
           <InputCard input={input} setInput={setInput} isRequesting={isLoading} request={request}/>
         </Box>
       </Box>
-      <InfoDialog apiKey={apiKey} chat={chat} setChat={setChat} open={open} handleClickOpen={handleClickOpen} handleClose={handleClose}/>
+      <DetailDialog chat={chat} setChat={setChat} open={open} handleClose={handleClose}/>
     </Box>
-  )
-}
-
-function InfoDialog(props: ChatProps) {
-  const { apiKey, chat, setChat, open, handleClickOpen, handleClose } = props
-
-  const [systemMessage, setSystemMessage] = useState(chat.systemMessage)
-
-  const saveOnClick = () => {
-    handleClose()
-    setChat(
-      {
-        ...chat,
-        systemMessage: systemMessage,
-      }
-    )
-  }
-
-  const cancelOnClick = () => {
-    handleClose()
-    setSystemMessage(chat.systemMessage)
-  }
-
-  const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSystemMessage(event.target.value)
-  };
-
-  return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-    >
-      <DialogTitle id="alert-dialog-title">
-        {"Chat Info"}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Chat info description
-        </DialogContentText>
-        <TextField
-          autoFocus
-          margin="normal"
-          id="name"
-          label="System message"
-          type="text"
-          fullWidth
-          variant="outlined"
-          multiline={true}
-          maxRows={8}
-          value={systemMessage}
-          onChange={handleSystemMessageChange}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={cancelOnClick}>Cancel</Button>
-        <Button onClick={saveOnClick} autoFocus>
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
   )
 }

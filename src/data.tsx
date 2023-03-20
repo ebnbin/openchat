@@ -1,4 +1,5 @@
 export interface Chat {
+  title: string
   model: string
   maxTokens: number
   extraCharsPerMessage: number,

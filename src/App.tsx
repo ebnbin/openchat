@@ -20,6 +20,7 @@ function App() {
 
   const [chat, setChat] = useState<Chat>(
     {
+      title: '',
       model: 'gpt-3.5-turbo',
       maxTokens: 4096,
       extraCharsPerMessage: 16,
