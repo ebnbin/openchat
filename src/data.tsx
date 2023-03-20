@@ -1,17 +1,18 @@
 export interface Chat {
   model: string
   maxTokens: number
+  extraCharsPerMessage: number,
   contextThreshold: number
   systemMessage: string
   conversations: ChatConversation[]
   tokensPerChar: number
-  extraCharsPerMessage: number
   tokens: number
+  incomplete: boolean
+  requestingUserMessage: string
 }
 
 export interface ChatConversation {
+  timestamp: number
   userMessage: string
   assistantMessage: string
-  incomplete: boolean
-  timestamp: number
 }

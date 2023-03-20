@@ -1,5 +1,10 @@
 import React, {ChangeEvent, useState} from "react";
-import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi} from "openai";
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+  Configuration,
+  OpenAIApi
+} from "openai";
 import Box from "@mui/material/Box";
 import {
   Avatar, Button,
@@ -20,6 +25,111 @@ import PsychologyAltIcon from "@mui/icons-material/PsychologyAltRounded";
 import {Chat, ChatConversation} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 
+//*********************************************************************************************************************
+
+interface MessageWrapper {
+  message: ChatCompletionRequestMessage
+  context: boolean
+}
+
+function chatToMessageWrappers(chat: Chat): MessageWrapper[] {
+  const result: MessageWrapper[] = []
+  if (chat.requestingUserMessage !== '') {
+    const userMessageWrapper = {
+      message: {
+        role: ChatCompletionRequestMessageRoleEnum.User,
+        content: chat.requestingUserMessage,
+      } as ChatCompletionRequestMessage,
+      context: true,
+    } as MessageWrapper
+    result.unshift(userMessageWrapper)
+  }
+  const maxContextTokens = chat.maxTokens * chat.contextThreshold
+  let usedTokens = 0
+  if (chat.systemMessage !== '') {
+    usedTokens += chat.systemMessage.length * chat.tokensPerChar + chat.extraCharsPerMessage
+  }
+  chat.conversations
+    .slice()
+    .reverse()
+    .forEach((conversation) => {
+      const tokens = (conversation.userMessage.length + conversation.assistantMessage.length +
+        2 * chat.extraCharsPerMessage) * chat.tokensPerChar
+      usedTokens += tokens
+      const context = usedTokens <= maxContextTokens
+      const assistantMessageWrapper = {
+        message: {
+          role: ChatCompletionRequestMessageRoleEnum.Assistant,
+          content: conversation.assistantMessage,
+        } as ChatCompletionRequestMessage,
+        context: context,
+      } as MessageWrapper
+      result.unshift(assistantMessageWrapper)
+      const userMessageWrapper = {
+        message: {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: conversation.userMessage,
+        } as ChatCompletionRequestMessage,
+        context: context,
+      } as MessageWrapper
+      result.unshift(userMessageWrapper)
+    })
+  if (chat.systemMessage !== '') {
+    const systemMessageWrapper = {
+      message: {
+        role: ChatCompletionRequestMessageRoleEnum.System,
+        content: chat.systemMessage,
+      } as ChatCompletionRequestMessage,
+      context: true,
+    } as MessageWrapper
+    result.unshift(systemMessageWrapper)
+  }
+  return result
+}
+
+function beforeRequest(
+  chat: Chat,
+  inputMessage: string,
+): Chat {
+  return {
+    ...chat,
+    requestingUserMessage: inputMessage,
+  }
+}
+
+function afterResponse(
+  chat: Chat,
+  requestMessages: ChatCompletionRequestMessage[],
+  response: CreateChatCompletionResponse,
+): Chat {
+  const responseMessage = response.choices[0].message!!.content
+  const conversations = [
+    ...chat.conversations,
+    {
+      timestamp: response.created,
+      userMessage: requestMessages[requestMessages.length - 1].content,
+      assistantMessage: responseMessage,
+    } as ChatConversation,
+  ]
+  const responseTotalTokens = response.usage!!.total_tokens
+  const charCount = requestMessages
+    .map((message) => message.content)
+    .concat(responseMessage)
+    .reduce((acc, message) => acc + message.length + chat.extraCharsPerMessage, 0)
+  const tokensPerChar = responseTotalTokens / charCount
+  const tokens = chat.tokens + responseTotalTokens
+  const incomplete = response.choices[0].finish_reason === 'length'
+  return {
+    ...chat,
+    conversations: conversations,
+    tokensPerChar: tokensPerChar,
+    tokens: tokens,
+    incomplete: incomplete,
+  } as Chat
+}
+
+//*********************************************************************************************************************
+
 interface ChatProps {
   apiKey: string
   chat: Chat
@@ -29,83 +139,12 @@ interface ChatProps {
   handleClose: () => void
 }
 
-class Message {
-  constructor(public message: ChatCompletionRequestMessage, public history: boolean) {
-  }
-}
-
-function chatToMessageList(chat: Chat): Message[] {
-  const historyTokens = chat.maxTokens * chat.contextThreshold
-  let usedTokens = chat.systemMessage === '' ? 0 : (chat.systemMessage.length * chat.tokensPerChar + chat.extraCharsPerMessage)
-  const result: Message[] = []
-  chat.conversations.slice().reverse().forEach((conversation) => {
-    const tokens = (conversation.assistantMessage.length + conversation.userMessage.length) * chat.tokensPerChar + 2 * chat.extraCharsPerMessage
-    usedTokens += tokens
-    const history = usedTokens <= historyTokens
-    const assistantMessage = new Message(
-      {
-        role: ChatCompletionRequestMessageRoleEnum.Assistant,
-        content: conversation.assistantMessage,
-      } as ChatCompletionRequestMessage,
-      history,
-    )
-    result.unshift(assistantMessage)
-    const userMessage = new Message(
-      {
-        role: ChatCompletionRequestMessageRoleEnum.User,
-        content: conversation.userMessage,
-      } as ChatCompletionRequestMessage,
-      history,
-    )
-    result.unshift(userMessage)
-  })
-  return result
-}
-
-function onResponse(chat: Chat, requestMessageList: ChatCompletionRequestMessage[], response: CreateChatCompletionResponse): Chat {
-  const conversationList = [
-    ...chat.conversations,
-    {
-      userMessage: requestMessageList[requestMessageList.length - 1].content,
-      assistantMessage: response.choices[0].message!!.content,
-      incomplete: response.choices[0].finish_reason === 'length',
-      timestamp: response.created,
-    } as ChatConversation
-  ]
-  const requestContentList = requestMessageList.map((message) => message.content)
-  const charCount = requestContentList.reduce((acc, cur) => acc + cur.length, 0)
-  const messageCount = requestMessageList.length
-  const tokenPerChar = Math.max(1, response.usage!!.completion_tokens - 1) / (response.choices[0].message!!.content.length)
-  const extraCharsPerMessage = (response.usage!!.prompt_tokens / tokenPerChar - charCount) / messageCount
-  return {
-    ...chat,
-    conversations: conversationList,
-    tokensPerChar: tokenPerChar,
-    extraCharsPerMessage: extraCharsPerMessage,
-  } as Chat
-}
-
-function getRequestMessage(chat: Chat, messageList: Message[]): ChatCompletionRequestMessage[] {
-  const result = messageList
-    .filter((message) => message.history)
-    .map((message) => message.message)
-  if (chat.systemMessage !== '') {
-    const systemMessage = {
-      role: ChatCompletionRequestMessageRoleEnum.System,
-      content: chat.systemMessage,
-    } as ChatCompletionRequestMessage
-    result.unshift(systemMessage)
-  }
-  return result
-}
-
 export function ChatPage(props: ChatProps) {
   const { apiKey, chat, setChat, open, handleClickOpen, handleClose } = props
 
-  const [messageList, setMessageList] = useState<Message[]>(chatToMessageList(chat))
+  const [messageList, setMessageList] = useState<MessageWrapper[]>(chatToMessageWrappers(chat))
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [log, setLog] = useState('')
 
   const isInputEmpty = input === ''
 
@@ -124,24 +163,17 @@ export function ChatPage(props: ChatProps) {
     });
     const openai = new OpenAIApi(configuration);
 
-    const inputMessage = new Message(
-      {
-        role: ChatCompletionRequestMessageRoleEnum.User,
-        content: input,
-      } as ChatCompletionRequestMessage,
-      true,
-    )
-    const nextMessageList = [
-      ...messageList,
-      inputMessage,
-    ]
-
-    setMessageList(nextMessageList)
+    const chat1 = beforeRequest(chat, input)
+    setChat(chat1)
+    const messageList1 = chatToMessageWrappers(chat1)
+    setMessageList(messageList1)
     setInput('')
 
     setIsLoading(true)
 
-    const requestMessageList = getRequestMessage(chat, nextMessageList)
+    const requestMessageList = messageList1
+      .filter((message) => message.context)
+      .map((message) => message.message)
 
     const response = await openai
       .createChatCompletion({
@@ -153,12 +185,10 @@ export function ChatPage(props: ChatProps) {
       })
 
     const responseData: CreateChatCompletionResponse = response.data
-    const nextChat = onResponse(chat, requestMessageList, responseData)
+    const nextChat = afterResponse(chat, requestMessageList, responseData)
     setChat(nextChat)
-    const newMessageList = chatToMessageList(nextChat)
+    const newMessageList = chatToMessageWrappers(nextChat)
     setMessageList(newMessageList)
-
-    setLog(`total_tokens=${response.data.usage.total_tokens}`)
 
     setIsLoading(false)
   }
@@ -171,10 +201,6 @@ export function ChatPage(props: ChatProps) {
       height={'100%'}
       position={'relative'}
     >
-      <Box
-        flexShrink={0}>
-        log={log}
-      </Box>
       <Box
         width={'100%'}
         flexGrow={1}
@@ -251,7 +277,7 @@ export function ChatPage(props: ChatProps) {
   )
 }
 
-function MessageList({ messages }: { messages: Message[] }) {
+function MessageList({ messages }: { messages: MessageWrapper[] }) {
   return (
     <List>
       {
@@ -272,7 +298,7 @@ function MessageList({ messages }: { messages: Message[] }) {
             <Box>
               <ListItem alignItems="flex-start">
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: message.history ? 'primary.main' : undefined }}>
+                  <Avatar sx={{ bgcolor: message.context ? 'primary.main' : undefined }}>
                     {icon}
                   </Avatar>
                 </ListItemAvatar>
