@@ -4,9 +4,10 @@ import {ListModels} from "./ListModels";
 import {CreateCompletionPage} from "./CreateCompletionPage";
 import {ApiKeyPage} from "./ApiKeyPage";
 import {CreateChatCompletionPage} from "./CreateChatCompletionPage";
-import {Box, Button, createTheme, ThemeProvider} from "@mui/material";
+import {createTheme, ThemeProvider} from "@mui/material";
 import {ChatPage} from "./ChatPage";
 import {Chat} from "./data";
+import {Configuration, OpenAIApi} from "openai";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -43,6 +44,12 @@ function App() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const { Configuration, OpenAIApi } = require("openai");
+  const configuration = new Configuration({
+    apiKey: apiKey,
+  });
+  const openai = new OpenAIApi(configuration);
 
   const pageList: Page[] = [
     {
@@ -86,11 +93,10 @@ function App() {
       title: 'Chat',
       element: (
         <ChatPage
-          apiKey={apiKey}
+          api={openai}
           chat={chat}
           setChat={setChat}
           open={open}
-          handleClickOpen={handleClickOpen}
           handleClose={handleClose}
         />
       ),
