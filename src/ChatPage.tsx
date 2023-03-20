@@ -9,21 +9,17 @@ import Box from "@mui/material/Box";
 import {
   Avatar, Button,
   Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-  Divider,
   IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  TextField
+  TextField, useTheme
 } from "@mui/material";
-import SendIcon from "@mui/icons-material/SendRounded";
-import DownloadingIcon from "@mui/icons-material/DownloadingRounded";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccountsRounded";
-import FaceIcon from "@mui/icons-material/FaceRounded";
-import PsychologyAltIcon from "@mui/icons-material/PsychologyAltRounded";
 import {Chat, ChatConversation} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
+import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
+import {grey} from "@mui/material/colors";
 
 //*********************************************************************************************************************
 
@@ -130,6 +126,159 @@ function afterResponse(
 
 //*********************************************************************************************************************
 
+interface MessageItemProps {
+  messageWrapper: MessageWrapper
+}
+
+function MessageItem(props: MessageItemProps) {
+  const { messageWrapper } = props
+
+  const theme = useTheme()
+
+  function itemColor(): string | undefined {
+    return messageWrapper.message.role === ChatCompletionRequestMessageRoleEnum.Assistant
+      ? (theme.palette.mode === 'dark' ? grey[900] : grey[100])
+      : undefined
+  }
+
+  function avatarColor(): string | undefined {
+    if (messageWrapper.context) {
+      switch (messageWrapper.message.role) {
+        case ChatCompletionRequestMessageRoleEnum.User:
+          return 'primary.main'
+        case ChatCompletionRequestMessageRoleEnum.Assistant:
+          return 'secondary.main'
+      }
+    }
+    return undefined
+  }
+
+  function avatarIcon(): JSX.Element | undefined {
+    switch (messageWrapper.message.role) {
+      case ChatCompletionRequestMessageRoleEnum.User:
+        return <FaceRounded />
+      case ChatCompletionRequestMessageRoleEnum.Assistant:
+        return <PsychologyAltRounded />
+    }
+    return undefined
+  }
+
+  return (
+    <ListItem
+      sx={{
+        alignItems: 'flex-start',
+        bgcolor: itemColor(),
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar
+          sx={{
+            bgcolor: avatarColor()
+          }}
+        >
+          {avatarIcon()}
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={messageWrapper.message.content}
+      />
+    </ListItem>
+  )
+}
+
+interface MessageListProps {
+  messageWrappers: MessageWrapper[]
+}
+
+function MessageList(props: MessageListProps) {
+  const { messageWrappers } = props
+
+  return (
+    <List>
+      {
+        messageWrappers
+          .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
+          .map((messageWrapper) => (
+              <MessageItem
+                messageWrapper={messageWrapper}
+              />
+            )
+          )
+      }
+    </List>
+  )
+}
+
+interface InputCardProps {
+  input: string
+  setInput: (input: string) => void
+  isRequesting: boolean
+  request: () => void
+}
+
+function InputCard(props: InputCardProps) {
+  const { input, setInput, isRequesting, request } = props
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value)
+  }
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      if (input !== '') {
+        request()
+      }
+    }
+  }
+
+  return (
+    <Card
+      elevation={8}
+      sx={{
+        width: '100%',
+        padding: '16px',
+        paddingTop: '8px',
+        borderRadius: 0,
+        borderTopLeftRadius: '8px',
+        borderTopRightRadius: '8px',
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+        }}
+      >
+        <TextField
+          variant={'standard'}
+          fullWidth={true}
+          multiline={true}
+          maxRows={8}
+          label={'Message'}
+          value={input}
+          autoFocus={true}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          sx={{
+            flexGrow: 1,
+          }}
+        />
+        <IconButton
+          disabled={input === '' || isRequesting}
+          onClick={request}
+        >
+          <SendRounded />
+        </IconButton>
+      </Box>
+    </Card>
+  )
+}
+
+//*********************************************************************************************************************
+
 interface ChatProps {
   apiKey: string
   chat: Chat
@@ -147,10 +296,6 @@ export function ChatPage(props: ChatProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const isInputEmpty = input === ''
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value)
-  };
 
   const request = async () => {
     if (isInputEmpty) {
@@ -209,11 +354,11 @@ export function ChatPage(props: ChatProps) {
         paddingBottom={'72px'}
       >
         <Box
-          maxWidth={960}
+          maxWidth={900}
           margin={'0 auto'}
         >
           <MessageList
-            messages={messageList}
+            messageWrappers={messageList}
           />
         </Box>
       </Box>
@@ -223,96 +368,16 @@ export function ChatPage(props: ChatProps) {
         position={'absolute'}
         bottom={0}
       >
-        <Card
-          sx={{
-            width: '100%',
-            maxWidth: 960,
-            margin: '0 auto',
-            padding: '16px',
-            paddingTop: '8px',
-            borderRadius: 0,
-            borderTopLeftRadius: '8px',
-            borderTopRightRadius: '8px',
-          }}
-          elevation={8}
+        <Box
+          maxWidth={900}
+          margin={'0 auto'}
         >
-          <Box
-            display={'flex'}
-            flexDirection={'row'}
-            width={'100%'}
-            alignItems={'flex-end'}
-          >
-            <TextField
-              variant={'standard'}
-              fullWidth={true}
-              multiline={true}
-              maxRows={8}
-              label={'Message'}
-              sx={{
-                flexGrow: 1,
-              }}
-              value={input}
-              onChange={handleInputChange}
-            />
-            <IconButton
-              sx={{
-                display: isLoading ? 'none' : 'inline',
-              }}
-              onClick={request}
-            >
-              <SendIcon/>
-            </IconButton>
-            <IconButton
-              sx={{
-                display: isLoading ? 'inline' : 'none',
-              }}
-            >
-              <DownloadingIcon/>
-            </IconButton>
-          </Box>
-        </Card>
+          <InputCard input={input} setInput={setInput} isRequesting={isLoading} request={request}/>
+        </Box>
       </Box>
       <InfoDialog apiKey={apiKey} chat={chat} setChat={setChat} open={open} handleClickOpen={handleClickOpen} handleClose={handleClose}/>
     </Box>
   )
-}
-
-function MessageList({ messages }: { messages: MessageWrapper[] }) {
-  return (
-    <List>
-      {
-        messages.map((message) => {
-          let icon;
-          switch (message.message.role) {
-            case ChatCompletionRequestMessageRoleEnum.User:
-              icon = <FaceIcon/>
-              break
-            case ChatCompletionRequestMessageRoleEnum.Assistant:
-              icon = <PsychologyAltIcon/>
-              break
-            default:
-              icon = <ManageAccountsIcon/>
-              break
-          }
-          return (
-            <Box>
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: message.context ? 'primary.main' : undefined }}>
-                    {icon}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={message.message.content}
-                />
-              </ListItem>
-              <Divider variant="inset" />
-            </Box>
-          )
-        })
-      }
-    </List>
-  );
 }
 
 function InfoDialog(props: ChatProps) {
