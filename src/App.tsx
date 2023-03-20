@@ -22,11 +22,12 @@ function App() {
     {
       model: 'gpt-3.5-turbo',
       maxTokens: 4096,
-      historyThreshold: 0.7,
-      systemContent: '',
-      conversationList: [],
+      contextThreshold: 0.7,
+      systemMessage: '',
+      conversations: [],
       tokensPerChar: 0,
       extraCharsPerMessage: 0,
+      tokens: 0
     } as Chat
   )
 

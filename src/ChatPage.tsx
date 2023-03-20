@@ -17,7 +17,7 @@ import DownloadingIcon from "@mui/icons-material/DownloadingRounded";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccountsRounded";
 import FaceIcon from "@mui/icons-material/FaceRounded";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAltRounded";
-import {Chat, Conversation} from "./data";
+import {Chat, ChatConversation} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 
 interface ChatProps {
@@ -35,17 +35,17 @@ class Message {
 }
 
 function chatToMessageList(chat: Chat): Message[] {
-  const historyTokens = chat.maxTokens * chat.historyThreshold
-  let usedTokens = chat.systemContent === '' ? 0 : (chat.systemContent.length * chat.tokensPerChar + chat.extraCharsPerMessage)
+  const historyTokens = chat.maxTokens * chat.contextThreshold
+  let usedTokens = chat.systemMessage === '' ? 0 : (chat.systemMessage.length * chat.tokensPerChar + chat.extraCharsPerMessage)
   const result: Message[] = []
-  chat.conversationList.slice().reverse().forEach((conversation) => {
-    const tokens = (conversation.assistantContent.length + conversation.userContent.length) * chat.tokensPerChar + 2 * chat.extraCharsPerMessage
+  chat.conversations.slice().reverse().forEach((conversation) => {
+    const tokens = (conversation.assistantMessage.length + conversation.userMessage.length) * chat.tokensPerChar + 2 * chat.extraCharsPerMessage
     usedTokens += tokens
     const history = usedTokens <= historyTokens
     const assistantMessage = new Message(
       {
         role: ChatCompletionRequestMessageRoleEnum.Assistant,
-        content: conversation.assistantContent,
+        content: conversation.assistantMessage,
       } as ChatCompletionRequestMessage,
       history,
     )
@@ -53,7 +53,7 @@ function chatToMessageList(chat: Chat): Message[] {
     const userMessage = new Message(
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
-        content: conversation.userContent,
+        content: conversation.userMessage,
       } as ChatCompletionRequestMessage,
       history,
     )
@@ -64,13 +64,13 @@ function chatToMessageList(chat: Chat): Message[] {
 
 function onResponse(chat: Chat, requestMessageList: ChatCompletionRequestMessage[], response: CreateChatCompletionResponse): Chat {
   const conversationList = [
-    ...chat.conversationList,
+    ...chat.conversations,
     {
-      userContent: requestMessageList[requestMessageList.length - 1].content,
-      assistantContent: response.choices[0].message!!.content,
+      userMessage: requestMessageList[requestMessageList.length - 1].content,
+      assistantMessage: response.choices[0].message!!.content,
       incomplete: response.choices[0].finish_reason === 'length',
       timestamp: response.created,
-    } as Conversation
+    } as ChatConversation
   ]
   const requestContentList = requestMessageList.map((message) => message.content)
   const charCount = requestContentList.reduce((acc, cur) => acc + cur.length, 0)
@@ -79,7 +79,7 @@ function onResponse(chat: Chat, requestMessageList: ChatCompletionRequestMessage
   const extraCharsPerMessage = (response.usage!!.prompt_tokens / tokenPerChar - charCount) / messageCount
   return {
     ...chat,
-    conversationList: conversationList,
+    conversations: conversationList,
     tokensPerChar: tokenPerChar,
     extraCharsPerMessage: extraCharsPerMessage,
   } as Chat
@@ -89,10 +89,10 @@ function getRequestMessage(chat: Chat, messageList: Message[]): ChatCompletionRe
   const result = messageList
     .filter((message) => message.history)
     .map((message) => message.message)
-  if (chat.systemContent !== '') {
+  if (chat.systemMessage !== '') {
     const systemMessage = {
       role: ChatCompletionRequestMessageRoleEnum.System,
-      content: chat.systemContent,
+      content: chat.systemMessage,
     } as ChatCompletionRequestMessage
     result.unshift(systemMessage)
   }
@@ -292,21 +292,21 @@ function MessageList({ messages }: { messages: Message[] }) {
 function InfoDialog(props: ChatProps) {
   const { apiKey, chat, setChat, open, handleClickOpen, handleClose } = props
 
-  const [systemMessage, setSystemMessage] = useState(chat.systemContent)
+  const [systemMessage, setSystemMessage] = useState(chat.systemMessage)
 
   const saveOnClick = () => {
     handleClose()
     setChat(
       {
         ...chat,
-        systemContent: systemMessage,
+        systemMessage: systemMessage,
       }
     )
   }
 
   const cancelOnClick = () => {
     handleClose()
-    setSystemMessage(chat.systemContent)
+    setSystemMessage(chat.systemMessage)
   }
 
   const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
