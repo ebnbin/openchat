@@ -27,16 +27,6 @@ interface MessageWrapper {
 
 function chatToMessageWrappers(chat: Chat): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  if (chat.requestingUserMessage !== '') {
-    const userMessageWrapper = {
-      message: {
-        role: ChatCompletionRequestMessageRoleEnum.User,
-        content: chat.requestingUserMessage,
-      } as ChatCompletionRequestMessage,
-      context: true,
-    } as MessageWrapper
-    result.unshift(userMessageWrapper)
-  }
   const maxContextTokens = chat.maxTokens * chat.contextThreshold
   let usedTokens = 0
   if (chat.systemMessage !== '') {
@@ -146,16 +136,18 @@ function MessageItem(props: MessageItemProps) {
 
 interface MessageListProps {
   messageWrappers: MessageWrapper[]
+  requestingMessage?: MessageWrapper,
   isLoading: boolean
 }
 
 function MessageList(props: MessageListProps) {
-  const { messageWrappers, isLoading } = props
+  const { messageWrappers, requestingMessage, isLoading } = props
 
+  const validMessageWrappers = requestingMessage ? [...messageWrappers, requestingMessage] : messageWrappers
   return (
     <List>
       {
-        messageWrappers
+        validMessageWrappers
           .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
           .map((messageWrapper) => (
               <MessageItem
@@ -440,25 +432,20 @@ function DetailDialog(props: DetailDialogProps) {
 
 //*********************************************************************************************************************
 
-interface ChatProps {
-  api: OpenAIApi,
-  chat: Chat
-  setChat: (chat: Chat) => void
-  open: boolean
-  handleClose: () => void
-}
-
 function beforeRequest(
-  chat: Chat,
-  setChat: (chat: Chat) => void,
-  inputMessage: string,
+  messageWrappers: MessageWrapper[],
+  input: string,
+  setRequestingMessage: (messageWrapper: MessageWrapper) => void,
 ): ChatCompletionRequestMessage[] {
-  const nextChat = {
-    ...chat,
-    requestingUserMessage: inputMessage,
-  }
-  setChat(nextChat)
-  return chatToMessageWrappers(nextChat)
+  const requestingMessage = {
+    message: {
+      content: input,
+      role: ChatCompletionRequestMessageRoleEnum.User,
+    } as ChatCompletionRequestMessage,
+    context: true,
+  } as MessageWrapper
+  setRequestingMessage(requestingMessage)
+  return [...messageWrappers, requestingMessage]
     .filter((message) => message.context)
     .map((message) => message.message)
 }
@@ -496,6 +483,14 @@ function afterResponse(
   setChat(nextChat)
 }
 
+interface ChatProps {
+  api: OpenAIApi,
+  chat: Chat
+  setChat: (chat: Chat) => void
+  open: boolean
+  handleClose: () => void
+}
+
 export function ChatPage(props: ChatProps) {
   const { api, chat, setChat, open, handleClose } = props
 
@@ -503,11 +498,11 @@ export function ChatPage(props: ChatProps) {
 
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [requestingMessage, setRequestingMessage] = useState<MessageWrapper>()
 
   const request = async () => {
     setIsLoading(true)
-
-    const requestMessages = beforeRequest(chat, setChat, input)
+    const requestMessages = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
     const response = await api
@@ -516,11 +511,12 @@ export function ChatPage(props: ChatProps) {
         messages: requestMessages,
       })
       .catch(() => {
+        setRequestingMessage(undefined)
         setIsLoading(false)
       })
 
+    setRequestingMessage(undefined)
     afterResponse(chat, setChat, requestMessages, response!!.data)
-
     setIsLoading(false)
   }
 
@@ -551,6 +547,7 @@ export function ChatPage(props: ChatProps) {
         >
           <MessageList
             messageWrappers={messageWrappers}
+            requestingMessage={requestingMessage}
             isLoading={isLoading}
           />
         </Box>

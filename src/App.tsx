@@ -31,7 +31,6 @@ function App() {
       tokensPerChar: 0,
       tokens: 0,
       incomplete: false,
-      requestingUserMessage: '',
     } as Chat
   )
 

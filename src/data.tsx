@@ -9,7 +9,6 @@ export interface Chat {
   tokensPerChar: number
   tokens: number
   incomplete: boolean
-  requestingUserMessage: string
 }
 
 export interface ChatConversation {
