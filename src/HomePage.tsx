@@ -3,22 +3,21 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
 import {Button, createTheme, Divider, ThemeProvider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
-import {ChatSettings, Settings} from "./data";
+import {ChatConversation, ChatSettings, Settings} from "./data";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
+import {ChatSettingsDialog} from "./ChatSettingsDialog";
 
 const drawerWidth = 300;
 
@@ -73,6 +72,13 @@ export function HomePage() {
       } as Settings,
     )
     localStorage.removeItem(`chatConversation${chatId}`)
+  }
+
+  const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
+
+  const setChatConversationsAndStore = (chatId: string, chatConversations: ChatConversation[]) => {
+    setChatConversations(chatConversations)
+    localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
   }
 
   const [open, setOpen] = React.useState(false);
@@ -175,9 +181,6 @@ export function HomePage() {
               onClick={() => handleItemClick(chatItem)}
               selected={selectedChatId === chatItem.id}
             >
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
               <ListItemText primary={chatItem.title === '' ? 'untitled' : chatItem.title} />
             </ListItemButton>
           </ListItem>
@@ -314,20 +317,30 @@ export function HomePage() {
                 settings={settings}
                 chatId={selectedChatId}
                 setChatSettings={setChatSettings}
-                deleteChat={deleteChat}
-                open={open}
-                handleClose={handleClose}
+                chatConversations={chatConversations}
+                setChatConversations={setChatConversationsAndStore}
               />
             ) : <></>}
           </Box>
         </Box>
-        <SettingsDialog
-          settings={settings}
-          setSettings={setSettingsAndStore}
-          open={settingsOpen}
-          handleClose={handleSettingsClose}
-        />
       </Box>
+      {selectedChatId !== undefined ? (
+        <ChatSettingsDialog
+          settings={settings}
+          chatId={selectedChatId}
+          setChatSettings={setChatSettings}
+          deleteChat={deleteChat}
+          chatConversations={chatConversations}
+          open={open}
+          handleClose={handleClose}
+        />
+      ) : <></>}
+      <SettingsDialog
+        settings={settings}
+        setSettings={setSettingsAndStore}
+        open={settingsOpen}
+        handleClose={handleSettingsClose}
+      />
     </ThemeProvider>
   );
 }

@@ -5,12 +5,10 @@ import {
 } from "openai";
 import Box from "@mui/material/Box";
 import {
-  Avatar, Button,
-  Card, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, List,
+  Avatar, Card, CircularProgress, IconButton, List,
   ListItem,
   ListItemAvatar,
-  ListItemText, Slider,
-  TextField, Typography, useTheme
+  ListItemText, TextField, useTheme
 } from "@mui/material";
 import {ChatSettings, ChatConversation, Settings, chatModels} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
@@ -254,198 +252,6 @@ function InputCard(props: InputCardProps) {
 
 //*********************************************************************************************************************
 
-interface ChatSettingsDialogProps {
-  chatSettings: ChatSettings,
-  setChatSettings: (chat: ChatSettings) => void
-  deleteChat: (chatId: string) => void
-  chatConversations: ChatConversation[]
-  open: boolean
-  handleClose: () => void
-}
-
-function ChatSettingsDialog(props: ChatSettingsDialogProps) {
-  const { chatSettings, setChatSettings, deleteChat, chatConversations, open, handleClose } = props
-
-  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChatSettings(
-      {
-        ...chatSettings,
-        title: event.target.value,
-      },
-    )
-  }
-
-  const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
-    setChatSettings(
-      {
-        ...chatSettings,
-        contextThreshold: newValue as number,
-      },
-    )
-  }
-
-  const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChatSettings(
-      {
-        ...chatSettings,
-        systemMessage: event.target.value,
-      },
-    )
-  }
-
-  const handleDeleteClick = () => {
-    deleteChat(chatSettings.id)
-    handleClose()
-  }
-
-  return (
-    <Dialog
-      fullWidth={true}
-      scroll={'paper'}
-      open={open}
-      onClose={handleClose}
-    >
-      <DialogTitle>
-        Edit Chat
-      </DialogTitle>
-      <DialogContent
-        dividers={true}
-        sx={{
-          padding: 0,
-        }}
-      >
-        <Box
-          sx={{
-            paddingX: '24px',
-            paddingY: '16px',
-          }}
-        >
-          <Typography
-            variant={'subtitle1'}
-            gutterBottom={true}
-          >
-            Title
-          </Typography>
-          <TextField
-            variant={'standard'}
-            fullWidth={true}
-            type={'text'}
-            placeholder={'New chat'}
-            value={chatSettings.title}
-            onChange={handleTitleChange}
-          />
-        </Box>
-        <Box
-          sx={{
-            paddingX: '24px',
-            paddingY: '16px',
-          }}
-        >
-          <Typography
-            variant={'subtitle1'}
-            gutterBottom={true}
-          >
-            Context Threshold
-          </Typography>
-          <Typography
-            variant={'body2'}
-            color={'text.secondary'}
-            gutterBottom={true}
-          >
-            Conversation histories that can be remembered as context for the next conversation
-            <br />
-            Current value: {(chatSettings.contextThreshold * 100).toFixed(0)}% of maximum tokens
-            (about {(chatModels.get(chatSettings.model)!!.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
-          </Typography>
-          <Box
-            sx={{
-              padding: '8px',
-              paddingBottom: '0px',
-            }}
-          >
-            <Slider
-              min={0}
-              max={0.95}
-              step={0.05}
-              marks={true}
-              value={chatSettings.contextThreshold}
-              onChange={handleContextThresholdChange}
-            />
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            paddingX: '24px',
-            paddingY: '16px',
-          }}
-        >
-          <Typography
-            variant={'subtitle1'}
-            gutterBottom={true}
-          >
-            System Message
-          </Typography>
-          <Typography
-            variant={'body2'}
-            color={'text.secondary'}
-            gutterBottom={true}
-          >
-            The system message helps set the behavior of the assistant
-          </Typography>
-          <TextField
-            variant={'outlined'}
-            fullWidth={true}
-            type={'text'}
-            multiline={true}
-            maxRows={8}
-            placeholder={'You are a helpful assistant.'}
-            value={chatSettings.systemMessage}
-            onChange={handleSystemMessageChange}
-          />
-        </Box>
-        <Box
-          sx={{
-            paddingX: '24px',
-            paddingY: '16px',
-          }}
-        >
-          <DialogContentText>
-            Model: {chatSettings.model} ({chatModels.get(chatSettings.model)!!.maxTokens} tokens)
-            <br />
-            Cumulative tokens used: {chatSettings.tokens}
-            <br />
-            Numbers of conversations: {chatConversations.length}
-          </DialogContentText>
-        </Box>
-        <Box
-          sx={{
-            paddingX: '24px',
-            paddingY: '16px',
-          }}
-        >
-          <Button
-            variant={'contained'}
-            color={'error'}
-            fullWidth={true}
-            onClick={handleDeleteClick}
-          >
-            Delete chat
-          </Button>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleClose}
-        >
-          OK
-        </Button>
-      </DialogActions>
-    </Dialog>
-  )
-}
-
-//*********************************************************************************************************************
-
 function beforeRequest(
   messageWrappers: MessageWrapper[],
   input: string,
@@ -468,7 +274,7 @@ function afterResponse(
   chatSettings: ChatSettings,
   setChat: (chat: ChatSettings) => void,
   chatConversations: ChatConversation[],
-  setChatConversations: (chatConversations: ChatConversation[]) => void,
+  setChatConversations: (chatId: string, chatConversations: ChatConversation[]) => void,
   requestMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
@@ -481,7 +287,7 @@ function afterResponse(
       assistantMessage: responseMessage,
     } as ChatConversation,
   ]
-  setChatConversations(nextChatConversations)
+  setChatConversations(chatSettings.id, nextChatConversations)
   const responseTotalTokens = response.usage!!.total_tokens
   const charCount = requestMessages
     .map((message) => message.content)
@@ -503,29 +309,21 @@ interface ChatProps {
   settings: Settings,
   chatId: string
   setChatSettings: (chat: ChatSettings) => void
-  deleteChat: (chatId: string) => void
-  open: boolean
-  handleClose: () => void
+  chatConversations: ChatConversation[]
+  setChatConversations: (chatId: string, chatConversations: ChatConversation[]) => void
 }
 
 export function ChatPage(props: ChatProps) {
-  const { settings, chatId, setChatSettings, deleteChat, open, handleClose } = props
+  const { settings, chatId, setChatSettings, chatConversations, setChatConversations } = props
 
   const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
-
-  const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
 
   useEffect(() => {
     const storedChatConversations = localStorage.getItem(`chatConversation${chatId}`)
     if (storedChatConversations) {
-      setChatConversations(JSON.parse(storedChatConversations))
+      setChatConversations(chatId, JSON.parse(storedChatConversations))
     }
-  }, [chatId])
-
-  const setChatConversationsAndStore = (chatConversations: ChatConversation[]) => {
-    setChatConversations(chatConversations)
-    localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
-  }
+  }, [setChatConversations, chatId])
 
   const messageWrappers = chatToMessageWrappers(chatSettings, chatConversations)
 
@@ -549,7 +347,7 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages,
+    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversations, requestMessages,
       response!!.data)
     setIsLoading(false)
   }
@@ -601,14 +399,6 @@ export function ChatPage(props: ChatProps) {
           />
         </Box>
       </Box>
-      <ChatSettingsDialog
-        chatSettings={chatSettings}
-        setChatSettings={setChatSettings}
-        deleteChat={deleteChat}
-        chatConversations={chatConversations}
-        open={open}
-        handleClose={handleClose}
-      />
     </Box>
   )
 }

@@ -1,0 +1,206 @@
+import {ChatConversation, chatModels, ChatSettings, Settings} from "./data";
+import React, {ChangeEvent} from "react";
+import {
+  Button,
+  Dialog, DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Slider,
+  TextField,
+  Typography
+} from "@mui/material";
+import Box from "@mui/material/Box";
+
+interface ChatSettingsDialogProps {
+  settings: Settings,
+  chatId: string,
+  setChatSettings: (chat: ChatSettings) => void
+  deleteChat: (chatId: string) => void
+  chatConversations: ChatConversation[]
+  open: boolean
+  handleClose: () => void
+}
+
+export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
+  const { settings, chatId, setChatSettings, deleteChat, chatConversations, open, handleClose } = props
+
+  const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
+
+  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setChatSettings(
+      {
+        ...chatSettings,
+        title: event.target.value,
+      },
+    )
+  }
+
+  const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
+    setChatSettings(
+      {
+        ...chatSettings,
+        contextThreshold: newValue as number,
+      },
+    )
+  }
+
+  const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setChatSettings(
+      {
+        ...chatSettings,
+        systemMessage: event.target.value,
+      },
+    )
+  }
+
+  const handleDeleteClick = () => {
+    deleteChat(chatSettings.id)
+    handleClose()
+  }
+
+  return (
+    <Dialog
+      fullWidth={true}
+      scroll={'paper'}
+      open={open}
+      onClose={handleClose}
+    >
+      <DialogTitle>
+        Chat Settings
+      </DialogTitle>
+      <DialogContent
+        dividers={true}
+        sx={{
+          padding: 0,
+        }}
+      >
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            Title
+          </Typography>
+          <TextField
+            variant={'standard'}
+            fullWidth={true}
+            type={'text'}
+            placeholder={'New chat'}
+            value={chatSettings.title}
+            onChange={handleTitleChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            Context Threshold
+          </Typography>
+          <Typography
+            variant={'body2'}
+            color={'text.secondary'}
+            gutterBottom={true}
+          >
+            Conversation histories that can be remembered as context for the next conversation
+            <br />
+            Current value: {(chatSettings.contextThreshold * 100).toFixed(0)}% of maximum tokens
+            (about {(chatModels.get(chatSettings.model)!!.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
+          </Typography>
+          <Box
+            sx={{
+              padding: '8px',
+              paddingBottom: '0px',
+            }}
+          >
+            <Slider
+              min={0}
+              max={0.95}
+              step={0.05}
+              marks={true}
+              value={chatSettings.contextThreshold}
+              onChange={handleContextThresholdChange}
+            />
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            System Message
+          </Typography>
+          <Typography
+            variant={'body2'}
+            color={'text.secondary'}
+            gutterBottom={true}
+          >
+            The system message helps set the behavior of the assistant
+          </Typography>
+          <TextField
+            variant={'outlined'}
+            fullWidth={true}
+            type={'text'}
+            multiline={true}
+            maxRows={8}
+            placeholder={'You are a helpful assistant.'}
+            value={chatSettings.systemMessage}
+            onChange={handleSystemMessageChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <DialogContentText>
+            Model: {chatSettings.model} ({chatModels.get(chatSettings.model)!!.maxTokens} tokens)
+            <br />
+            Cumulative tokens used: {chatSettings.tokens}
+            <br />
+            Numbers of conversations: {chatConversations.length}
+          </DialogContentText>
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Button
+            variant={'contained'}
+            color={'error'}
+            fullWidth={true}
+            onClick={handleDeleteClick}
+          >
+            Delete chat
+          </Button>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={handleClose}
+        >
+          OK
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
