@@ -7,7 +7,7 @@ import {
 import Box from "@mui/material/Box";
 import {
   Avatar, Button,
-  Card, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, Divider,
+  Card, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider,
   IconButton, List,
   ListItem,
   ListItemAvatar,
@@ -302,7 +302,11 @@ function DetailDialog(props: DetailDialogProps) {
       open={open}
       onClose={handleCancelClick}
     >
+      <DialogTitle>
+        Edit Chat
+      </DialogTitle>
       <DialogContent
+        dividers={true}
         sx={{
           padding: 0,
         }}
@@ -426,7 +430,6 @@ function DetailDialog(props: DetailDialogProps) {
           </Button>
         </Box>
       </DialogContent>
-      <Divider />
       <DialogActions>
         <Button
           onClick={handleCancelClick}

@@ -7,17 +7,14 @@ interface ApiKeyProps {
 }
 
 export function ApiKeyPage({ apiKey, setApiKey }: ApiKeyProps) {
-  const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setApiKey(event.target.value)
-    localStorage.setItem('apiKey', event.target.value);
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <TextField
         label={"OPENAI_API_KEY"}
         value={apiKey}
-        onChange={handleApiKeyChange}
+        onChange={(event) => {
+          setApiKey(event.target.value)
+        }}
       />
     </div>
   );
