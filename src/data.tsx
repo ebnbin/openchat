@@ -1,5 +1,6 @@
 export interface Settings {
   apiKey: string
+  isDarkMode: boolean,
   chats: ChatSettings[]
 }
 

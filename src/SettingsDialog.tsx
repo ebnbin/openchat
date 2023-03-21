@@ -1,11 +1,11 @@
-import React from "react";
+import React, {ChangeEvent} from "react";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Link, TextField,
+  Link, Switch, TextField,
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -20,6 +20,15 @@ interface SettingsDialogProps {
 
 export function SettingsDialog(props: SettingsDialogProps) {
   const { settings, setSettings, open, handleClose } = props
+
+  const handleIsDarkModeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSettings(
+      {
+        ...settings,
+        isDarkMode: event.target.checked,
+      } as Settings
+    )
+  }
 
   return (
     <Dialog
@@ -77,6 +86,23 @@ export function SettingsDialog(props: SettingsDialogProps) {
                 } as Settings
               )
             }}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            Dark mode
+          </Typography>
+          <Switch
+            checked={settings.isDarkMode}
+            onChange={handleIsDarkModeChange}
           />
         </Box>
       </DialogContent>

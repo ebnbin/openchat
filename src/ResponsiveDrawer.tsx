@@ -13,24 +13,29 @@ import MailIcon from '@mui/icons-material/Mail';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
-import {Button, Divider, useMediaQuery} from "@mui/material";
+import {Button, createTheme, Divider, ThemeProvider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
 import {ChatSettings, Settings} from "./data";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const drawerWidth = 300;
 
-interface Props {
-}
-
-export default function ResponsiveDrawer(props: Props) {
+export default function ResponsiveDrawer() {
   const [settings, setSettings] = useState<Settings>(
     {
       apiKey: '',
+      isDarkMode: false,
       chats: [],
     } as Settings
   )
+
+  const theme = createTheme({
+    palette: {
+      mode: settings.isDarkMode ? 'dark' : 'light',
+    },
+  })
 
   useEffect(() => {
     const storedSettings = localStorage.getItem('settings')
@@ -200,126 +205,129 @@ export default function ResponsiveDrawer(props: Props) {
   );
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'row',
-      }}
-    >
-      {
-        !isPageWide && (
-          <Drawer
-            variant={'temporary'}
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            }}
-          >
-            {drawer}
-          </Drawer>
-        )
-      }
-      {
-        isPageWide && (
-          <Drawer
-            variant={'permanent'}
-            open={true}
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            }}
-          >
-            {drawer}
-          </Drawer>
-        )
-      }
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Box
         sx={{
-          flexGrow: 1,
+          width: '100%',
+          height: '100vh',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
         }}
       >
         {
           !isPageWide && (
-            <Box
+            <Drawer
+              variant={'temporary'}
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
               sx={{
-                height: '56px',
-                flexShrink: 0,
+                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
               }}
             >
-              <AppBar
-                color={'default'}
-              >
-                <Toolbar
-                  variant={'dense'}
-                  sx={{
-                    alignItems: 'center'
-                  }}
-                >
-                  <IconButton
-                    edge="start"
-                    onClick={handleDrawerToggle}
-                    sx={{ mr: 2 }}
-                  >
-                    <MenuRounded/>
-                  </IconButton>
-                  <Typography variant="h6" noWrap component="div">
-                    {selectedChatId ? settings.chats.find((chat) => chat.id === selectedChatId)!!.title : 'New chat'}
-                  </Typography>
-                  <Box
-                    sx={{
-                      height: '56px',
-                      flexGrow: 1,
-                    }}
-                  />
-                  <IconButton
-                    edge="end"
-                    onClick={selectedChatId ? handleClickOpen : undefined}
-                    sx={{
-                      display: selectedChatId ? 'inherit' : 'none',
-                    }}
-                  >
-                    <EditRounded />
-                  </IconButton>
-                </Toolbar>
-              </AppBar>
-            </Box>
+              {drawer}
+            </Drawer>
+          )
+        }
+        {
+          isPageWide && (
+            <Drawer
+              variant={'permanent'}
+              open={true}
+              sx={{
+                width: drawerWidth,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              }}
+            >
+              {drawer}
+            </Drawer>
           )
         }
         <Box
-          style={{
-            width: '100%',
+          sx={{
             flexGrow: 1,
-            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {selectedChatId !== undefined ? (
-            <ChatPage
-              key={`ChatPage${selectedChatId}`}
-              settings={settings}
-              chatId={selectedChatId}
-              setChatSettings={setChatSettings}
-              deleteChat={deleteChat}
-              open={open}
-              handleClose={handleClose}
-            />
-          ) : <></>}
+          {
+            !isPageWide && (
+              <Box
+                sx={{
+                  height: '56px',
+                  flexShrink: 0,
+                }}
+              >
+                <AppBar
+                  color={'default'}
+                >
+                  <Toolbar
+                    variant={'dense'}
+                    sx={{
+                      alignItems: 'center'
+                    }}
+                  >
+                    <IconButton
+                      edge="start"
+                      onClick={handleDrawerToggle}
+                      sx={{ mr: 2 }}
+                    >
+                      <MenuRounded/>
+                    </IconButton>
+                    <Typography variant="h6" noWrap component="div">
+                      {selectedChatId ? settings.chats.find((chat) => chat.id === selectedChatId)!!.title : 'New chat'}
+                    </Typography>
+                    <Box
+                      sx={{
+                        height: '56px',
+                        flexGrow: 1,
+                      }}
+                    />
+                    <IconButton
+                      edge="end"
+                      onClick={selectedChatId ? handleClickOpen : undefined}
+                      sx={{
+                        display: selectedChatId ? 'inherit' : 'none',
+                      }}
+                    >
+                      <EditRounded />
+                    </IconButton>
+                  </Toolbar>
+                </AppBar>
+              </Box>
+            )
+          }
+          <Box
+            style={{
+              width: '100%',
+              flexGrow: 1,
+              overflow: 'auto',
+            }}
+          >
+            {selectedChatId !== undefined ? (
+              <ChatPage
+                key={`ChatPage${selectedChatId}`}
+                settings={settings}
+                chatId={selectedChatId}
+                setChatSettings={setChatSettings}
+                deleteChat={deleteChat}
+                open={open}
+                handleClose={handleClose}
+              />
+            ) : <></>}
+          </Box>
         </Box>
+        <SettingsDialog
+          settings={settings}
+          setSettings={setSettingsAndStore}
+          open={settingsOpen}
+          handleClose={handleSettingsClose}
+        />
       </Box>
-      <SettingsDialog
-        settings={settings}
-        setSettings={setSettingsAndStore}
-        open={settingsOpen}
-        handleClose={handleSettingsClose}
-      />
-    </Box>
+    </ThemeProvider>
   );
 }
