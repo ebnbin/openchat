@@ -1,7 +1,6 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -16,6 +15,7 @@ import InfoIcon from '@mui/icons-material/InfoRounded';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useState} from "react";
+import {useMediaQuery} from "@mui/material";
 
 const drawerWidth = 300;
 
@@ -75,15 +75,18 @@ export default function ResponsiveDrawer(props: Props) {
     </div>
   );
 
+  const isPageWide = useMediaQuery('(min-width:900px)')
+
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+      }}
+    >
       <Box
-        component="nav"
         sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-        aria-label="mailbox folders"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -110,43 +113,60 @@ export default function ResponsiveDrawer(props: Props) {
         </Drawer>
       </Box>
       <Box
-        component="main"
-        sx={{ flexGrow: 1, width: { md: `calc(100% - ${drawerWidth}px)` }, height: '100vh', display: 'flex', flexDirection: 'column' }}
+        sx={{
+          flexGrow: 1,
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
-        <AppBar
-          position="static"
+        <Box
           sx={{
-            width: '100%',
+            height: '56px',
             display: { md: 'none' },
+            flexShrink: 0,
           }}
         >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+          <AppBar
+            color={'default'}
+          >
+            <Toolbar
+              variant={'dense'}
             >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              {selectedPage ? pageList[selectedPage].title : 'Responsive drawer'}
-            </Typography>
-            <div style={{flexGrow: 1}} />
-            <IconButton
-              size="large"
-              onClick={pageList[selectedPage].handleClickOpen}
-              sx={{display: pageList[selectedPage].handleClickOpen ? 'inline' : 'none', alignItems: 'center'}}
-              color="inherit"
-            >
-              <InfoIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <div style={{ width: '100%', flexGrow: 1, overflow: 'auto' }}>
+              <IconButton
+                color="inherit"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" noWrap component="div">
+                {selectedPage ? pageList[selectedPage].title : 'Responsive drawer'}
+              </Typography>
+              <div style={{flexGrow: 1}} />
+              <IconButton
+                size="large"
+                onClick={pageList[selectedPage].handleClickOpen}
+                sx={{display: pageList[selectedPage].handleClickOpen ? 'inline' : 'none', alignItems: 'center'}}
+                color="inherit"
+              >
+                <InfoIcon />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+
+        </Box>
+        <Box
+          style={{
+            width: '100%',
+            flexGrow: 1,
+            overflow: 'auto',
+          }}
+        >
           {pageList[selectedPage].element}
-        </div>
+        </Box>
       </Box>
     </Box>
   );

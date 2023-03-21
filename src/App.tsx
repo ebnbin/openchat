@@ -8,6 +8,7 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import {ChatPage} from "./ChatPage";
 import {Chat} from "./data";
 import {Configuration, OpenAIApi} from "openai";
+import CssBaseline from "@mui/material/CssBaseline";
 
 function App() {
   const [apiKey, setApiKey] = useState('');
@@ -59,7 +60,8 @@ function App() {
           apiKey={apiKey}
           setApiKey={setApiKey}
         />
-      ) },
+      ),
+    },
     {
       key: 'ListModels',
       title: 'List models',
@@ -120,6 +122,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <ResponsiveDrawer
         pageList={pageList}
       />

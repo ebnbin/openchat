@@ -18,6 +18,8 @@ import {Chat, ChatConversation} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 
+const contentWidth = 900
+
 //*********************************************************************************************************************
 
 interface MessageWrapper {
@@ -110,25 +112,32 @@ function MessageItem(props: MessageItemProps) {
   }
 
   return (
-    <ListItem
+    <Box
       sx={{
-        alignItems: 'flex-start',
         bgcolor: itemColor(),
       }}
     >
-      <ListItemAvatar>
-        <Avatar
-          sx={{
-            bgcolor: avatarColor()
-          }}
-        >
-          {avatarIcon()}
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        primary={messageWrapper.message.content}
-      />
-    </ListItem>
+      <ListItem
+        sx={{
+          maxWidth: contentWidth,
+          margin: '0 auto',
+          alignItems: 'flex-start',
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar
+            sx={{
+              bgcolor: avatarColor()
+            }}
+          >
+            {avatarIcon()}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={messageWrapper.message.content}
+        />
+      </ListItem>
+    </Box>
   )
 }
 
@@ -202,8 +211,8 @@ function InputCard(props: InputCardProps) {
         padding: '16px',
         paddingTop: '8px',
         borderRadius: 0,
-        borderTopLeftRadius: '8px',
-        borderTopRightRadius: '8px',
+        borderTopLeftRadius: '16px',
+        borderTopRightRadius: '16px',
       }}
     >
       <Box
@@ -220,10 +229,14 @@ function InputCard(props: InputCardProps) {
           multiline={true}
           maxRows={8}
           label={'Message'}
+          placeholder={'Hello, who are you?'}
           value={input}
           autoFocus={true}
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
+          InputLabelProps={{
+            shrink: true,
+          }}
           sx={{
             flexGrow: 1,
           }}
@@ -539,18 +552,11 @@ export function ChatPage(props: ChatProps) {
           overflow: 'auto',
         }}
       >
-        <Box
-          sx={{
-            maxWidth: '900px',
-            margin: '0 auto',
-          }}
-        >
-          <MessageList
-            messageWrappers={messageWrappers}
-            requestingMessage={requestingMessage}
-            isLoading={isLoading}
-          />
-        </Box>
+        <MessageList
+          messageWrappers={messageWrappers}
+          requestingMessage={requestingMessage}
+          isLoading={isLoading}
+        />
       </Box>
       <Box
         sx={{
@@ -562,7 +568,7 @@ export function ChatPage(props: ChatProps) {
       >
         <Box
           sx={{
-            maxWidth: '900px',
+            maxWidth: contentWidth,
             margin: '0 auto',
           }}
         >
