@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import ResponsiveDrawer, {Page} from "./ResponsiveDrawer";
+import React from 'react';
+import ResponsiveDrawer from "./ResponsiveDrawer";
 import {createTheme, ThemeProvider} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -22,9 +22,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <ResponsiveDrawer
-        pageList={[]}
-      />
+      <ResponsiveDrawer />
     </ThemeProvider>
   );
 }

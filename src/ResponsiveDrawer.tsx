@@ -16,28 +16,19 @@ import {useEffect, useState} from "react";
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
 import {Chat, Settings} from "./data";
-import {ListModels} from "./ListModels";
-import {CreateCompletionPage} from "./CreateCompletionPage";
-import {CreateChatCompletionPage} from "./CreateChatCompletionPage";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 
 const drawerWidth = 300;
 
-export class Page {
-  constructor(public key: string, public title: string, public element: JSX.Element, public handleClickOpen?: () => void) {
-  }
-}
-
 interface Props {
-  pageList: Page[];
 }
 
 export default function ResponsiveDrawer(props: Props) {
   const [settings, setSettings] = useState<Settings>(
     {
       apiKey: '',
-      chatList: [],
+      chats: [],
     } as Settings
   )
 
@@ -53,33 +44,30 @@ export default function ResponsiveDrawer(props: Props) {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
 
-  const [chat, setChat] = useState<Chat>(
-    {
-      id: '',
-      title: '',
-      model: 'gpt-3.5-turbo',
-      maxTokens: 4096,
-      extraCharsPerMessage: 16,
-      contextThreshold: 0.3,
-      systemMessage: '',
-      conversations: [],
-      tokensPerChar: 0,
-      tokens: 0,
-      incomplete: false,
-    } as Chat
-  )
-
-  const setChatAndStore = (chat: Chat) => {
-    setChat(chat)
-    localStorage.setItem(`chat_${chat.id}`, JSON.stringify(chat))
+  const setChatSettings = (chat: Chat) => {
+    const copyChats = settings.chats.slice()
+    const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
+    copyChats[index] = chat
+    setSettingsAndStore(
+      {
+        ...settings,
+        chats: copyChats,
+      } as Settings,
+    )
   }
 
-  useEffect(() => {
-    const storedChat = localStorage.getItem('chat')
-    if (storedChat) {
-      setChat(JSON.parse(storedChat))
-    }
-  }, [])
+  const deleteChat = (chatId: string) => {
+    setSelectedChatId(undefined)
+    const copyChats = settings.chats.slice()
+    const index = copyChats.findIndex((foundChat) => foundChat.id === chatId)
+    copyChats.splice(index, 1)
+    setSettingsAndStore(
+      {
+        ...settings,
+        chats: copyChats,
+      } as Settings,
+    )
+  }
 
   const [open, setOpen] = React.useState(false);
 
@@ -101,61 +89,41 @@ export default function ResponsiveDrawer(props: Props) {
     setSettingsOpen(false);
   };
 
-  const pageList: Page[] = [
-    {
-      key: 'ListModels',
-      title: 'List models',
-      element: (
-        <ListModels
-          settings={settings}
-        />
-      ),
-    },
-    {
-      key: 'CreateCompletion',
-      title: 'Create completion',
-      element: (
-        <CreateCompletionPage
-          settings={settings}
-        />
-      ),
-    },
-    {
-      key: 'CreateChatCompletion',
-      title: 'Create chat completion',
-      element: (
-        <CreateChatCompletionPage
-          settings={settings}
-        />
-      ),
-    },
-    {
-      key: 'Chat',
-      title: 'Chat',
-      element: (
-        <ChatPage
-          settings={settings}
-          setSettings={setSettingsAndStore}
-          chat={chat}
-          setChat={setChatAndStore}
-          open={open}
-          handleClose={handleClose}
-        />
-      ),
-      handleClickOpen: handleClickOpen,
-    },
-  ]
+  const handleNewChatClick = () => {
+    setSelectedChatId(undefined)
+    setSettingsAndStore(
+      {
+        ...settings,
+        chats: [
+          ...settings.chats,
+          {
+            id: `${new Date().getTime()}`,
+            title: '',
+            model: 'gpt-3.5-turbo',
+            maxTokens: 4096,
+            extraCharsPerMessage: 16,
+            contextThreshold: 0.7,
+            systemMessage: '',
+            conversations: [],
+            tokensPerChar: 0,
+            tokens: 0,
+            incomplete: false,
+          } as Chat
+        ]
+      } as Settings
+    )
+  }
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const [selectedPage, setSelectedPage] = useState<number>(0);
+  const [selectedChatId, setSelectedChatId] = useState<string>();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleItemClick = (page: number) => {
-    setSelectedPage(page)
+  const handleItemClick = (chat: Chat) => {
+    setSelectedChatId(chat.id)
     setMobileOpen(false)
   }
 
@@ -171,6 +139,7 @@ export default function ResponsiveDrawer(props: Props) {
     >
       <Button
         variant={'outlined'}
+        onClick={handleNewChatClick}
         sx={{
           margin: '8px',
           flexShrink: 0,
@@ -185,28 +154,28 @@ export default function ResponsiveDrawer(props: Props) {
           overflow: 'auto',
         }}
       >
-        {pageList.map((page: Page, index) => (
+        {settings.chats.slice().reverse().map((chatItem: Chat, index) => (
           <ListItem
-            key={page.key}
+            key={chatItem.id}
             disablePadding={true}
             secondaryAction={
               <IconButton
                 edge="end"
-                onClick={pageList[index].handleClickOpen}
-                sx={{display: isPageWide && pageList[index].handleClickOpen && selectedPage === index ? 'flex' : 'none', alignItems: 'center'}}
+                onClick={handleClickOpen} // TODO
+                sx={{display: isPageWide && selectedChatId === chatItem.id ? 'flex' : 'none', alignItems: 'center'}} // TODO
               >
                 <EditRounded />
               </IconButton>
             }
           >
             <ListItemButton
-              onClick={() => handleItemClick(index)}
-              selected={selectedPage === index}
+              onClick={() => handleItemClick(chatItem)}
+              selected={selectedChatId === chatItem.id}
             >
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
-              <ListItemText primary={page.title} />
+              <ListItemText primary={chatItem.title === '' ? 'untitled' : chatItem.title} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -305,7 +274,7 @@ export default function ResponsiveDrawer(props: Props) {
                     <MenuRounded/>
                   </IconButton>
                   <Typography variant="h6" noWrap component="div">
-                    {selectedPage ? pageList[selectedPage].title : 'Responsive drawer'}
+                    {selectedChatId ? settings.chats.find((chat) => chat.id === selectedChatId)!!.title : 'New chat'}
                   </Typography>
                   <Box
                     sx={{
@@ -315,9 +284,9 @@ export default function ResponsiveDrawer(props: Props) {
                   />
                   <IconButton
                     edge="end"
-                    onClick={pageList[selectedPage].handleClickOpen}
+                    onClick={selectedChatId ? handleClickOpen : undefined}
                     sx={{
-                      display: pageList[selectedPage].handleClickOpen ? 'inherit' : 'none',
+                      display: selectedChatId ? 'inherit' : 'none',
                     }}
                   >
                     <EditRounded />
@@ -334,7 +303,17 @@ export default function ResponsiveDrawer(props: Props) {
             overflow: 'auto',
           }}
         >
-          {pageList[selectedPage].element}
+          {selectedChatId !== undefined ? (
+            <ChatPage
+              key={`ChatPage${selectedChatId}`}
+              settings={settings}
+              chatId={selectedChatId}
+              setChatSettings={setChatSettings}
+              deleteChat={deleteChat}
+              open={open}
+              handleClose={handleClose}
+            />
+          ) : <></>}
         </Box>
       </Box>
       <SettingsDialog

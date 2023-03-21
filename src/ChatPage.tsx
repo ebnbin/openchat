@@ -6,8 +6,7 @@ import {
 import Box from "@mui/material/Box";
 import {
   Avatar, Button,
-  Card, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider,
-  IconButton, List,
+  Card, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, List,
   ListItem,
   ListItemAvatar,
   ListItemText, Slider,
@@ -256,13 +255,14 @@ function InputCard(props: InputCardProps) {
 
 interface DetailDialogProps {
   chat: Chat,
-  setChat: (chat: Chat) => void
+  setChatSettings: (chat: Chat) => void
+  deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
 }
 
 function DetailDialog(props: DetailDialogProps) {
-  const { chat, setChat, open, handleClose } = props
+  const { chat, setChatSettings, deleteChat, open, handleClose } = props
 
   const [title, setTitle] = useState(chat.title)
   const [contextThreshold, setContextThreshold] = useState(chat.contextThreshold)
@@ -276,8 +276,13 @@ function DetailDialog(props: DetailDialogProps) {
     setSystemMessage(event.target.value)
   }
 
+  const handleDeleteClick = () => {
+    deleteChat(chat.id)
+    handleClose()
+  }
+
   const handleSaveClick = () => {
-    setChat(
+    setChatSettings(
       {
         ...chat,
         title: title,
@@ -351,7 +356,8 @@ function DetailDialog(props: DetailDialogProps) {
           >
             Conversation histories that can be remembered as context for the next conversation
             <br />
-            Current value: {(contextThreshold * 100).toFixed(0)}% of maximum tokens (about {(chat.maxTokens * contextThreshold / 4 * 3).toFixed(0)} words)
+            Current value: {(contextThreshold * 100).toFixed(0)}% of maximum tokens
+            (about {(chat.maxTokens * contextThreshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -425,6 +431,7 @@ function DetailDialog(props: DetailDialogProps) {
             variant={'contained'}
             color={'error'}
             fullWidth={true}
+            onClick={handleDeleteClick}
           >
             Delete chat
           </Button>
@@ -501,15 +508,17 @@ function afterResponse(
 
 interface ChatProps {
   settings: Settings,
-  setSettings: (settings: Settings) => void,
-  chat: Chat
-  setChat: (chat: Chat) => void
+  chatId: string
+  setChatSettings: (chat: Chat) => void
+  deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
 }
 
 export function ChatPage(props: ChatProps) {
-  const { settings, setSettings, chat, setChat, open, handleClose } = props
+  const { settings, chatId, setChatSettings, deleteChat, open, handleClose } = props
+
+  const chat = settings.chats.find((chat) => chat.id === chatId)!!
 
   const messageWrappers = chatToMessageWrappers(chat)
 
@@ -533,7 +542,7 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chat, setChat, requestMessages, response!!.data)
+    afterResponse(chat, setChatSettings, requestMessages, response!!.data)
     setIsLoading(false)
   }
 
@@ -586,7 +595,8 @@ export function ChatPage(props: ChatProps) {
       </Box>
       <DetailDialog
         chat={chat}
-        setChat={setChat}
+        setChatSettings={setChatSettings}
+        deleteChat={deleteChat}
         open={open}
         handleClose={handleClose}
       />

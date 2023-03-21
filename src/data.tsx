@@ -1,6 +1,6 @@
 export interface Settings {
   apiKey: string
-  chatList: Chat[]
+  chats: Chat[]
 }
 
 export interface Chat {
