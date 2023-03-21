@@ -1,4 +1,4 @@
-import {ChatConversation, chatModels, ChatSettings, Settings} from "./data";
+import {chatModels, ChatSettings, Settings} from "./data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
@@ -17,13 +17,12 @@ interface ChatSettingsDialogProps {
   chatId: string,
   setChatSettings: (chat: ChatSettings) => void
   deleteChat: (chatId: string) => void
-  chatConversations: ChatConversation[]
   open: boolean
   handleClose: () => void
 }
 
 export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
-  const { settings, chatId, setChatSettings, deleteChat, chatConversations, open, handleClose } = props
+  const { settings, chatId, setChatSettings, deleteChat, open, handleClose } = props
 
   const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
 
@@ -175,7 +174,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             <br />
             Cumulative tokens used: {chatSettings.tokens}
             <br />
-            Numbers of conversations: {chatConversations.length}
+            Numbers of conversations: {chatSettings.conversations}
           </DialogContentText>
         </Box>
         <Box

@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
 import {Button, createTheme, Divider, ThemeProvider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
-import {ChatConversation, ChatSettings, Settings} from "./data";
+import {ChatSettings, Settings} from "./data";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -74,13 +74,6 @@ export function HomePage() {
     localStorage.removeItem(`chatConversation${chatId}`)
   }
 
-  const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
-
-  const setChatConversationsAndStore = (chatId: string, chatConversations: ChatConversation[]) => {
-    setChatConversations(chatConversations)
-    localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
-  }
-
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -116,6 +109,7 @@ export function HomePage() {
             systemMessage: '',
             tokensPerChar: 0,
             tokens: 0,
+            conversations: 0,
             incomplete: false,
           } as ChatSettings
         ]
@@ -317,8 +311,6 @@ export function HomePage() {
                 settings={settings}
                 chatId={selectedChatId}
                 setChatSettings={setChatSettings}
-                chatConversations={chatConversations}
-                setChatConversations={setChatConversationsAndStore}
               />
             ) : <></>}
           </Box>
@@ -330,7 +322,6 @@ export function HomePage() {
           chatId={selectedChatId}
           setChatSettings={setChatSettings}
           deleteChat={deleteChat}
-          chatConversations={chatConversations}
           open={open}
           handleClose={handleClose}
         />

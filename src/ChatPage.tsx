@@ -274,7 +274,7 @@ function afterResponse(
   chatSettings: ChatSettings,
   setChat: (chat: ChatSettings) => void,
   chatConversations: ChatConversation[],
-  setChatConversations: (chatId: string, chatConversations: ChatConversation[]) => void,
+  setChatConversations: (chatConversations: ChatConversation[]) => void,
   requestMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
@@ -287,7 +287,7 @@ function afterResponse(
       assistantMessage: responseMessage,
     } as ChatConversation,
   ]
-  setChatConversations(chatSettings.id, nextChatConversations)
+  setChatConversations(nextChatConversations)
   const responseTotalTokens = response.usage!!.total_tokens
   const charCount = requestMessages
     .map((message) => message.content)
@@ -295,11 +295,13 @@ function afterResponse(
     .reduce((acc, message) => acc + message.length + chatModels.get(chatSettings.model)!!.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chatSettings.tokens + responseTotalTokens
+  const conversations = chatSettings.conversations + 1
   const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
     ...chatSettings,
     tokensPerChar: tokensPerChar,
     tokens: tokens,
+    conversations: conversations,
     incomplete: incomplete,
   } as ChatSettings
   setChat(nextChat)
@@ -309,21 +311,26 @@ interface ChatProps {
   settings: Settings,
   chatId: string
   setChatSettings: (chat: ChatSettings) => void
-  chatConversations: ChatConversation[]
-  setChatConversations: (chatId: string, chatConversations: ChatConversation[]) => void
 }
 
 export function ChatPage(props: ChatProps) {
-  const { settings, chatId, setChatSettings, chatConversations, setChatConversations } = props
+  const { settings, chatId, setChatSettings } = props
 
   const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
+
+  const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
+
+  const setChatConversationsAndStore = (chatConversations: ChatConversation[]) => {
+    setChatConversations(chatConversations)
+    localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
+  }
 
   useEffect(() => {
     const storedChatConversations = localStorage.getItem(`chatConversation${chatId}`)
     if (storedChatConversations) {
-      setChatConversations(chatId, JSON.parse(storedChatConversations))
+      setChatConversations(JSON.parse(storedChatConversations))
     }
-  }, [setChatConversations, chatId])
+  }, [chatId])
 
   const messageWrappers = chatToMessageWrappers(chatSettings, chatConversations)
 
@@ -347,7 +354,7 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversations, requestMessages,
+    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages,
       response!!.data)
     setIsLoading(false)
   }

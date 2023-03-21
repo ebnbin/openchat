@@ -12,6 +12,7 @@ export interface ChatSettings {
   systemMessage: string
   tokensPerChar: number
   tokens: number
+  conversations: number
   incomplete: boolean
 }
 
