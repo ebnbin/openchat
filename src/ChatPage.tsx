@@ -8,12 +8,13 @@ import {
   Avatar, Card, CircularProgress, IconButton, List,
   ListItem,
   ListItemAvatar,
-  ListItemText, TextField, useTheme
+  TextField, useTheme
 } from "@mui/material";
 import {ChatSettings, ChatConversation, Settings, chatModels} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
+import {MessageContent} from "./MessageContent";
 
 const contentWidth = 900
 
@@ -122,7 +123,14 @@ function MessageItem(props: MessageItemProps) {
           alignItems: 'flex-start',
         }}
       >
-        <ListItemAvatar>
+        <ListItemAvatar
+          sx={{
+            display: 'flex',
+            height: '56px',
+            flexShrink: 0,
+            placeItems: 'center',
+          }}
+        >
           <Avatar
             sx={{
               bgcolor: avatarColor()
@@ -131,9 +139,16 @@ function MessageItem(props: MessageItemProps) {
             {avatarIcon()}
           </Avatar>
         </ListItemAvatar>
-        <ListItemText
-          primary={messageWrapper.message.content}
-        />
+        <Box
+          sx={{
+            flexGrow: 1,
+            width: '0px',
+          }}
+        >
+          <MessageContent
+            content={messageWrapper.message.content}
+          />
+        </Box>
       </ListItem>
     </Box>
   )
@@ -143,7 +158,7 @@ function MessageItem(props: MessageItemProps) {
 
 interface MessageListProps {
   messageWrappers: MessageWrapper[]
-  requestingMessage?: MessageWrapper,
+  requestingMessage?: MessageWrapper
   isLoading: boolean
 }
 
