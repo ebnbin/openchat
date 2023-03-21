@@ -4,6 +4,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {Box, Chip, Typography, useTheme} from "@mui/material";
 import {copy} from "./util";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import 'katex/dist/katex.min.css'
 
 interface MessageContentProps {
   content: string
@@ -20,6 +23,8 @@ export function MessageContent({ content }: MessageContentProps) {
   return (
     <ReactMarkdown
       children={content}
+      remarkPlugins={[remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       components={{
         code({node, inline, className, children, ...props}) {
           const match = /language-(\w+)/.exec(className || '')
