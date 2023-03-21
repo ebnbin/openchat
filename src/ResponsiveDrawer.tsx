@@ -67,6 +67,7 @@ export default function ResponsiveDrawer(props: Props) {
         chats: copyChats,
       } as Settings,
     )
+    localStorage.removeItem(`chatConversation${chatId}`)
   }
 
   const [open, setOpen] = React.useState(false);

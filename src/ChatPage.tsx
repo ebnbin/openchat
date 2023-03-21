@@ -26,19 +26,19 @@ interface MessageWrapper {
   context: boolean
 }
 
-function chatToMessageWrappers(chat: ChatSettings, chatConversations: ChatConversation[]): MessageWrapper[] {
+function chatToMessageWrappers(chatSettings: ChatSettings, chatConversations: ChatConversation[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  const maxContextTokens = chat.maxTokens * chat.contextThreshold
+  const maxContextTokens = chatSettings.maxTokens * chatSettings.contextThreshold
   let usedTokens = 0
-  if (chat.systemMessage !== '') {
-    usedTokens += chat.systemMessage.length * chat.tokensPerChar + chat.extraCharsPerMessage
+  if (chatSettings.systemMessage !== '') {
+    usedTokens += chatSettings.systemMessage.length * chatSettings.tokensPerChar + chatSettings.extraCharsPerMessage
   }
   chatConversations
     .slice()
     .reverse()
     .forEach((conversation) => {
       const tokens = (conversation.userMessage.length + conversation.assistantMessage.length +
-        2 * chat.extraCharsPerMessage) * chat.tokensPerChar
+        2 * chatSettings.extraCharsPerMessage) * chatSettings.tokensPerChar
       usedTokens += tokens
       const context = usedTokens <= maxContextTokens
       const assistantMessageWrapper = {
@@ -58,11 +58,11 @@ function chatToMessageWrappers(chat: ChatSettings, chatConversations: ChatConver
       } as MessageWrapper
       result.unshift(userMessageWrapper)
     })
-  if (chat.systemMessage !== '') {
+  if (chatSettings.systemMessage !== '') {
     const systemMessageWrapper = {
       message: {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content: chat.systemMessage,
+        content: chatSettings.systemMessage,
       } as ChatCompletionRequestMessage,
       context: true,
     } as MessageWrapper
@@ -253,8 +253,8 @@ function InputCard(props: InputCardProps) {
 
 //*********************************************************************************************************************
 
-interface DetailDialogProps {
-  chat: ChatSettings,
+interface ChatSettingsDialogProps {
+  chatSettings: ChatSettings,
   setChatSettings: (chat: ChatSettings) => void
   deleteChat: (chatId: string) => void
   chatConversations: ChatConversation[]
@@ -262,42 +262,38 @@ interface DetailDialogProps {
   handleClose: () => void
 }
 
-function DetailDialog(props: DetailDialogProps) {
-  const { chat, setChatSettings, deleteChat, chatConversations, open, handleClose } = props
-
-  const [title, setTitle] = useState(chat.title)
-  const [contextThreshold, setContextThreshold] = useState(chat.contextThreshold)
-  const [systemMessage, setSystemMessage] = useState(chat.systemMessage)
+function ChatSettingsDialog(props: ChatSettingsDialogProps) {
+  const { chatSettings, setChatSettings, deleteChat, chatConversations, open, handleClose } = props
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
+    setChatSettings(
+      {
+        ...chatSettings,
+        title: event.target.value,
+      },
+    )
+  }
+
+  const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
+    setChatSettings(
+      {
+        ...chatSettings,
+        contextThreshold: newValue as number,
+      },
+    )
   }
 
   const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSystemMessage(event.target.value)
+    setChatSettings(
+      {
+        ...chatSettings,
+        systemMessage: event.target.value,
+      },
+    )
   }
 
   const handleDeleteClick = () => {
-    deleteChat(chat.id)
-    handleClose()
-  }
-
-  const handleSaveClick = () => {
-    setChatSettings(
-      {
-        ...chat,
-        title: title,
-        contextThreshold: contextThreshold,
-        systemMessage: systemMessage,
-      },
-    )
-    handleClose()
-  }
-
-  const handleCancelClick = () => {
-    setTitle(chat.title)
-    setContextThreshold(chat.contextThreshold)
-    setSystemMessage(chat.systemMessage)
+    deleteChat(chatSettings.id)
     handleClose()
   }
 
@@ -306,7 +302,7 @@ function DetailDialog(props: DetailDialogProps) {
       fullWidth={true}
       scroll={'paper'}
       open={open}
-      onClose={handleCancelClick}
+      onClose={handleClose}
     >
       <DialogTitle>
         Edit Chat
@@ -334,7 +330,7 @@ function DetailDialog(props: DetailDialogProps) {
             fullWidth={true}
             type={'text'}
             placeholder={'New chat'}
-            value={title}
+            value={chatSettings.title}
             onChange={handleTitleChange}
           />
         </Box>
@@ -357,8 +353,8 @@ function DetailDialog(props: DetailDialogProps) {
           >
             Conversation histories that can be remembered as context for the next conversation
             <br />
-            Current value: {(contextThreshold * 100).toFixed(0)}% of maximum tokens
-            (about {(chat.maxTokens * contextThreshold / 4 * 3).toFixed(0)} words)
+            Current value: {(chatSettings.contextThreshold * 100).toFixed(0)}% of maximum tokens
+            (about {(chatSettings.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -371,10 +367,8 @@ function DetailDialog(props: DetailDialogProps) {
               max={0.95}
               step={0.05}
               marks={true}
-              value={contextThreshold}
-              onChange={(event, newValue) => {
-                setContextThreshold(newValue as number)
-              }}
+              value={chatSettings.contextThreshold}
+              onChange={handleContextThresholdChange}
             />
           </Box>
         </Box>
@@ -404,7 +398,7 @@ function DetailDialog(props: DetailDialogProps) {
             multiline={true}
             maxRows={8}
             placeholder={'You are a helpful assistant.'}
-            value={systemMessage}
+            value={chatSettings.systemMessage}
             onChange={handleSystemMessageChange}
           />
         </Box>
@@ -415,9 +409,9 @@ function DetailDialog(props: DetailDialogProps) {
           }}
         >
           <DialogContentText>
-            Model: {chat.model} ({chat.maxTokens} tokens)
+            Model: {chatSettings.model} ({chatSettings.maxTokens} tokens)
             <br />
-            Cumulative tokens used: {chat.tokens}
+            Cumulative tokens used: {chatSettings.tokens}
             <br />
             Numbers of conversations: {chatConversations.length}
           </DialogContentText>
@@ -440,14 +434,9 @@ function DetailDialog(props: DetailDialogProps) {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={handleCancelClick}
+          onClick={handleClose}
         >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSaveClick}
-        >
-          Save
+          OK
         </Button>
       </DialogActions>
     </Dialog>
@@ -475,7 +464,7 @@ function beforeRequest(
 }
 
 function afterResponse(
-  chat: ChatSettings,
+  chatSettings: ChatSettings,
   setChat: (chat: ChatSettings) => void,
   chatConversations: ChatConversation[],
   setChatConversations: (chatConversations: ChatConversation[]) => void,
@@ -496,12 +485,12 @@ function afterResponse(
   const charCount = requestMessages
     .map((message) => message.content)
     .concat(responseMessage)
-    .reduce((acc, message) => acc + message.length + chat.extraCharsPerMessage, 0)
+    .reduce((acc, message) => acc + message.length + chatSettings.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
-  const tokens = chat.tokens + responseTotalTokens
+  const tokens = chatSettings.tokens + responseTotalTokens
   const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
-    ...chat,
+    ...chatSettings,
     tokensPerChar: tokensPerChar,
     tokens: tokens,
     incomplete: incomplete,
@@ -521,7 +510,7 @@ interface ChatProps {
 export function ChatPage(props: ChatProps) {
   const { settings, chatId, setChatSettings, deleteChat, open, handleClose } = props
 
-  const chat = settings.chats.find((chat) => chat.id === chatId)!!
+  const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
 
   const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
 
@@ -537,7 +526,7 @@ export function ChatPage(props: ChatProps) {
     localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
   }
 
-  const messageWrappers = chatToMessageWrappers(chat, chatConversations)
+  const messageWrappers = chatToMessageWrappers(chatSettings, chatConversations)
 
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -550,7 +539,7 @@ export function ChatPage(props: ChatProps) {
 
     const response = await api(settings.apiKey)
       .createChatCompletion({
-        model: chat.model,
+        model: chatSettings.model,
         messages: requestMessages,
       })
       .catch(() => {
@@ -559,7 +548,7 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chat, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages, response!!.data)
+    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages, response!!.data)
     setIsLoading(false)
   }
 
@@ -610,8 +599,8 @@ export function ChatPage(props: ChatProps) {
           />
         </Box>
       </Box>
-      <DetailDialog
-        chat={chat}
+      <ChatSettingsDialog
+        chatSettings={chatSettings}
         setChatSettings={setChatSettings}
         deleteChat={deleteChat}
         chatConversations={chatConversations}
