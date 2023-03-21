@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useEffect, useState} from "react";
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum
@@ -12,7 +12,7 @@ import {
   ListItemText, Slider,
   TextField, Typography, useTheme
 } from "@mui/material";
-import {Chat, ChatConversation, Settings} from "./data";
+import {ChatSettings, ChatConversation, Settings} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
@@ -26,14 +26,14 @@ interface MessageWrapper {
   context: boolean
 }
 
-function chatToMessageWrappers(chat: Chat): MessageWrapper[] {
+function chatToMessageWrappers(chat: ChatSettings, chatConversations: ChatConversation[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
   const maxContextTokens = chat.maxTokens * chat.contextThreshold
   let usedTokens = 0
   if (chat.systemMessage !== '') {
     usedTokens += chat.systemMessage.length * chat.tokensPerChar + chat.extraCharsPerMessage
   }
-  chat.conversations
+  chatConversations
     .slice()
     .reverse()
     .forEach((conversation) => {
@@ -254,15 +254,16 @@ function InputCard(props: InputCardProps) {
 //*********************************************************************************************************************
 
 interface DetailDialogProps {
-  chat: Chat,
-  setChatSettings: (chat: Chat) => void
+  chat: ChatSettings,
+  setChatSettings: (chat: ChatSettings) => void
   deleteChat: (chatId: string) => void
+  chatConversations: ChatConversation[]
   open: boolean
   handleClose: () => void
 }
 
 function DetailDialog(props: DetailDialogProps) {
-  const { chat, setChatSettings, deleteChat, open, handleClose } = props
+  const { chat, setChatSettings, deleteChat, chatConversations, open, handleClose } = props
 
   const [title, setTitle] = useState(chat.title)
   const [contextThreshold, setContextThreshold] = useState(chat.contextThreshold)
@@ -418,7 +419,7 @@ function DetailDialog(props: DetailDialogProps) {
             <br />
             Cumulative tokens used: {chat.tokens}
             <br />
-            Numbers of conversations: {chat.conversations.length}
+            Numbers of conversations: {chatConversations.length}
           </DialogContentText>
         </Box>
         <Box
@@ -474,20 +475,23 @@ function beforeRequest(
 }
 
 function afterResponse(
-  chat: Chat,
-  setChat: (chat: Chat) => void,
+  chat: ChatSettings,
+  setChat: (chat: ChatSettings) => void,
+  chatConversations: ChatConversation[],
+  setChatConversations: (chatConversations: ChatConversation[]) => void,
   requestMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
   const responseMessage = response.choices[0].message!!.content
-  const conversations = [
-    ...chat.conversations,
+  const nextChatConversations = [
+    ...chatConversations,
     {
-      timestamp: response.created,
+      timestamp: Math.round(response.created * 1000),
       userMessage: requestMessages[requestMessages.length - 1].content,
       assistantMessage: responseMessage,
     } as ChatConversation,
   ]
+  setChatConversations(nextChatConversations)
   const responseTotalTokens = response.usage!!.total_tokens
   const charCount = requestMessages
     .map((message) => message.content)
@@ -498,18 +502,17 @@ function afterResponse(
   const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
     ...chat,
-    conversations: conversations,
     tokensPerChar: tokensPerChar,
     tokens: tokens,
     incomplete: incomplete,
-  } as Chat
+  } as ChatSettings
   setChat(nextChat)
 }
 
 interface ChatProps {
   settings: Settings,
   chatId: string
-  setChatSettings: (chat: Chat) => void
+  setChatSettings: (chat: ChatSettings) => void
   deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
@@ -520,7 +523,21 @@ export function ChatPage(props: ChatProps) {
 
   const chat = settings.chats.find((chat) => chat.id === chatId)!!
 
-  const messageWrappers = chatToMessageWrappers(chat)
+  const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
+
+  useEffect(() => {
+    const storedChatConversations = localStorage.getItem(`chatConversation${chatId}`)
+    if (storedChatConversations) {
+      setChatConversations(JSON.parse(storedChatConversations))
+    }
+  }, [chatId])
+
+  const setChatConversationsAndStore = (chatConversations: ChatConversation[]) => {
+    setChatConversations(chatConversations)
+    localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
+  }
+
+  const messageWrappers = chatToMessageWrappers(chat, chatConversations)
 
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -542,7 +559,7 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chat, setChatSettings, requestMessages, response!!.data)
+    afterResponse(chat, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages, response!!.data)
     setIsLoading(false)
   }
 
@@ -597,6 +614,7 @@ export function ChatPage(props: ChatProps) {
         chat={chat}
         setChatSettings={setChatSettings}
         deleteChat={deleteChat}
+        chatConversations={chatConversations}
         open={open}
         handleClose={handleClose}
       />

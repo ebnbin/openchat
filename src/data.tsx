@@ -1,9 +1,9 @@
 export interface Settings {
   apiKey: string
-  chats: Chat[]
+  chats: ChatSettings[]
 }
 
-export interface Chat {
+export interface ChatSettings {
   id: string
   title: string
   model: string
@@ -11,7 +11,6 @@ export interface Chat {
   extraCharsPerMessage: number,
   contextThreshold: number
   systemMessage: string
-  conversations: ChatConversation[]
   tokensPerChar: number
   tokens: number
   incomplete: boolean

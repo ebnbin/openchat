@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
-import {Chat, Settings} from "./data";
+import {ChatSettings, Settings} from "./data";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 
@@ -44,7 +44,7 @@ export default function ResponsiveDrawer(props: Props) {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
 
-  const setChatSettings = (chat: Chat) => {
+  const setChatSettings = (chat: ChatSettings) => {
     const copyChats = settings.chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
     copyChats[index] = chat
@@ -104,11 +104,10 @@ export default function ResponsiveDrawer(props: Props) {
             extraCharsPerMessage: 16,
             contextThreshold: 0.7,
             systemMessage: '',
-            conversations: [],
             tokensPerChar: 0,
             tokens: 0,
             incomplete: false,
-          } as Chat
+          } as ChatSettings
         ]
       } as Settings
     )
@@ -122,7 +121,7 @@ export default function ResponsiveDrawer(props: Props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleItemClick = (chat: Chat) => {
+  const handleItemClick = (chat: ChatSettings) => {
     setSelectedChatId(chat.id)
     setMobileOpen(false)
   }
@@ -154,7 +153,7 @@ export default function ResponsiveDrawer(props: Props) {
           overflow: 'auto',
         }}
       >
-        {settings.chats.slice().reverse().map((chatItem: Chat, index) => (
+        {settings.chats.slice().reverse().map((chatItem: ChatSettings, index) => (
           <ListItem
             key={chatItem.id}
             disablePadding={true}
