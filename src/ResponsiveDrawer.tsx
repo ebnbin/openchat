@@ -15,9 +15,7 @@ import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
-import {Chat} from "./data";
-import {Configuration, OpenAIApi} from "openai";
-import {ApiKeyPage} from "./ApiKeyPage";
+import {Chat, Settings} from "./data";
 import {ListModels} from "./ListModels";
 import {CreateCompletionPage} from "./CreateCompletionPage";
 import {CreateChatCompletionPage} from "./CreateChatCompletionPage";
@@ -36,22 +34,28 @@ interface Props {
 }
 
 export default function ResponsiveDrawer(props: Props) {
-  const [apiKey, setApiKey] = useState('');
-
-  const setApiKeyAndStore = (apiKey: string) => {
-    setApiKey(apiKey)
-    localStorage.setItem('apiKey', apiKey)
-  }
+  const [settings, setSettings] = useState<Settings>(
+    {
+      apiKey: '',
+      chatList: [],
+    } as Settings
+  )
 
   useEffect(() => {
-    const storedApiKey = localStorage.getItem('apiKey');
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
+    const storedSettings = localStorage.getItem('settings')
+    if (storedSettings) {
+      setSettings(JSON.parse(storedSettings))
     }
-  }, [apiKey]);
+  }, [])
+
+  const setSettingsAndStore = (settings: Settings) => {
+    setSettings(settings)
+    localStorage.setItem('settings', JSON.stringify(settings))
+  }
 
   const [chat, setChat] = useState<Chat>(
     {
+      id: '',
       title: '',
       model: 'gpt-3.5-turbo',
       maxTokens: 4096,
@@ -64,6 +68,18 @@ export default function ResponsiveDrawer(props: Props) {
       incomplete: false,
     } as Chat
   )
+
+  const setChatAndStore = (chat: Chat) => {
+    setChat(chat)
+    localStorage.setItem(`chat_${chat.id}`, JSON.stringify(chat))
+  }
+
+  useEffect(() => {
+    const storedChat = localStorage.getItem('chat')
+    if (storedChat) {
+      setChat(JSON.parse(storedChat))
+    }
+  }, [])
 
   const [open, setOpen] = React.useState(false);
 
@@ -85,29 +101,13 @@ export default function ResponsiveDrawer(props: Props) {
     setSettingsOpen(false);
   };
 
-  const { Configuration, OpenAIApi } = require("openai");
-  const configuration = new Configuration({
-    apiKey: apiKey,
-  });
-  const openai = new OpenAIApi(configuration);
-
   const pageList: Page[] = [
-    {
-      key: 'ApiKey',
-      title: 'API key',
-      element: (
-        <ApiKeyPage
-          apiKey={apiKey}
-          setApiKey={setApiKeyAndStore}
-        />
-      ),
-    },
     {
       key: 'ListModels',
       title: 'List models',
       element: (
         <ListModels
-          apiKey={apiKey}
+          settings={settings}
         />
       ),
     },
@@ -116,7 +116,7 @@ export default function ResponsiveDrawer(props: Props) {
       title: 'Create completion',
       element: (
         <CreateCompletionPage
-          apiKey={apiKey}
+          settings={settings}
         />
       ),
     },
@@ -125,7 +125,7 @@ export default function ResponsiveDrawer(props: Props) {
       title: 'Create chat completion',
       element: (
         <CreateChatCompletionPage
-          apiKey={apiKey}
+          settings={settings}
         />
       ),
     },
@@ -134,9 +134,10 @@ export default function ResponsiveDrawer(props: Props) {
       title: 'Chat',
       element: (
         <ChatPage
-          api={openai}
+          settings={settings}
+          setSettings={setSettingsAndStore}
           chat={chat}
-          setChat={setChat}
+          setChat={setChatAndStore}
           open={open}
           handleClose={handleClose}
         />
@@ -336,7 +337,12 @@ export default function ResponsiveDrawer(props: Props) {
           {pageList[selectedPage].element}
         </Box>
       </Box>
-      <SettingsDialog apiKey={apiKey} setApiKey={setApiKeyAndStore} open={settingsOpen} handleClose={handleSettingsClose}/>
+      <SettingsDialog
+        settings={settings}
+        setSettings={setSettingsAndStore}
+        open={settingsOpen}
+        handleClose={handleSettingsClose}
+      />
     </Box>
   );
 }

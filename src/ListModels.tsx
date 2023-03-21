@@ -1,33 +1,28 @@
 import React, {useState} from "react";
-import {Configuration, Model, OpenAIApi} from "openai";
+import {Model} from "openai";
 import {Button} from "@mui/material";
 import {JsonLog} from "./JsonLog";
+import {Settings} from "./data";
+import {api} from "./util";
 
 interface ListModelsProps {
-  apiKey: string;
+  settings: Settings;
 }
 
 // https://platform.openai.com/docs/api-reference/models/list
-export function ListModels({ apiKey }: ListModelsProps) {
+export function ListModels({ settings }: ListModelsProps) {
   const [response, setResponse] = useState<JSX.Element[]>();
   const [isLoading, setIsLoading] = useState(false);
-
-  const { Configuration, OpenAIApi } = require("openai");
-
-  const configuration = new Configuration({
-    apiKey: apiKey,
-  });
-  const openai = new OpenAIApi(configuration);
 
   const request = async () => {
     setIsLoading(true)
 
-    const response = await openai
+    const response = await api(settings.apiKey)
       .listModels()
       .catch(() => {
         setIsLoading(false)
       });
-    const listItems = response.data.data.map((item: Model) =>
+    const listItems = response!!.data.data.map((item: Model) =>
       <li key={item.id}>
         <JsonLog
           object={item}
@@ -43,7 +38,7 @@ export function ListModels({ apiKey }: ListModelsProps) {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <Button
         variant={"contained"}
-        disabled={apiKey.length === 0 || isLoading}
+        disabled={settings.apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

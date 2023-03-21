@@ -2,19 +2,19 @@ import React, {ChangeEvent, useState} from "react";
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
-  ChatCompletionResponseMessageRoleEnum,
-  Configuration,
-  OpenAIApi
+  ChatCompletionResponseMessageRoleEnum
 } from "openai";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {JsonLog} from "./JsonLog";
+import {Settings} from "./data";
+import {api} from "./util";
 
 interface CreateCompletionProps {
-  apiKey: string;
+  settings: Settings;
 }
 
 // https://platform.openai.com/docs/api-reference/chat/create
-export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
+export function CreateChatCompletionPage({ settings }: CreateCompletionProps) {
   const modelList: string[] = [
     'gpt-4',
     'gpt-4-0314',
@@ -42,13 +42,6 @@ export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
     setMessage(message)
   };
 
-  const { Configuration, OpenAIApi } = require("openai");
-
-  const configuration = new Configuration({
-    apiKey: apiKey,
-  });
-  const openai = new OpenAIApi(configuration);
-
   const request = async () => {
     if (!message) {
       return
@@ -61,7 +54,7 @@ export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
     setResponseData(undefined)
     setIsLoading(true)
 
-    const response = await openai
+    const response = await api(settings.apiKey)
       .createChatCompletion({
         model: model,
         messages: currentMessages,
@@ -71,7 +64,7 @@ export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
       });
 
     let role: ChatCompletionRequestMessageRoleEnum = ChatCompletionRequestMessageRoleEnum.Assistant
-    switch (response.data.choices[0].message.role) {
+    switch (response!!.data.choices[0].message!!.role) {
       case ChatCompletionResponseMessageRoleEnum.System:
         role = ChatCompletionRequestMessageRoleEnum.System;
         break;
@@ -86,7 +79,7 @@ export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
     }
     const newMessage: ChatCompletionRequestMessage = {
       role: role,
-      content: response.data.choices[0].message.content,
+      content: response!!.data.choices[0].message!!.content,
     }
 
     setMessages([...currentMessages, newMessage])
@@ -117,7 +110,7 @@ export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
       />
       <Button
         variant={"contained"}
-        disabled={apiKey.length === 0 || isLoading}
+        disabled={settings.apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

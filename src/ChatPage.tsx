@@ -1,8 +1,7 @@
 import React, {ChangeEvent, useState} from "react";
 import {
   ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-  OpenAIApi
+  ChatCompletionRequestMessageRoleEnum
 } from "openai";
 import Box from "@mui/material/Box";
 import {
@@ -14,9 +13,10 @@ import {
   ListItemText, Slider,
   TextField, Typography, useTheme
 } from "@mui/material";
-import {Chat, ChatConversation} from "./data";
+import {Chat, ChatConversation, Settings} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
+import {api} from "./util";
 
 const contentWidth = 900
 
@@ -500,7 +500,8 @@ function afterResponse(
 }
 
 interface ChatProps {
-  api: OpenAIApi,
+  settings: Settings,
+  setSettings: (settings: Settings) => void,
   chat: Chat
   setChat: (chat: Chat) => void
   open: boolean
@@ -508,7 +509,7 @@ interface ChatProps {
 }
 
 export function ChatPage(props: ChatProps) {
-  const { api, chat, setChat, open, handleClose } = props
+  const { settings, setSettings, chat, setChat, open, handleClose } = props
 
   const messageWrappers = chatToMessageWrappers(chat)
 
@@ -521,7 +522,7 @@ export function ChatPage(props: ChatProps) {
     const requestMessages = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
-    const response = await api
+    const response = await api(settings.apiKey)
       .createChatCompletion({
         model: chat.model,
         messages: requestMessages,

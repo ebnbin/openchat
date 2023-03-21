@@ -9,16 +9,17 @@ import {
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
+import {Settings} from "./data";
 
 interface SettingsDialogProps {
-  apiKey: string
-  setApiKey: (apiKey: string) => void
+  settings: Settings,
+  setSettings: (settings: Settings) => void
   open: boolean
   handleClose: () => void
 }
 
 export function SettingsDialog(props: SettingsDialogProps) {
-  const { apiKey, setApiKey, open, handleClose } = props
+  const { settings, setSettings, open, handleClose } = props
 
   return (
     <Dialog
@@ -67,9 +68,14 @@ export function SettingsDialog(props: SettingsDialogProps) {
             fullWidth={true}
             type={'text'}
             placeholder={'API key'}
-            value={apiKey}
+            value={settings.apiKey}
             onChange={(event) => {
-              setApiKey(event.target.value)
+              setSettings(
+                {
+                  ...settings,
+                  apiKey: event.target.value,
+                } as Settings
+              )
             }}
           />
         </Box>

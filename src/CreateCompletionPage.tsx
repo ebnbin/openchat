@@ -1,14 +1,15 @@
 import React, {ChangeEvent, useState} from "react";
-import {Configuration, OpenAIApi} from "openai";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {JsonLog} from "./JsonLog";
+import {Settings} from "./data";
+import {api} from "./util";
 
 interface CreateCompletionProps {
-  apiKey: string;
+  settings: Settings;
 }
 
 // https://platform.openai.com/docs/api-reference/completions/create
-export function CreateCompletionPage({ apiKey }: CreateCompletionProps) {
+export function CreateCompletionPage({ settings }: CreateCompletionProps) {
   const modelList: string[] = [
     'text-davinci-003',
     'text-davinci-002',
@@ -35,19 +36,12 @@ export function CreateCompletionPage({ apiKey }: CreateCompletionProps) {
     setPrompt(event.target.value)
   };
 
-  const { Configuration, OpenAIApi } = require("openai");
-
-  const configuration = new Configuration({
-    apiKey: apiKey,
-  });
-  const openai = new OpenAIApi(configuration);
-
   const request = async () => {
     setResponse('[Loading]')
     setResponseData(undefined)
     setIsLoading(true)
 
-    const response = await openai
+    const response = await api(settings.apiKey)
       .createCompletion({
         model: model,
         prompt: prompt,
@@ -57,7 +51,7 @@ export function CreateCompletionPage({ apiKey }: CreateCompletionProps) {
         setIsLoading(false)
       });
 
-    setResponse(response.data.choices[0].text)
+    setResponse(response!!.data.choices[0].text!!)
     setResponseData(response)
     setIsLoading(false)
   }
@@ -85,7 +79,7 @@ export function CreateCompletionPage({ apiKey }: CreateCompletionProps) {
       />
       <Button
         variant={"contained"}
-        disabled={apiKey.length === 0 || isLoading}
+        disabled={settings.apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

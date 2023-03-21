@@ -1,4 +1,10 @@
+export interface Settings {
+  apiKey: string
+  chatList: Chat[]
+}
+
 export interface Chat {
+  id: string
   title: string
   model: string
   maxTokens: number
