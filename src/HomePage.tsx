@@ -22,7 +22,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 const drawerWidth = 300;
 
-export default function ResponsiveDrawer() {
+export function HomePage() {
   const [settings, setSettings] = useState<Settings>(
     {
       apiKey: '',

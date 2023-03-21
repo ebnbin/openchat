@@ -1,10 +1,8 @@
 import React from 'react';
-import ResponsiveDrawer from "./ResponsiveDrawer";
+import {HomePage} from "./HomePage";
 
-function App() {
+export default function App() {
   return (
-    <ResponsiveDrawer />
-  );
+    <HomePage/>
+  )
 }
-
-export default App;
