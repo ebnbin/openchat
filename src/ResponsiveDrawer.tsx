@@ -101,8 +101,6 @@ export default function ResponsiveDrawer(props: Props) {
             id: `${new Date().getTime()}`,
             title: '',
             model: 'gpt-3.5-turbo',
-            maxTokens: 4096,
-            extraCharsPerMessage: 16,
             contextThreshold: 0.7,
             systemMessage: '',
             tokensPerChar: 0,

@@ -12,7 +12,7 @@ import {
   ListItemText, Slider,
   TextField, Typography, useTheme
 } from "@mui/material";
-import {ChatSettings, ChatConversation, Settings} from "./data";
+import {ChatSettings, ChatConversation, Settings, chatModels} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
@@ -28,17 +28,18 @@ interface MessageWrapper {
 
 function chatToMessageWrappers(chatSettings: ChatSettings, chatConversations: ChatConversation[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  const maxContextTokens = chatSettings.maxTokens * chatSettings.contextThreshold
+  const maxContextTokens = chatModels.get(chatSettings.model)!!.maxTokens * chatSettings.contextThreshold
   let usedTokens = 0
   if (chatSettings.systemMessage !== '') {
-    usedTokens += chatSettings.systemMessage.length * chatSettings.tokensPerChar + chatSettings.extraCharsPerMessage
+    usedTokens += chatSettings.systemMessage.length * chatSettings.tokensPerChar +
+      chatModels.get(chatSettings.model)!!.extraCharsPerMessage
   }
   chatConversations
     .slice()
     .reverse()
     .forEach((conversation) => {
       const tokens = (conversation.userMessage.length + conversation.assistantMessage.length +
-        2 * chatSettings.extraCharsPerMessage) * chatSettings.tokensPerChar
+        2 * chatModels.get(chatSettings.model)!!.extraCharsPerMessage) * chatSettings.tokensPerChar
       usedTokens += tokens
       const context = usedTokens <= maxContextTokens
       const assistantMessageWrapper = {
@@ -354,7 +355,7 @@ function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             Conversation histories that can be remembered as context for the next conversation
             <br />
             Current value: {(chatSettings.contextThreshold * 100).toFixed(0)}% of maximum tokens
-            (about {(chatSettings.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
+            (about {(chatModels.get(chatSettings.model)!!.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -409,7 +410,7 @@ function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           }}
         >
           <DialogContentText>
-            Model: {chatSettings.model} ({chatSettings.maxTokens} tokens)
+            Model: {chatSettings.model} ({chatModels.get(chatSettings.model)!!.maxTokens} tokens)
             <br />
             Cumulative tokens used: {chatSettings.tokens}
             <br />
@@ -485,7 +486,7 @@ function afterResponse(
   const charCount = requestMessages
     .map((message) => message.content)
     .concat(responseMessage)
-    .reduce((acc, message) => acc + message.length + chatSettings.extraCharsPerMessage, 0)
+    .reduce((acc, message) => acc + message.length + chatModels.get(chatSettings.model)!!.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chatSettings.tokens + responseTotalTokens
   const incomplete = response.choices[0].finish_reason === 'length'
@@ -548,7 +549,8 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages, response!!.data)
+    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages,
+      response!!.data)
     setIsLoading(false)
   }
 
