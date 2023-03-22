@@ -1,4 +1,5 @@
-export interface Settings {
+export interface AppData {
+  'version': number
   'openai_api_key': string
   'chats': Chat[]
 }

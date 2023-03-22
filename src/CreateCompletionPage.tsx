@@ -1,11 +1,11 @@
 import React, {ChangeEvent, useState} from "react";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {JsonLog} from "./JsonLog";
-import {Settings} from "./data";
+import {AppData} from "./data";
 import {api} from "./util";
 
 interface CreateCompletionProps {
-  settings: Settings;
+  settings: AppData;
 }
 
 // https://platform.openai.com/docs/api-reference/completions/create

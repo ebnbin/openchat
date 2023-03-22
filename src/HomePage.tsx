@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
 import {Button, createTheme, Divider, ThemeProvider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
-import {Chat, Settings} from "./data";
+import {Chat, AppData} from "./data";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -25,11 +25,12 @@ const drawerWidth = 300;
 export function HomePage() {
   const isDarkMode = useIsDarkMode()
 
-  const [settings, setSettings] = useState<Settings>(
+  const [settings, setSettings] = useState<AppData>(
     {
+      version: 1,
       openai_api_key: '',
       chats: [],
-    } as Settings
+    } as AppData
   )
 
   const theme = createTheme({
@@ -39,15 +40,15 @@ export function HomePage() {
   })
 
   useEffect(() => {
-    const storedSettings = localStorage.getItem('settings')
+    const storedSettings = localStorage.getItem('app_data')
     if (storedSettings) {
       setSettings(JSON.parse(storedSettings))
     }
   }, [])
 
-  const setSettingsAndStore = (settings: Settings) => {
+  const setSettingsAndStore = (settings: AppData) => {
     setSettings(settings)
-    localStorage.setItem('settings', JSON.stringify(settings))
+    localStorage.setItem('app_data', JSON.stringify(settings))
   }
 
   const setChatSettings = (chat: Chat) => {
@@ -58,7 +59,7 @@ export function HomePage() {
         {
           ...settings,
           chats: [...copyChats, chat],
-        } as Settings,
+        } as AppData,
       )
       setSelectedChatId(chat.id)
     } else {
@@ -67,7 +68,7 @@ export function HomePage() {
         {
           ...settings,
           chats: copyChats,
-        } as Settings,
+        } as AppData,
       )
     }
   }
@@ -81,9 +82,9 @@ export function HomePage() {
       {
         ...settings,
         chats: copyChats,
-      } as Settings,
+      } as AppData,
     )
-    localStorage.removeItem(`chatConversation${chatId}`)
+    localStorage.removeItem(`chat_${chatId}`)
   }
 
   const [open, setOpen] = React.useState(false);

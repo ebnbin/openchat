@@ -9,11 +9,11 @@ import {
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import {Settings} from "./data";
+import {AppData} from "./data";
 
 interface SettingsDialogProps {
-  settings: Settings,
-  setSettings: (settings: Settings) => void
+  settings: AppData,
+  setSettings: (settings: AppData) => void
   open: boolean
   handleClose: () => void
 }
@@ -26,7 +26,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
       {
         ...settings,
         // isDarkMode: event.target.checked,
-      } as Settings
+      } as AppData
     )
   }
 
@@ -83,7 +83,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                 {
                   ...settings,
                   openai_api_key: event.target.value,
-                } as Settings
+                } as AppData
               )
             }}
           />

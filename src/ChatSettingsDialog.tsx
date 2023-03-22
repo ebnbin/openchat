@@ -1,4 +1,4 @@
-import {chatModels, Chat, defaultModel, Settings} from "./data";
+import {chatModels, Chat, defaultModel, AppData} from "./data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
@@ -13,7 +13,7 @@ import {
 import Box from "@mui/material/Box";
 
 interface ChatSettingsDialogProps {
-  settings: Settings,
+  settings: AppData,
   chatId: string,
   setChatSettings: (chat: Chat) => void
   deleteChat: (chatId: string) => void

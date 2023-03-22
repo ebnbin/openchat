@@ -2,11 +2,11 @@ import React, {useState} from "react";
 import {Model} from "openai";
 import {Button} from "@mui/material";
 import {JsonLog} from "./JsonLog";
-import {Settings} from "./data";
+import {AppData} from "./data";
 import {api} from "./util";
 
 interface ListModelsProps {
-  settings: Settings;
+  settings: AppData;
 }
 
 // https://platform.openai.com/docs/api-reference/models/list

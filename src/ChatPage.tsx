@@ -10,7 +10,7 @@ import {
   ListItemAvatar,
   TextField, useTheme
 } from "@mui/material";
-import {Chat, ChatConversation, Settings, chatModels, defaultModel} from "./data";
+import {Chat, ChatConversation, AppData, chatModels, defaultModel} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
@@ -324,7 +324,7 @@ function afterResponse(
 }
 
 interface ChatProps {
-  settings: Settings,
+  settings: AppData,
   chatId: string
   setChatSettings: (chat: Chat) => void
 }
@@ -345,11 +345,11 @@ export function ChatPage(props: ChatProps) {
 
   const setChatConversationsAndStore = (chatId: string, chatConversations: ChatConversation[]) => {
     setChatConversations(chatConversations)
-    localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
+    localStorage.setItem(`chat_${chatId}`, JSON.stringify(chatConversations))
   }
 
   useEffect(() => {
-    const storedChatConversations = localStorage.getItem(`chatConversation${chatId}`)
+    const storedChatConversations = localStorage.getItem(`chat_${chatId}`)
     if (storedChatConversations) {
       setChatConversations(JSON.parse(storedChatConversations))
     }
