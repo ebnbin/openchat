@@ -54,7 +54,7 @@ export function CreateChatCompletionPage({ settings }: CreateCompletionProps) {
     setResponseData(undefined)
     setIsLoading(true)
 
-    const response = await api(settings.apiKey)
+    const response = await api(settings.openai_api_key)
       .createChatCompletion({
         model: model,
         messages: currentMessages,
@@ -110,7 +110,7 @@ export function CreateChatCompletionPage({ settings }: CreateCompletionProps) {
       />
       <Button
         variant={"contained"}
-        disabled={settings.apiKey.length === 0 || isLoading}
+        disabled={settings.openai_api_key.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

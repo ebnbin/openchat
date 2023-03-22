@@ -41,7 +41,7 @@ export function CreateCompletionPage({ settings }: CreateCompletionProps) {
     setResponseData(undefined)
     setIsLoading(true)
 
-    const response = await api(settings.apiKey)
+    const response = await api(settings.openai_api_key)
       .createCompletion({
         model: model,
         prompt: prompt,
@@ -79,7 +79,7 @@ export function CreateCompletionPage({ settings }: CreateCompletionProps) {
       />
       <Button
         variant={"contained"}
-        disabled={settings.apiKey.length === 0 || isLoading}
+        disabled={settings.openai_api_key.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

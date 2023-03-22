@@ -10,7 +10,7 @@ import {
   ListItemAvatar,
   TextField, useTheme
 } from "@mui/material";
-import {ChatSettings, ChatConversation, Settings, chatModels, defaultModel} from "./data";
+import {Chat, ChatConversation, Settings, chatModels, defaultModel} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
@@ -25,26 +25,26 @@ interface MessageWrapper {
   context: boolean
 }
 
-function chatToMessageWrappers(chatSettings: ChatSettings, chatConversations: ChatConversation[]): MessageWrapper[] {
+function chatToMessageWrappers(chatSettings: Chat, chatConversations: ChatConversation[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  const maxContextTokens = defaultModel.maxTokens * chatSettings.contextThreshold
+  const maxContextTokens = defaultModel.maxTokens * chatSettings.context_threshold
   let usedTokens = 0
-  if (chatSettings.systemMessage !== '') {
-    usedTokens += chatSettings.systemMessage.length * chatSettings.tokensPerChar +
+  if (chatSettings.system_message !== '') {
+    usedTokens += chatSettings.system_message.length * chatSettings.tokens_per_char +
       defaultModel.extraCharsPerMessage
   }
   chatConversations
     .slice()
     .reverse()
     .forEach((conversation) => {
-      const tokens = (conversation.userMessage.length + conversation.assistantMessage.length +
-        2 * defaultModel.extraCharsPerMessage) * chatSettings.tokensPerChar
+      const tokens = (conversation.user_message.length + conversation.assistant_message.length +
+        2 * defaultModel.extraCharsPerMessage) * chatSettings.tokens_per_char
       usedTokens += tokens
       const context = usedTokens <= maxContextTokens
       const assistantMessageWrapper = {
         message: {
           role: ChatCompletionRequestMessageRoleEnum.Assistant,
-          content: conversation.assistantMessage,
+          content: conversation.assistant_message,
         } as ChatCompletionRequestMessage,
         context: context,
       } as MessageWrapper
@@ -52,17 +52,17 @@ function chatToMessageWrappers(chatSettings: ChatSettings, chatConversations: Ch
       const userMessageWrapper = {
         message: {
           role: ChatCompletionRequestMessageRoleEnum.User,
-          content: conversation.userMessage,
+          content: conversation.user_message,
         } as ChatCompletionRequestMessage,
         context: context,
       } as MessageWrapper
       result.unshift(userMessageWrapper)
     })
-  if (chatSettings.systemMessage !== '') {
+  if (chatSettings.system_message !== '') {
     const systemMessageWrapper = {
       message: {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content: chatSettings.systemMessage,
+        content: chatSettings.system_message,
       } as ChatCompletionRequestMessage,
       context: true,
     } as MessageWrapper
@@ -287,8 +287,8 @@ function beforeRequest(
 }
 
 function afterResponse(
-  chatSettings: ChatSettings,
-  setChat: (chat: ChatSettings) => void,
+  chatSettings: Chat,
+  setChat: (chat: Chat) => void,
   chatConversations: ChatConversation[],
   setChatConversations: (chatConversations: ChatConversation[]) => void,
   requestMessages: ChatCompletionRequestMessage[],
@@ -298,9 +298,9 @@ function afterResponse(
   const nextChatConversations = [
     ...chatConversations,
     {
-      timestamp: Math.round(response.created * 1000),
-      userMessage: requestMessages[requestMessages.length - 1].content,
-      assistantMessage: responseMessage,
+      id: `${new Date().getTime()}`,
+      user_message: requestMessages[requestMessages.length - 1].content,
+      assistant_message: responseMessage,
     } as ChatConversation,
   ]
   setChatConversations(nextChatConversations)
@@ -315,16 +315,16 @@ function afterResponse(
   // const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
     ...chatSettings,
-    tokensPerChar: tokensPerChar,
+    tokens_per_char: tokensPerChar,
     tokens: tokens,
-  } as ChatSettings
+  } as Chat
   setChat(nextChat)
 }
 
 interface ChatProps {
   settings: Settings,
   chatId: string
-  setChatSettings: (chat: ChatSettings) => void
+  setChatSettings: (chat: Chat) => void
 }
 
 export function ChatPage(props: ChatProps) {
@@ -357,7 +357,7 @@ export function ChatPage(props: ChatProps) {
     const requestMessages = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
-    const response = await api(settings.apiKey)
+    const response = await api(settings.openai_api_key)
       .createChatCompletion({
         model: defaultModel.model,
         messages: requestMessages,

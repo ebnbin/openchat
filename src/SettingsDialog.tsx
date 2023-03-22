@@ -77,12 +77,12 @@ export function SettingsDialog(props: SettingsDialogProps) {
             fullWidth={true}
             type={'text'}
             placeholder={'API key'}
-            value={settings.apiKey}
+            value={settings.openai_api_key}
             onChange={(event) => {
               setSettings(
                 {
                   ...settings,
-                  apiKey: event.target.value,
+                  openai_api_key: event.target.value,
                 } as Settings
               )
             }}

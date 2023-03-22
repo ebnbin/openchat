@@ -1,21 +1,21 @@
 export interface Settings {
-  apiKey: string
-  chats: ChatSettings[]
+  'openai_api_key': string
+  'chats': Chat[]
 }
 
-export interface ChatSettings {
-  id: string
-  title: string
-  contextThreshold: number
-  systemMessage: string
-  tokensPerChar: number
-  tokens: number
+export interface Chat {
+  'id': string
+  'title': string
+  'context_threshold': number
+  'system_message': string
+  'tokens_per_char': number
+  'tokens': number
 }
 
 export interface ChatConversation {
-  timestamp: number
-  userMessage: string
-  assistantMessage: string
+  'id': string
+  'user_message': string
+  'assistant_message': string
 }
 
 export interface ChatModel {

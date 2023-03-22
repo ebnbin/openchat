@@ -1,4 +1,4 @@
-import {chatModels, ChatSettings, defaultModel, Settings} from "./data";
+import {chatModels, Chat, defaultModel, Settings} from "./data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
@@ -15,7 +15,7 @@ import Box from "@mui/material/Box";
 interface ChatSettingsDialogProps {
   settings: Settings,
   chatId: string,
-  setChatSettings: (chat: ChatSettings) => void
+  setChatSettings: (chat: Chat) => void
   deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
@@ -39,7 +39,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     setChatSettings(
       {
         ...chatSettings,
-        contextThreshold: newValue as number,
+        context_threshold: newValue as number,
       },
     )
   }
@@ -48,7 +48,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     setChatSettings(
       {
         ...chatSettings,
-        systemMessage: event.target.value,
+        system_message: event.target.value,
       },
     )
   }
@@ -114,8 +114,8 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           >
             Conversation histories that can be remembered as context for the next conversation
             <br />
-            Current value: {(chatSettings.contextThreshold * 100).toFixed(0)}% of maximum tokens
-            (about {(defaultModel.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
+            Current value: {(chatSettings.context_threshold * 100).toFixed(0)}% of maximum tokens
+            (about {(defaultModel.maxTokens * chatSettings.context_threshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -128,7 +128,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
               max={0.95}
               step={0.05}
               marks={true}
-              value={chatSettings.contextThreshold}
+              value={chatSettings.context_threshold}
               onChange={handleContextThresholdChange}
             />
           </Box>
@@ -159,7 +159,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             multiline={true}
             maxRows={8}
             placeholder={'You are a helpful assistant.'}
-            value={chatSettings.systemMessage}
+            value={chatSettings.system_message}
             onChange={handleSystemMessageChange}
           />
         </Box>

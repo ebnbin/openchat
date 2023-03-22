@@ -17,7 +17,7 @@ export function ListModels({ settings }: ListModelsProps) {
   const request = async () => {
     setIsLoading(true)
 
-    const response = await api(settings.apiKey)
+    const response = await api(settings.openai_api_key)
       .listModels()
       .catch(() => {
         setIsLoading(false)
@@ -38,7 +38,7 @@ export function ListModels({ settings }: ListModelsProps) {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <Button
         variant={"contained"}
-        disabled={settings.apiKey.length === 0 || isLoading}
+        disabled={settings.openai_api_key.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

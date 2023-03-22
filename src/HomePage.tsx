@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import {useEffect, useState} from "react";
 import {Button, createTheme, Divider, ThemeProvider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
-import {ChatSettings, Settings} from "./data";
+import {Chat, Settings} from "./data";
 import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -27,7 +27,7 @@ export function HomePage() {
 
   const [settings, setSettings] = useState<Settings>(
     {
-      apiKey: '',
+      openai_api_key: '',
       chats: [],
     } as Settings
   )
@@ -50,7 +50,7 @@ export function HomePage() {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
 
-  const setChatSettings = (chat: ChatSettings) => {
+  const setChatSettings = (chat: Chat) => {
     const copyChats = settings.chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
     copyChats[index] = chat
@@ -106,11 +106,11 @@ export function HomePage() {
           {
             id: `${new Date().getTime()}`,
             title: '',
-            contextThreshold: 0.7,
-            systemMessage: '',
-            tokensPerChar: 0,
+            context_threshold: 0.7,
+            system_message: '',
+            tokens_per_char: 0,
             tokens: 0,
-          } as ChatSettings
+          } as Chat
         ]
       } as Settings
     )
@@ -124,7 +124,7 @@ export function HomePage() {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleItemClick = (chat: ChatSettings) => {
+  const handleItemClick = (chat: Chat) => {
     setSelectedChatId(chat.id)
     setMobileOpen(false)
   }
@@ -156,7 +156,7 @@ export function HomePage() {
           overflow: 'auto',
         }}
       >
-        {settings.chats.slice().reverse().map((chatItem: ChatSettings, index) => (
+        {settings.chats.slice().reverse().map((chatItem: Chat, index) => (
           <ListItem
             key={chatItem.id}
             disablePadding={true}
