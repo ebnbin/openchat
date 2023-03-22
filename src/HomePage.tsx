@@ -27,7 +27,7 @@ export function HomePage() {
 
   const [settings, setSettings] = useState<AppData>(
     {
-      version: 1,
+      version: 100, // 0.1.0
       openai_api_key: '',
       chats: [],
     } as AppData
