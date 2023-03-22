@@ -12,7 +12,7 @@ interface MessageContentProps {
   content: string
 }
 
-export function MessageContent({ content }: MessageContentProps) {
+function InternalMessageContent({ content }: MessageContentProps) {
   const theme = useTheme()
   const style: any = theme.palette.mode === 'dark' ? oneDark : oneLight
 
@@ -88,3 +88,5 @@ export function MessageContent({ content }: MessageContentProps) {
     />
   )
 }
+
+export const MessageContent = React.memo(InternalMessageContent);

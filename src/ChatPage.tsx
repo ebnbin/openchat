@@ -171,8 +171,9 @@ function MessageList(props: MessageListProps) {
       {
         validMessageWrappers
           .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
-          .map((messageWrapper) => (
+          .map((messageWrapper, index) => (
               <MessageItem
+                key={index}
                 messageWrapper={messageWrapper}
               />
             )
