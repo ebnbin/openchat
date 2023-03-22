@@ -53,13 +53,23 @@ export function HomePage() {
   const setChatSettings = (chat: Chat) => {
     const copyChats = settings.chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
-    copyChats[index] = chat
-    setSettingsAndStore(
-      {
-        ...settings,
-        chats: copyChats,
-      } as Settings,
-    )
+    if (index === -1) {
+      setSettingsAndStore(
+        {
+          ...settings,
+          chats: [...copyChats, chat],
+        } as Settings,
+      )
+      setSelectedChatId(chat.id)
+    } else {
+      copyChats[index] = chat
+      setSettingsAndStore(
+        {
+          ...settings,
+          chats: copyChats,
+        } as Settings,
+      )
+    }
   }
 
   const deleteChat = (chatId: string) => {
@@ -98,22 +108,6 @@ export function HomePage() {
 
   const handleNewChatClick = () => {
     setSelectedChatId(undefined)
-    setSettingsAndStore(
-      {
-        ...settings,
-        chats: [
-          ...settings.chats,
-          {
-            id: `${new Date().getTime()}`,
-            title: '',
-            context_threshold: 0.7,
-            system_message: '',
-            tokens_per_char: 0,
-            tokens: 0,
-          } as Chat
-        ]
-      } as Settings
-    )
   }
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -311,7 +305,14 @@ export function HomePage() {
                 chatId={selectedChatId}
                 setChatSettings={setChatSettings}
               />
-            ) : <></>}
+            ) : (
+              <ChatPage
+                key={`ChatPage${selectedChatId}`}
+                settings={settings}
+                chatId=''
+                setChatSettings={setChatSettings}
+              />
+            )}
           </Box>
         </Box>
       </Box>

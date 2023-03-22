@@ -290,20 +290,21 @@ function afterResponse(
   chatSettings: Chat,
   setChat: (chat: Chat) => void,
   chatConversations: ChatConversation[],
-  setChatConversations: (chatConversations: ChatConversation[]) => void,
+  setChatConversations: (id: string, chatConversations: ChatConversation[]) => void,
   requestMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
+  const id = `${new Date().getTime()}`
   const responseMessage = response.choices[0].message!!.content
   const nextChatConversations = [
     ...chatConversations,
     {
-      id: `${new Date().getTime()}`,
+      id: id,
       user_message: requestMessages[requestMessages.length - 1].content,
       assistant_message: responseMessage,
     } as ChatConversation,
   ]
-  setChatConversations(nextChatConversations)
+  setChatConversations(chatSettings.id === '' ? id : chatSettings.id, nextChatConversations)
   const responseTotalTokens = response.usage!!.total_tokens
   const charCount = requestMessages
     .map((message) => message.content)
@@ -315,6 +316,7 @@ function afterResponse(
   // const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
     ...chatSettings,
+    id: chatSettings.id === '' ? id : chatSettings.id,
     tokens_per_char: tokensPerChar,
     tokens: tokens,
   } as Chat
@@ -330,11 +332,18 @@ interface ChatProps {
 export function ChatPage(props: ChatProps) {
   const { settings, chatId, setChatSettings } = props
 
-  const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
+  const chatSettings = chatId === '' ? ({
+    id: '',
+    title: '',
+    context_threshold: 0.7,
+    system_message: '',
+    tokens_per_char: 0,
+    tokens: 0,
+  } as Chat) : settings.chats.find((chat) => chat.id === chatId)!!
 
   const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
 
-  const setChatConversationsAndStore = (chatConversations: ChatConversation[]) => {
+  const setChatConversationsAndStore = (chatId: string, chatConversations: ChatConversation[]) => {
     setChatConversations(chatConversations)
     localStorage.setItem(`chatConversation${chatId}`, JSON.stringify(chatConversations))
   }
