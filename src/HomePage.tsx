@@ -106,13 +106,10 @@ export function HomePage() {
           {
             id: `${new Date().getTime()}`,
             title: '',
-            model: 'gpt-3.5-turbo',
             contextThreshold: 0.7,
             systemMessage: '',
             tokensPerChar: 0,
             tokens: 0,
-            conversations: 0,
-            incomplete: false,
           } as ChatSettings
         ]
       } as Settings

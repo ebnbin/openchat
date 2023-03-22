@@ -10,7 +10,7 @@ import {
   ListItemAvatar,
   TextField, useTheme
 } from "@mui/material";
-import {ChatSettings, ChatConversation, Settings, chatModels} from "./data";
+import {ChatSettings, ChatConversation, Settings, chatModels, defaultModel} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
@@ -27,18 +27,18 @@ interface MessageWrapper {
 
 function chatToMessageWrappers(chatSettings: ChatSettings, chatConversations: ChatConversation[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  const maxContextTokens = chatModels.get(chatSettings.model)!!.maxTokens * chatSettings.contextThreshold
+  const maxContextTokens = defaultModel.maxTokens * chatSettings.contextThreshold
   let usedTokens = 0
   if (chatSettings.systemMessage !== '') {
     usedTokens += chatSettings.systemMessage.length * chatSettings.tokensPerChar +
-      chatModels.get(chatSettings.model)!!.extraCharsPerMessage
+      defaultModel.extraCharsPerMessage
   }
   chatConversations
     .slice()
     .reverse()
     .forEach((conversation) => {
       const tokens = (conversation.userMessage.length + conversation.assistantMessage.length +
-        2 * chatModels.get(chatSettings.model)!!.extraCharsPerMessage) * chatSettings.tokensPerChar
+        2 * defaultModel.extraCharsPerMessage) * chatSettings.tokensPerChar
       usedTokens += tokens
       const context = usedTokens <= maxContextTokens
       const assistantMessageWrapper = {
@@ -308,17 +308,15 @@ function afterResponse(
   const charCount = requestMessages
     .map((message) => message.content)
     .concat(responseMessage)
-    .reduce((acc, message) => acc + message.length + chatModels.get(chatSettings.model)!!.extraCharsPerMessage, 0)
+    .reduce((acc, message) => acc + message.length + defaultModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chatSettings.tokens + responseTotalTokens
-  const conversations = chatSettings.conversations + 1
-  const incomplete = response.choices[0].finish_reason === 'length'
+  // const conversations = chatSettings.conversations + 1
+  // const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
     ...chatSettings,
     tokensPerChar: tokensPerChar,
     tokens: tokens,
-    conversations: conversations,
-    incomplete: incomplete,
   } as ChatSettings
   setChat(nextChat)
 }
@@ -361,7 +359,7 @@ export function ChatPage(props: ChatProps) {
 
     const response = await api(settings.apiKey)
       .createChatCompletion({
-        model: chatSettings.model,
+        model: defaultModel.model,
         messages: requestMessages,
       })
       .catch(() => {

@@ -1,4 +1,4 @@
-import {chatModels, ChatSettings, Settings} from "./data";
+import {chatModels, ChatSettings, defaultModel, Settings} from "./data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
@@ -115,7 +115,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             Conversation histories that can be remembered as context for the next conversation
             <br />
             Current value: {(chatSettings.contextThreshold * 100).toFixed(0)}% of maximum tokens
-            (about {(chatModels.get(chatSettings.model)!!.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
+            (about {(defaultModel.maxTokens * chatSettings.contextThreshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -170,11 +170,11 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           }}
         >
           <DialogContentText>
-            Model: {chatSettings.model} ({chatModels.get(chatSettings.model)!!.maxTokens} tokens)
+            Model: {defaultModel.model} ({defaultModel.maxTokens} tokens)
             <br />
             Cumulative tokens used: {chatSettings.tokens}
-            <br />
-            Numbers of conversations: {chatSettings.conversations}
+            {/*<br />*/}
+            {/*Numbers of conversations: {chatSettings.conversations}*/}
           </DialogContentText>
         </Box>
         <Box
