@@ -18,21 +18,23 @@ import {ChatPage} from "./ChatPage";
 import {SettingsDialog} from "./SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
 import {ChatSettingsDialog} from "./ChatSettingsDialog";
+import {useIsDarkMode} from "./util";
 
 const drawerWidth = 300;
 
 export function HomePage() {
+  const isDarkMode = useIsDarkMode()
+
   const [settings, setSettings] = useState<Settings>(
     {
       apiKey: '',
-      isDarkMode: false,
       chats: [],
     } as Settings
   )
 
   const theme = createTheme({
     palette: {
-      mode: settings.isDarkMode ? 'dark' : 'light',
+      mode: isDarkMode ? 'dark' : 'light',
     },
   })
 

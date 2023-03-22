@@ -25,7 +25,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
     setSettings(
       {
         ...settings,
-        isDarkMode: event.target.checked,
+        // isDarkMode: event.target.checked,
       } as Settings
     )
   }
@@ -88,23 +88,23 @@ export function SettingsDialog(props: SettingsDialogProps) {
             }}
           />
         </Box>
-        <Box
-          sx={{
-            paddingX: '24px',
-            paddingY: '16px',
-          }}
-        >
-          <Typography
-            variant={'subtitle1'}
-            gutterBottom={true}
-          >
-            Dark mode
-          </Typography>
-          <Switch
-            checked={settings.isDarkMode}
-            onChange={handleIsDarkModeChange}
-          />
-        </Box>
+        {/*<Box*/}
+        {/*  sx={{*/}
+        {/*    paddingX: '24px',*/}
+        {/*    paddingY: '16px',*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <Typography*/}
+        {/*    variant={'subtitle1'}*/}
+        {/*    gutterBottom={true}*/}
+        {/*  >*/}
+        {/*    Dark mode*/}
+        {/*  </Typography>*/}
+        {/*  <Switch*/}
+        {/*    checked={settings.isDarkMode}*/}
+        {/*    onChange={handleIsDarkModeChange}*/}
+        {/*  />*/}
+        {/*</Box>*/}
       </DialogContent>
       <DialogActions>
         <Button
