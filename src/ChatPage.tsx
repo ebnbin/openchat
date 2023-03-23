@@ -38,9 +38,14 @@ function chatToMessageWrappers(chatSettings: Chat, chatMessages: ChatMessage[]):
     .slice()
     .reverse()
     .forEach((chatMessage) => {
-      const tokens = (chatMessage.content.length + defaultModel.extraCharsPerMessage) * chatSettings.tokens_per_char
-      usedTokens += tokens
-      const context = usedTokens <= maxContextTokens
+      let context: boolean
+      if (usedTokens > maxContextTokens) {
+        context = false
+      } else {
+        const tokens = (chatMessage.content.length + defaultModel.extraCharsPerMessage) * chatSettings.tokens_per_char
+        usedTokens += tokens
+        context = usedTokens <= maxContextTokens
+      }
       const messageWrapper = {
         id: chatMessage.id,
         message: {
