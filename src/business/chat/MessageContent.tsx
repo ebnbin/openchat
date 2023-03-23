@@ -89,4 +89,5 @@ function InternalMessageContent({ content }: MessageContentProps) {
   )
 }
 
-export const MessageContent = React.memo(InternalMessageContent);
+const MessageContent = React.memo(InternalMessageContent);
+export default MessageContent;

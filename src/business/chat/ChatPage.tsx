@@ -1,27 +1,20 @@
-import React, {ChangeEvent, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum
 } from "openai";
 import Box from "@mui/material/Box";
-import {
-  Avatar, Card, CircularProgress, IconButton, List,
-  ListItem,
-  ListItemAvatar,
-  TextField, useTheme
-} from "@mui/material";
 import {Chat, AppData, defaultModel, ChatMessage} from "../../data/data";
 import {CreateChatCompletionResponse} from "openai/api";
-import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "../../util/util";
-import {MessageContent} from "./MessageContent";
-import {AxiosError} from "axios";
+import MessageList from "./MessageList";
+import InputCard from "./InputCard";
 
-const contentWidth = 900
+export const contentWidth = 900
 
 //*********************************************************************************************************************
 
-interface MessageWrapper {
+export interface MessageWrapper {
   id: string
   message: ChatCompletionRequestMessage
   context: boolean
@@ -69,201 +62,6 @@ function chatToMessageWrappers(chatSettings: Chat, chatMessages: ChatMessage[]):
     result.unshift(systemMessageWrapper)
   }
   return result
-}
-
-//*********************************************************************************************************************
-
-interface MessageItemProps {
-  messageWrapper: MessageWrapper
-}
-
-function MessageItem(props: MessageItemProps) {
-  const { messageWrapper } = props
-
-  const theme = useTheme()
-
-  function itemColor(): string | undefined {
-    return messageWrapper.message.role === ChatCompletionRequestMessageRoleEnum.Assistant
-      ? theme.palette.action.hover
-      : undefined
-  }
-
-  function avatarColor(): string | undefined {
-    if (messageWrapper.context) {
-      switch (messageWrapper.message.role) {
-        case ChatCompletionRequestMessageRoleEnum.User:
-          return 'primary.main'
-        case ChatCompletionRequestMessageRoleEnum.Assistant:
-          return 'secondary.main'
-      }
-    }
-    return undefined
-  }
-
-  function avatarIcon(): JSX.Element | undefined {
-    switch (messageWrapper.message.role) {
-      case ChatCompletionRequestMessageRoleEnum.User:
-        return <FaceRounded />
-      case ChatCompletionRequestMessageRoleEnum.Assistant:
-        return <PsychologyAltRounded />
-    }
-    return undefined
-  }
-
-  return (
-    <Box
-      sx={{
-        bgcolor: itemColor(),
-      }}
-    >
-      <ListItem
-        sx={{
-          maxWidth: contentWidth,
-          margin: '0 auto',
-          alignItems: 'flex-start',
-        }}
-      >
-        <ListItemAvatar
-          sx={{
-            display: 'flex',
-            height: '56px',
-            flexShrink: 0,
-            placeItems: 'center',
-          }}
-        >
-          <Avatar
-            sx={{
-              bgcolor: avatarColor()
-            }}
-          >
-            {avatarIcon()}
-          </Avatar>
-        </ListItemAvatar>
-        <Box
-          sx={{
-            flexGrow: 1,
-            width: '0px',
-          }}
-        >
-          <MessageContent
-            content={messageWrapper.message.content}
-          />
-        </Box>
-      </ListItem>
-    </Box>
-  )
-}
-
-//*********************************************************************************************************************
-
-interface MessageListProps {
-  messageWrappers: MessageWrapper[]
-  requestingMessage?: MessageWrapper
-  isLoading: boolean
-}
-
-function MessageList(props: MessageListProps) {
-  const { messageWrappers, requestingMessage, isLoading } = props
-
-  const validMessageWrappers = requestingMessage ? [...messageWrappers, requestingMessage] : messageWrappers
-  return (
-    <List>
-      {
-        validMessageWrappers
-          .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
-          .map((messageWrapper) => (
-              <MessageItem
-                key={messageWrapper.id}
-                messageWrapper={messageWrapper}
-              />
-            )
-          )
-      }
-      { isLoading ? (
-        <ListItem
-          sx={{
-            justifyContent: 'center',
-          }}
-        >
-          <CircularProgress />
-        </ListItem>
-      ) : undefined }
-    </List>
-  )
-}
-
-//*********************************************************************************************************************
-
-interface InputCardProps {
-  input: string
-  setInput: (input: string) => void
-  isRequesting: boolean
-  request: () => void
-}
-
-function InputCard(props: InputCardProps) {
-  const { input, setInput, isRequesting, request } = props
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value)
-  }
-
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault()
-      if (input !== '') {
-        request()
-      }
-    }
-  }
-
-  return (
-    <Card
-      elevation={8}
-      sx={{
-        width: '100%',
-        padding: '16px',
-        paddingTop: '8px',
-        borderRadius: 0,
-        borderTopLeftRadius: '16px',
-        borderTopRightRadius: '16px',
-      }}
-    >
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-end',
-        }}
-      >
-        <TextField
-          variant={'standard'}
-          fullWidth={true}
-          multiline={true}
-          maxRows={8}
-          label={'Message'}
-          placeholder={'Hello, who are you?'}
-          value={input}
-          autoFocus={true}
-          onChange={handleInputChange}
-          onKeyDown={handleInputKeyDown}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          sx={{
-            flexGrow: 1,
-          }}
-        />
-        <IconButton
-          disabled={input === '' || isRequesting}
-          onClick={request}
-        >
-          <SendRounded />
-        </IconButton>
-      </Box>
-    </Card>
-  )
 }
 
 //*********************************************************************************************************************
@@ -351,7 +149,7 @@ interface ChatProps {
   setChatSettings: (chat: Chat) => void
 }
 
-export function ChatPage(props: ChatProps) {
+export default function ChatPage(props: ChatProps) {
   const { settings, chatId, setChatSettings } = props
 
   const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
@@ -392,7 +190,7 @@ export function ChatPage(props: ChatProps) {
           response.data)
         setIsLoading(false)
       })
-      .catch((error: AxiosError) => {
+      .catch(() => {
         setRequestingMessage(undefined)
         afterResponseError(chatMessages, setChatMessagesAndStore, requestMessageWrappers)
         setIsLoading(false)

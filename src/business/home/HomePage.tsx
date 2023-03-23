@@ -14,11 +14,11 @@ import {useEffect, useState} from "react";
 import {Button, createTheme, Divider, ThemeProvider, useMediaQuery} from "@mui/material";
 import {EditRounded, MenuRounded, SettingsRounded} from "@mui/icons-material";
 import {Chat, AppData} from "../../data/data";
-import {ChatPage} from "../chat/ChatPage";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import {useIsDarkMode} from "../../util/util";
+import ChatPage from "../chat/ChatPage";
 
 const drawerWidth = 300;
 
