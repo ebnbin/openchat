@@ -3,7 +3,8 @@ import HomeDrawerContent from "./HomeDrawerContent";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {AppData} from "../../data/data";
-import {drawerWidth} from "./HomePage";
+
+const drawerWidth = 300;
 
 interface HomeDrawerProps {
   appData: AppData,

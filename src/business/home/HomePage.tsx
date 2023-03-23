@@ -1,63 +1,39 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import {useEffect, useState} from "react";
-import {createTheme, ThemeProvider} from "@mui/material";
-import {Chat, AppData} from "../../data/data";
-import {SettingsDialog} from "../settings/SettingsDialog";
-import CssBaseline from "@mui/material/CssBaseline";
-import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
-import {useIsDarkMode} from "../../util/util";
-import ChatPage from "../chat/ChatPage";
+import Box from "@mui/material/Box";
 import HomeDrawer from "./HomeDrawer";
 import HomeAppBar from "./HomeAppBar";
+import ChatPage from "../chat/ChatPage";
+import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
+import * as React from "react";
+import {AppData, Chat} from "../../data/data";
+import {useState} from "react";
 
-export const drawerWidth = 300;
+interface HomePageProps {
+  appData: AppData
+  setAppData: (appData: AppData) => void
+  setSettingsOpen: (settingsOpen: boolean) => void
+}
 
-export function HomePage() {
-  const isDarkMode = useIsDarkMode()
+export default function HomePage(props: HomePageProps) {
+  const { appData, setAppData, setSettingsOpen } = props
 
-  const [settings, setSettings] = useState<AppData>(
-    {
-      version: 100, // 0.1.0
-      openai_api_key: '',
-      chats: [],
-    } as AppData
-  )
-
-  const theme = createTheme({
-    palette: {
-      mode: isDarkMode ? 'dark' : 'light',
-    },
-  })
-
-  useEffect(() => {
-    const storedSettings = localStorage.getItem('app_data')
-    if (storedSettings) {
-      setSettings(JSON.parse(storedSettings))
-    }
-  }, [])
-
-  const setSettingsAndStore = (settings: AppData) => {
-    setSettings(settings)
-    localStorage.setItem('app_data', JSON.stringify(settings))
-  }
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const setChatSettings = (chat: Chat) => {
-    const copyChats = settings.chats.slice()
+    const copyChats = appData.chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
     if (index === -1) {
-      setSettingsAndStore(
+      setAppData(
         {
-          ...settings,
+          ...appData,
           chats: [...copyChats, chat],
         } as AppData,
       )
       setSelectedChatId(chat.id)
     } else {
       copyChats[index] = chat
-      setSettingsAndStore(
+      setAppData(
         {
-          ...settings,
+          ...appData,
           chats: copyChats,
         } as AppData,
       )
@@ -66,17 +42,19 @@ export function HomePage() {
 
   const deleteChat = (chatId: string) => {
     setSelectedChatId('')
-    const copyChats = settings.chats.slice()
+    const copyChats = appData.chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chatId)
     copyChats.splice(index, 1)
-    setSettingsAndStore(
+    setAppData(
       {
-        ...settings,
+        ...appData,
         chats: copyChats,
       } as AppData,
     )
     localStorage.removeItem(`chat_${chatId}`)
   }
+
+  const [selectedChatId, setSelectedChatId] = useState<string>('');
 
   const [open, setOpen] = React.useState(false);
 
@@ -88,20 +66,8 @@ export function HomePage() {
     setOpen(false);
   };
 
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-
-  const handleSettingsClose = () => {
-    setSettingsOpen(false);
-  };
-
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const [selectedChatId, setSelectedChatId] = useState<string>('');
-
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <>
       <Box
         sx={{
           width: '100%',
@@ -111,8 +77,8 @@ export function HomePage() {
         }}
       >
         <HomeDrawer
-          appData={settings}
-          setAppData={setSettings}
+          appData={appData}
+          setAppData={setAppData}
           selectedChatId={selectedChatId}
           setSelectedChatId={setSelectedChatId}
           handleClickOpen={handleClickOpen}
@@ -128,7 +94,7 @@ export function HomePage() {
           }}
         >
           <HomeAppBar
-            appData={settings}
+            appData={appData}
             selectedChatId={selectedChatId}
             handleClickOpen={handleClickOpen}
             setMobileOpen={setMobileOpen}
@@ -143,7 +109,7 @@ export function HomePage() {
             {selectedChatId !== '' ? (
               <ChatPage
                 key={`ChatPage${selectedChatId}`}
-                settings={settings}
+                settings={appData}
                 chatId={selectedChatId}
                 setChatSettings={setChatSettings}
               />
@@ -155,7 +121,7 @@ export function HomePage() {
       </Box>
       {selectedChatId !== '' ? (
         <ChatSettingsDialog
-          settings={settings}
+          settings={appData}
           chatId={selectedChatId}
           setChatSettings={setChatSettings}
           deleteChat={deleteChat}
@@ -163,12 +129,6 @@ export function HomePage() {
           handleClose={handleClose}
         />
       ) : <></>}
-      <SettingsDialog
-        settings={settings}
-        setSettings={setSettingsAndStore}
-        open={settingsOpen}
-        handleClose={handleSettingsClose}
-      />
-    </ThemeProvider>
-  );
+    </>
+  )
 }

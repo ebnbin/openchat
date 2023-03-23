@@ -1,8 +1,8 @@
 import React from 'react';
-import {HomePage} from "./business/home/HomePage";
+import AppPage from "./business/app/AppPage";
 
 export default function App() {
   return (
-    <HomePage/>
+    <AppPage/>
   )
 }
