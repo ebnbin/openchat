@@ -4,13 +4,13 @@ import {FaceRounded, PsychologyAltRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React from "react";
 import {contentWidth, MessageWrapper} from "./ChatPage";
-import MessageContent from "./MessageContent";
+import ChatMessageContent from "./ChatMessageContent";
 
 interface MessageItemProps {
   messageWrapper: MessageWrapper
 }
 
-export default function MessageItem(props: MessageItemProps) {
+export default function ChatMessageItem(props: MessageItemProps) {
   const { messageWrapper } = props
 
   const theme = useTheme()
@@ -78,7 +78,7 @@ export default function MessageItem(props: MessageItemProps) {
             width: '0px',
           }}
         >
-          <MessageContent
+          <ChatMessageContent
             content={messageWrapper.message.content}
           />
         </Box>

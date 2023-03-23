@@ -10,7 +10,7 @@ interface InputCardProps {
   request: () => void
 }
 
-export default function InputCard(props: InputCardProps) {
+export default function ChatInputCard(props: InputCardProps) {
   const { input, setInput, isRequesting, request } = props
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {

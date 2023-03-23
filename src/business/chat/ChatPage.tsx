@@ -7,8 +7,8 @@ import Box from "@mui/material/Box";
 import {Chat, AppData, defaultModel, ChatMessage} from "../../data/data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {api} from "../../util/util";
-import MessageList from "./MessageList";
-import InputCard from "./InputCard";
+import ChatMessageList from "./ChatMessageList";
+import ChatInputCard from "./ChatInputCard";
 
 export const contentWidth = 900
 
@@ -216,7 +216,7 @@ export default function ChatPage(props: ChatProps) {
           overflow: 'auto',
         }}
       >
-        <MessageList
+        <ChatMessageList
           messageWrappers={messageWrappers}
           requestingMessage={requestingMessage}
           isLoading={isLoading}
@@ -236,7 +236,7 @@ export default function ChatPage(props: ChatProps) {
             margin: '0 auto',
           }}
         >
-          <InputCard
+          <ChatInputCard
             input={input}
             setInput={setInput}
             isRequesting={isLoading}
