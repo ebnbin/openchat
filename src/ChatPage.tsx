@@ -10,11 +10,12 @@ import {
   ListItemAvatar,
   TextField, useTheme
 } from "@mui/material";
-import {Chat, AppData, chatModels, defaultModel, ChatMessage} from "./data";
+import {Chat, AppData, defaultModel, ChatMessage} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
 import {MessageContent} from "./MessageContent";
+import {AxiosError} from "axios";
 
 const contentWidth = 900
 
@@ -289,7 +290,7 @@ function afterResponse(
   chatSettings: Chat,
   setChat: (chat: Chat) => void,
   chatMessages: ChatMessage[],
-  setChatMessages: (id: string, chatMessages: ChatMessage[]) => void,
+  setChatMessages: (chatMessages: ChatMessage[]) => void,
   requestMessageWrappers: MessageWrapper[],
   response: CreateChatCompletionResponse,
 ) {
@@ -309,7 +310,7 @@ function afterResponse(
       content: responseMessage.content,
     } as ChatMessage,
   ]
-  setChatMessages(chatSettings.id === '' ? id : chatSettings.id, nextChatMessages)
+  setChatMessages(nextChatMessages)
   const responseTotalTokens = response.usage!!.total_tokens
   const charCount = requestMessageWrappers
     .map((messageWrapper) => messageWrapper.message.content)
@@ -321,11 +322,27 @@ function afterResponse(
   // const incomplete = response.choices[0].finish_reason === 'length'
   const nextChat = {
     ...chatSettings,
-    id: chatSettings.id === '' ? id : chatSettings.id,
     tokens_per_char: tokensPerChar,
     tokens: tokens,
   } as Chat
   setChat(nextChat)
+}
+
+function afterResponseError(
+  chatMessages: ChatMessage[],
+  setChatMessages: (chatMessages: ChatMessage[]) => void,
+  requestMessageWrappers: MessageWrapper[],
+) {
+  const requestMessageWrapper = requestMessageWrappers[requestMessageWrappers.length - 1]
+  const nextChatMessages = [
+    ...chatMessages,
+    {
+      id: requestMessageWrapper.id,
+      role: requestMessageWrapper.message.role,
+      content: requestMessageWrapper.message.content,
+    } as ChatMessage,
+  ]
+  setChatMessages(nextChatMessages)
 }
 
 interface ChatProps {
@@ -337,18 +354,11 @@ interface ChatProps {
 export function ChatPage(props: ChatProps) {
   const { settings, chatId, setChatSettings } = props
 
-  const chatSettings = chatId === '' ? ({
-    id: '',
-    title: '',
-    context_threshold: 0.7,
-    system_message: '',
-    tokens_per_char: 0,
-    tokens: 0,
-  } as Chat) : settings.chats.find((chat) => chat.id === chatId)!!
+  const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
-  const setChatMessagesAndStore = (chatId: string, chatMessages: ChatMessage[]) => {
+  const setChatMessagesAndStore = (chatMessages: ChatMessage[]) => {
     setChatMessages(chatMessages)
     localStorage.setItem(`chat_${chatId}`, JSON.stringify(chatMessages))
   }
@@ -366,25 +376,27 @@ export function ChatPage(props: ChatProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [requestingMessage, setRequestingMessage] = useState<MessageWrapper>()
 
-  const request = async () => {
+  const request = () => {
     setIsLoading(true)
     const requestMessageWrappers = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
-    const response = await api(settings.openai_api_key)
+    api(settings.openai_api_key)
       .createChatCompletion({
         model: defaultModel.model,
         messages: requestMessageWrappers.map((messageWrapper) => messageWrapper.message),
       })
-      .catch(() => {
+      .then(response => {
         setRequestingMessage(undefined)
+        afterResponse(chatSettings, setChatSettings, chatMessages, setChatMessagesAndStore, requestMessageWrappers,
+          response.data)
         setIsLoading(false)
       })
-
-    setRequestingMessage(undefined)
-    afterResponse(chatSettings, setChatSettings, chatMessages, setChatMessagesAndStore, requestMessageWrappers,
-      response!!.data)
-    setIsLoading(false)
+      .catch((error: AxiosError) => {
+        setRequestingMessage(undefined)
+        afterResponseError(chatMessages, setChatMessagesAndStore, requestMessageWrappers)
+        setIsLoading(false)
+      })
   }
 
   return (
