@@ -2,8 +2,8 @@ import React, {useState} from "react";
 import {Model} from "openai";
 import {Button} from "@mui/material";
 import {JsonLog} from "./JsonLog";
-import {AppData} from "./data";
-import {api} from "./util";
+import {AppData} from "../data/data";
+import {api} from "../util/util";
 
 interface ListModelsProps {
   settings: AppData;

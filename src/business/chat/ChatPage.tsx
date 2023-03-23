@@ -10,10 +10,10 @@ import {
   ListItemAvatar,
   TextField, useTheme
 } from "@mui/material";
-import {Chat, AppData, defaultModel, ChatMessage} from "./data";
+import {Chat, AppData, defaultModel, ChatMessage} from "../../data/data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
-import {api} from "./util";
+import {api} from "../../util/util";
 import {MessageContent} from "./MessageContent";
 import {AxiosError} from "axios";
 

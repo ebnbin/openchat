@@ -9,7 +9,7 @@ import {
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import {AppData} from "./data";
+import {AppData} from "../../data/data";
 
 interface SettingsDialogProps {
   settings: AppData,

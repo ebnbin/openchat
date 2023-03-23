@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {Box, Chip, Typography, useTheme} from "@mui/material";
-import {copy} from "./util";
+import {copy} from "../../util/util";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import 'katex/dist/katex.min.css'

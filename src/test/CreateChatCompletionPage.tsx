@@ -6,8 +6,8 @@ import {
 } from "openai";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {JsonLog} from "./JsonLog";
-import {AppData} from "./data";
-import {api} from "./util";
+import {AppData} from "../data/data";
+import {api} from "../util/util";
 
 interface CreateCompletionProps {
   settings: AppData;
