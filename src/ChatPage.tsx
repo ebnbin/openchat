@@ -10,7 +10,7 @@ import {
   ListItemAvatar,
   TextField, useTheme
 } from "@mui/material";
-import {Chat, ChatConversation, AppData, chatModels, defaultModel} from "./data";
+import {Chat, AppData, chatModels, defaultModel, ChatMessage} from "./data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {FaceRounded, PsychologyAltRounded, SendRounded} from "@mui/icons-material";
 import {api} from "./util";
@@ -21,11 +21,12 @@ const contentWidth = 900
 //*********************************************************************************************************************
 
 interface MessageWrapper {
+  id: string
   message: ChatCompletionRequestMessage
   context: boolean
 }
 
-function chatToMessageWrappers(chatSettings: Chat, chatConversations: ChatConversation[]): MessageWrapper[] {
+function chatToMessageWrappers(chatSettings: Chat, chatMessages: ChatMessage[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
   const maxContextTokens = defaultModel.maxTokens * chatSettings.context_threshold
   let usedTokens = 0
@@ -33,33 +34,26 @@ function chatToMessageWrappers(chatSettings: Chat, chatConversations: ChatConver
     usedTokens += chatSettings.system_message.length * chatSettings.tokens_per_char +
       defaultModel.extraCharsPerMessage
   }
-  chatConversations
+  chatMessages
     .slice()
     .reverse()
-    .forEach((conversation) => {
-      const tokens = (conversation.user_message.length + conversation.assistant_message.length +
-        2 * defaultModel.extraCharsPerMessage) * chatSettings.tokens_per_char
+    .forEach((chatMessage) => {
+      const tokens = (chatMessage.content.length + defaultModel.extraCharsPerMessage) * chatSettings.tokens_per_char
       usedTokens += tokens
       const context = usedTokens <= maxContextTokens
-      const assistantMessageWrapper = {
+      const messageWrapper = {
+        id: chatMessage.id,
         message: {
-          role: ChatCompletionRequestMessageRoleEnum.Assistant,
-          content: conversation.assistant_message,
+          role: chatMessage.role,
+          content: chatMessage.content,
         } as ChatCompletionRequestMessage,
         context: context,
       } as MessageWrapper
-      result.unshift(assistantMessageWrapper)
-      const userMessageWrapper = {
-        message: {
-          role: ChatCompletionRequestMessageRoleEnum.User,
-          content: conversation.user_message,
-        } as ChatCompletionRequestMessage,
-        context: context,
-      } as MessageWrapper
-      result.unshift(userMessageWrapper)
+      result.unshift(messageWrapper)
     })
   if (chatSettings.system_message !== '') {
     const systemMessageWrapper = {
+      id: chatSettings.id,
       message: {
         role: ChatCompletionRequestMessageRoleEnum.System,
         content: chatSettings.system_message,
@@ -171,9 +165,9 @@ function MessageList(props: MessageListProps) {
       {
         validMessageWrappers
           .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
-          .map((messageWrapper, index) => (
+          .map((messageWrapper) => (
               <MessageItem
-                key={index}
+                key={messageWrapper.id}
                 messageWrapper={messageWrapper}
               />
             )
@@ -272,8 +266,9 @@ function beforeRequest(
   messageWrappers: MessageWrapper[],
   input: string,
   setRequestingMessage: (messageWrapper: MessageWrapper) => void,
-): ChatCompletionRequestMessage[] {
+): MessageWrapper[] {
   const requestingMessage = {
+    id: `${new Date().getTime()}`,
     message: {
       content: input,
       role: ChatCompletionRequestMessageRoleEnum.User,
@@ -283,32 +278,37 @@ function beforeRequest(
   setRequestingMessage(requestingMessage)
   return [...messageWrappers, requestingMessage]
     .filter((message) => message.context)
-    .map((message) => message.message)
 }
 
 function afterResponse(
   chatSettings: Chat,
   setChat: (chat: Chat) => void,
-  chatConversations: ChatConversation[],
-  setChatConversations: (id: string, chatConversations: ChatConversation[]) => void,
-  requestMessages: ChatCompletionRequestMessage[],
+  chatMessages: ChatMessage[],
+  setChatMessages: (id: string, chatMessages: ChatMessage[]) => void,
+  requestMessageWrappers: MessageWrapper[],
   response: CreateChatCompletionResponse,
 ) {
   const id = `${new Date().getTime()}`
-  const responseMessage = response.choices[0].message!!.content
-  const nextChatConversations = [
-    ...chatConversations,
+  const responseMessage = response.choices[0].message!!
+  const requestMessageWrapper = requestMessageWrappers[requestMessageWrappers.length - 1]
+  const nextChatMessages = [
+    ...chatMessages,
+    {
+      id: requestMessageWrapper.id,
+      role: requestMessageWrapper.message.role,
+      content: requestMessageWrapper.message.content,
+    } as ChatMessage,
     {
       id: id,
-      user_message: requestMessages[requestMessages.length - 1].content,
-      assistant_message: responseMessage,
-    } as ChatConversation,
+      role: responseMessage.role,
+      content: responseMessage.content,
+    } as ChatMessage,
   ]
-  setChatConversations(chatSettings.id === '' ? id : chatSettings.id, nextChatConversations)
+  setChatMessages(chatSettings.id === '' ? id : chatSettings.id, nextChatMessages)
   const responseTotalTokens = response.usage!!.total_tokens
-  const charCount = requestMessages
-    .map((message) => message.content)
-    .concat(responseMessage)
+  const charCount = requestMessageWrappers
+    .map((messageWrapper) => messageWrapper.message.content)
+    .concat(responseMessage.content)
     .reduce((acc, message) => acc + message.length + defaultModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chatSettings.tokens + responseTotalTokens
@@ -341,21 +341,21 @@ export function ChatPage(props: ChatProps) {
     tokens: 0,
   } as Chat) : settings.chats.find((chat) => chat.id === chatId)!!
 
-  const [chatConversations, setChatConversations] = useState<ChatConversation[]>([])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
-  const setChatConversationsAndStore = (chatId: string, chatConversations: ChatConversation[]) => {
-    setChatConversations(chatConversations)
-    localStorage.setItem(`chat_${chatId}`, JSON.stringify(chatConversations))
+  const setChatMessagesAndStore = (chatId: string, chatMessages: ChatMessage[]) => {
+    setChatMessages(chatMessages)
+    localStorage.setItem(`chat_${chatId}`, JSON.stringify(chatMessages))
   }
 
   useEffect(() => {
-    const storedChatConversations = localStorage.getItem(`chat_${chatId}`)
-    if (storedChatConversations) {
-      setChatConversations(JSON.parse(storedChatConversations))
+    const storedChatMessages = localStorage.getItem(`chat_${chatId}`)
+    if (storedChatMessages) {
+      setChatMessages(JSON.parse(storedChatMessages))
     }
   }, [chatId])
 
-  const messageWrappers = chatToMessageWrappers(chatSettings, chatConversations)
+  const messageWrappers = chatToMessageWrappers(chatSettings, chatMessages)
 
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -363,13 +363,13 @@ export function ChatPage(props: ChatProps) {
 
   const request = async () => {
     setIsLoading(true)
-    const requestMessages = beforeRequest(messageWrappers, input, setRequestingMessage)
+    const requestMessageWrappers = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
     const response = await api(settings.openai_api_key)
       .createChatCompletion({
         model: defaultModel.model,
-        messages: requestMessages,
+        messages: requestMessageWrappers.map((messageWrapper) => messageWrapper.message),
       })
       .catch(() => {
         setRequestingMessage(undefined)
@@ -377,7 +377,7 @@ export function ChatPage(props: ChatProps) {
       })
 
     setRequestingMessage(undefined)
-    afterResponse(chatSettings, setChatSettings, chatConversations, setChatConversationsAndStore, requestMessages,
+    afterResponse(chatSettings, setChatSettings, chatMessages, setChatMessagesAndStore, requestMessageWrappers,
       response!!.data)
     setIsLoading(false)
   }

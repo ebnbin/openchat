@@ -13,10 +13,10 @@ export interface Chat {
   'tokens': number
 }
 
-export interface ChatConversation {
+export interface ChatMessage {
   'id': string
-  'user_message': string
-  'assistant_message': string
+  'role': string
+  'content': string
 }
 
 export interface ChatModel {
