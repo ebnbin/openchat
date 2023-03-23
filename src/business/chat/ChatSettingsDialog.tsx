@@ -1,4 +1,4 @@
-import {Chat, defaultModel, AppData} from "../../data/data";
+import {Chat, defaultModel} from "../../data/data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
@@ -13,48 +13,45 @@ import {
 import Box from "@mui/material/Box";
 
 interface ChatSettingsDialogProps {
-  settings: AppData,
-  chatId: string,
-  setChatSettings: (chat: Chat) => void
+  chat: Chat,
+  setChat: (chat: Chat) => void
   deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
 }
 
 export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
-  const { settings, chatId, setChatSettings, deleteChat, open, handleClose } = props
-
-  const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
+  const { chat, setChat, deleteChat, open, handleClose } = props
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChatSettings(
+    setChat(
       {
-        ...chatSettings,
+        ...chat,
         title: event.target.value,
       },
     )
   }
 
   const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
-    setChatSettings(
+    setChat(
       {
-        ...chatSettings,
+        ...chat,
         context_threshold: newValue as number,
       },
     )
   }
 
   const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChatSettings(
+    setChat(
       {
-        ...chatSettings,
+        ...chat,
         system_message: event.target.value,
       },
     )
   }
 
   const handleDeleteClick = () => {
-    deleteChat(chatSettings.id)
+    deleteChat(chat.id)
     handleClose()
   }
 
@@ -91,7 +88,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             fullWidth={true}
             type={'text'}
             placeholder={'New chat'}
-            value={chatSettings.title}
+            value={chat.title}
             onChange={handleTitleChange}
           />
         </Box>
@@ -114,8 +111,8 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           >
             Conversation histories that can be remembered as context for the next conversation
             <br />
-            Current value: {(chatSettings.context_threshold * 100).toFixed(0)}% of maximum tokens
-            (about {(defaultModel.maxTokens * chatSettings.context_threshold / 4 * 3).toFixed(0)} words)
+            Current value: {(chat.context_threshold * 100).toFixed(0)}% of maximum tokens
+            (about {(defaultModel.maxTokens * chat.context_threshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -128,7 +125,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
               max={0.95}
               step={0.05}
               marks={true}
-              value={chatSettings.context_threshold}
+              value={chat.context_threshold}
               onChange={handleContextThresholdChange}
             />
           </Box>
@@ -159,7 +156,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             multiline={true}
             maxRows={8}
             placeholder={'You are a helpful assistant.'}
-            value={chatSettings.system_message}
+            value={chat.system_message}
             onChange={handleSystemMessageChange}
           />
         </Box>
@@ -172,9 +169,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           <DialogContentText>
             Model: {defaultModel.model} ({defaultModel.maxTokens} tokens)
             <br />
-            Cumulative tokens used: {chatSettings.tokens}
-            {/*<br />*/}
-            {/*Numbers of conversations: {chatSettings.conversations}*/}
+            Cumulative tokens used: {chat.tokens}
           </DialogContentText>
         </Box>
         <Box

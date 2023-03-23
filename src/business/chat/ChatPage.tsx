@@ -20,12 +20,12 @@ export interface MessageWrapper {
   context: boolean
 }
 
-function chatToMessageWrappers(chatSettings: Chat, chatMessages: ChatMessage[]): MessageWrapper[] {
+function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  const maxContextTokens = defaultModel.maxTokens * chatSettings.context_threshold
+  const maxContextTokens = defaultModel.maxTokens * chat.context_threshold
   let usedTokens = 0
-  if (chatSettings.system_message !== '') {
-    usedTokens += chatSettings.system_message.length * chatSettings.tokens_per_char +
+  if (chat.system_message !== '') {
+    usedTokens += chat.system_message.length * chat.tokens_per_char +
       defaultModel.extraCharsPerMessage
   }
   chatMessages
@@ -36,7 +36,7 @@ function chatToMessageWrappers(chatSettings: Chat, chatMessages: ChatMessage[]):
       if (usedTokens > maxContextTokens) {
         context = false
       } else {
-        const tokens = (chatMessage.content.length + defaultModel.extraCharsPerMessage) * chatSettings.tokens_per_char
+        const tokens = (chatMessage.content.length + defaultModel.extraCharsPerMessage) * chat.tokens_per_char
         usedTokens += tokens
         context = usedTokens <= maxContextTokens
       }
@@ -50,12 +50,12 @@ function chatToMessageWrappers(chatSettings: Chat, chatMessages: ChatMessage[]):
       } as MessageWrapper
       result.unshift(messageWrapper)
     })
-  if (chatSettings.system_message !== '') {
+  if (chat.system_message !== '') {
     const systemMessageWrapper = {
-      id: chatSettings.id,
+      id: chat.id,
       message: {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content: chatSettings.system_message,
+        content: chat.system_message,
       } as ChatCompletionRequestMessage,
       context: true,
     } as MessageWrapper
@@ -85,7 +85,7 @@ function beforeRequest(
 }
 
 function afterResponse(
-  chatSettings: Chat,
+  chat: Chat,
   setChat: (chat: Chat) => void,
   chatMessages: ChatMessage[],
   setChatMessages: (chatMessages: ChatMessage[]) => void,
@@ -115,11 +115,9 @@ function afterResponse(
     .concat(responseMessage.content)
     .reduce((acc, message) => acc + message.length + defaultModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
-  const tokens = chatSettings.tokens + responseTotalTokens
-  // const conversations = chatSettings.conversations + 1
-  // const incomplete = response.choices[0].finish_reason === 'length'
+  const tokens = chat.tokens + responseTotalTokens
   const nextChat = {
-    ...chatSettings,
+    ...chat,
     tokens_per_char: tokensPerChar,
     tokens: tokens,
   } as Chat
@@ -144,15 +142,15 @@ function afterResponseError(
 }
 
 interface ChatProps {
-  settings: AppData,
+  appData: AppData,
   chatId: string
-  setChatSettings: (chat: Chat) => void
+  setChat: (chat: Chat) => void
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { settings, chatId, setChatSettings } = props
+  const { appData, chatId, setChat } = props
 
-  const chatSettings = settings.chats.find((chat) => chat.id === chatId)!!
+  const chat = appData.chats.find((chat) => chat.id === chatId)!!
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
@@ -168,7 +166,7 @@ export default function ChatPage(props: ChatProps) {
     }
   }, [chatId])
 
-  const messageWrappers = chatToMessageWrappers(chatSettings, chatMessages)
+  const messageWrappers = chatToMessageWrappers(chat, chatMessages)
 
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -179,14 +177,14 @@ export default function ChatPage(props: ChatProps) {
     const requestMessageWrappers = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
-    api(settings.openai_api_key)
+    api(appData.openai_api_key)
       .createChatCompletion({
         model: defaultModel.model,
         messages: requestMessageWrappers.map((messageWrapper) => messageWrapper.message),
       })
       .then(response => {
         setRequestingMessage(undefined)
-        afterResponse(chatSettings, setChatSettings, chatMessages, setChatMessagesAndStore, requestMessageWrappers,
+        afterResponse(chat, setChat, chatMessages, setChatMessagesAndStore, requestMessageWrappers,
           response.data)
         setIsLoading(false)
       })

@@ -18,7 +18,7 @@ export default function HomePage(props: HomePageProps) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const setChatSettings = (chat: Chat) => {
+  const setChat = (chat: Chat) => {
     const copyChats = appData.chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
     if (index === -1) {
@@ -56,15 +56,7 @@ export default function HomePage(props: HomePageProps) {
 
   const [selectedChatId, setSelectedChatId] = useState<string>('');
 
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
 
   return (
     <>
@@ -81,7 +73,7 @@ export default function HomePage(props: HomePageProps) {
           setAppData={setAppData}
           selectedChatId={selectedChatId}
           setSelectedChatId={setSelectedChatId}
-          handleClickOpen={handleClickOpen}
+          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
           setSettingsOpen={setSettingsOpen}
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
@@ -96,7 +88,7 @@ export default function HomePage(props: HomePageProps) {
           <HomeAppBar
             appData={appData}
             selectedChatId={selectedChatId}
-            handleClickOpen={handleClickOpen}
+            handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
             setMobileOpen={setMobileOpen}
           />
           <Box
@@ -109,9 +101,9 @@ export default function HomePage(props: HomePageProps) {
             {selectedChatId !== '' ? (
               <ChatPage
                 key={`ChatPage${selectedChatId}`}
-                settings={appData}
+                appData={appData}
                 chatId={selectedChatId}
-                setChatSettings={setChatSettings}
+                setChat={setChat}
               />
             ) : (
               <></>
@@ -121,12 +113,11 @@ export default function HomePage(props: HomePageProps) {
       </Box>
       {selectedChatId !== '' ? (
         <ChatSettingsDialog
-          settings={appData}
-          chatId={selectedChatId}
-          setChatSettings={setChatSettings}
+          chat={appData.chats.find((chat) => chat.id === selectedChatId)!!}
+          setChat={setChat}
           deleteChat={deleteChat}
-          open={open}
-          handleClose={handleClose}
+          open={chatSettingsDialogOpen}
+          handleClose={() => setChatSettingsDialogOpen(true)}
         />
       ) : <></>}
     </>

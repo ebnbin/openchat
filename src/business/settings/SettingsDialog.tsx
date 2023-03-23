@@ -5,26 +5,26 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Link, Switch, TextField,
+  Link, TextField,
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import {AppData} from "../../data/data";
 
 interface SettingsDialogProps {
-  settings: AppData,
-  setSettings: (settings: AppData) => void
+  appData: AppData,
+  setAppData: (appData: AppData) => void
   open: boolean
   handleClose: () => void
 }
 
 export function SettingsDialog(props: SettingsDialogProps) {
-  const { settings, setSettings, open, handleClose } = props
+  const { appData, setAppData, open, handleClose } = props
 
   const handleIsDarkModeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSettings(
+    setAppData(
       {
-        ...settings,
+        ...appData,
         // isDarkMode: event.target.checked,
       } as AppData
     )
@@ -77,11 +77,11 @@ export function SettingsDialog(props: SettingsDialogProps) {
             fullWidth={true}
             type={'text'}
             placeholder={'API key'}
-            value={settings.openai_api_key}
+            value={appData.openai_api_key}
             onChange={(event) => {
-              setSettings(
+              setAppData(
                 {
-                  ...settings,
+                  ...appData,
                   openai_api_key: event.target.value,
                 } as AppData
               )

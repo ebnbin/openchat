@@ -8,15 +8,7 @@ import {useIsDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
 
 export default function AppPage() {
-  const isDarkMode = useIsDarkMode()
-
-  const theme = createTheme({
-    palette: {
-      mode: isDarkMode ? 'dark' : 'light',
-    },
-  })
-
-  const [settings, setSettings] = useState<AppData>(
+  const [appData, setAppData] = useState<AppData>(
     {
       version: 100, // 0.1.0
       openai_api_key: '',
@@ -27,13 +19,13 @@ export default function AppPage() {
   useEffect(() => {
     const storedSettings = localStorage.getItem('app_data')
     if (storedSettings) {
-      setSettings(JSON.parse(storedSettings))
+      setAppData(JSON.parse(storedSettings))
     }
   }, [])
 
-  const setSettingsAndStore = (settings: AppData) => {
-    setSettings(settings)
-    localStorage.setItem('app_data', JSON.stringify(settings))
+  const setAppDataAndStore = (appData: AppData) => {
+    setAppData(appData)
+    localStorage.setItem('app_data', JSON.stringify(appData))
   }
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -42,17 +34,24 @@ export default function AppPage() {
     setSettingsOpen(false);
   };
 
+  const isDarkMode = useIsDarkMode()
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? 'dark' : 'light',
+    },
+  })
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <HomePage
-        appData={settings}
-        setAppData={setSettingsAndStore}
+        appData={appData}
+        setAppData={setAppDataAndStore}
         setSettingsOpen={setSettingsOpen}
       />
       <SettingsDialog
-        settings={settings}
-        setSettings={setSettingsAndStore}
+        appData={appData}
+        setAppData={(setAppDataAndStore)}
         open={settingsOpen}
         handleClose={handleSettingsClose}
       />

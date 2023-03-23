@@ -11,14 +11,14 @@ interface HomeDrawerProps {
   setAppData: (appData: AppData) => void,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
-  handleClickOpen: () => void,
+  handleChatSettingsDialogOpen: () => void,
   setSettingsOpen: (settingsOpen: boolean) => void,
   mobileOpen: boolean,
   setMobileOpen: (mobileOpen: boolean) => void,
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
-  const { appData, setAppData, selectedChatId, setSelectedChatId, handleClickOpen, setSettingsOpen, mobileOpen, setMobileOpen } = props
+  const { appData, setAppData, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen, mobileOpen, setMobileOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
@@ -55,7 +55,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               setAppData={setAppData}
               selectedChatId={selectedChatId}
               setSelectedChatId={setSelectedChatId}
-              handleClickOpen={handleClickOpen}
+              handleClickOpen={handleChatSettingsDialogOpen}
               handleItemClick={handleItemClick}
               handleClickSettingsOpen={handleClickSettingsOpen}
             />
@@ -78,7 +78,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               setAppData={setAppData}
               selectedChatId={selectedChatId}
               setSelectedChatId={setSelectedChatId}
-              handleClickOpen={handleClickOpen}
+              handleClickOpen={handleChatSettingsDialogOpen}
               handleItemClick={handleItemClick}
               handleClickSettingsOpen={handleClickSettingsOpen}
             />

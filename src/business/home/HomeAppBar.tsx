@@ -11,12 +11,12 @@ import {AppData} from "../../data/data";
 interface HomeAppBarProps {
   appData: AppData,
   selectedChatId: string,
-  handleClickOpen: () => void,
+  handleChatSettingsDialogOpen: () => void,
   setMobileOpen: (mobileOpen: boolean) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
-  const { appData, selectedChatId, handleClickOpen, setMobileOpen } = props
+  const { appData, selectedChatId, handleChatSettingsDialogOpen, setMobileOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
@@ -61,7 +61,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                 />
                 <IconButton
                   edge="end"
-                  onClick={selectedChatId !== '' ? handleClickOpen : undefined}
+                  onClick={selectedChatId !== '' ? handleChatSettingsDialogOpen : undefined}
                   sx={{
                     display: selectedChatId !== '' ? 'inherit' : 'none',
                   }}

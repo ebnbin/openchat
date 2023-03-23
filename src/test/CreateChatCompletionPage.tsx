@@ -6,15 +6,14 @@ import {
 } from "openai";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {JsonLog} from "./JsonLog";
-import {AppData} from "../data/data";
 import {api} from "../util/util";
 
 interface CreateCompletionProps {
-  settings: AppData;
+  apiKey: string
 }
 
 // https://platform.openai.com/docs/api-reference/chat/create
-export function CreateChatCompletionPage({ settings }: CreateCompletionProps) {
+export function CreateChatCompletionPage({ apiKey }: CreateCompletionProps) {
   const modelList: string[] = [
     'gpt-4',
     'gpt-4-0314',
@@ -54,7 +53,7 @@ export function CreateChatCompletionPage({ settings }: CreateCompletionProps) {
     setResponseData(undefined)
     setIsLoading(true)
 
-    const response = await api(settings.openai_api_key)
+    const response = await api(apiKey)
       .createChatCompletion({
         model: model,
         messages: currentMessages,
@@ -110,7 +109,7 @@ export function CreateChatCompletionPage({ settings }: CreateCompletionProps) {
       />
       <Button
         variant={"contained"}
-        disabled={settings.openai_api_key.length === 0 || isLoading}
+        disabled={apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}

@@ -1,15 +1,14 @@
 import React, {ChangeEvent, useState} from "react";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {JsonLog} from "./JsonLog";
-import {AppData} from "../data/data";
 import {api} from "../util/util";
 
 interface CreateCompletionProps {
-  settings: AppData;
+  apiKey: string
 }
 
 // https://platform.openai.com/docs/api-reference/completions/create
-export function CreateCompletionPage({ settings }: CreateCompletionProps) {
+export function CreateCompletionPage({ apiKey }: CreateCompletionProps) {
   const modelList: string[] = [
     'text-davinci-003',
     'text-davinci-002',
@@ -41,7 +40,7 @@ export function CreateCompletionPage({ settings }: CreateCompletionProps) {
     setResponseData(undefined)
     setIsLoading(true)
 
-    const response = await api(settings.openai_api_key)
+    const response = await api(apiKey)
       .createCompletion({
         model: model,
         prompt: prompt,
@@ -79,7 +78,7 @@ export function CreateCompletionPage({ settings }: CreateCompletionProps) {
       />
       <Button
         variant={"contained"}
-        disabled={settings.openai_api_key.length === 0 || isLoading}
+        disabled={apiKey.length === 0 || isLoading}
         onClick={request}
       >
         {"Request"}
