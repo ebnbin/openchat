@@ -108,7 +108,24 @@ export function HomePage() {
   };
 
   const handleNewChatClick = () => {
-    setSelectedChatId(undefined)
+    const id = `${new Date().getTime()}`
+    setSettingsAndStore(
+      {
+        ...settings,
+        chats: [
+          ...settings.chats,
+          {
+            id: id,
+            title: '',
+            context_threshold: 0.7,
+            system_message: '',
+            tokens_per_char: 0,
+            tokens: 0,
+          } as Chat
+        ],
+      } as AppData
+    )
+    setSelectedChatId(id)
   }
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -307,12 +324,7 @@ export function HomePage() {
                 setChatSettings={setChatSettings}
               />
             ) : (
-              <ChatPage
-                key={`ChatPage${selectedChatId}`}
-                settings={settings}
-                chatId=''
-                setChatSettings={setChatSettings}
-              />
+              <></>
             )}
           </Box>
         </Box>
