@@ -1,6 +1,6 @@
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import List from "@mui/material/List";
-import {Chat} from "../../data/data";
+import {Chat} from "../../util/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import {EditRounded, SettingsRounded} from "@mui/icons-material";

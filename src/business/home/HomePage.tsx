@@ -4,7 +4,7 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
-import {Chat} from "../../data/data";
+import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
 

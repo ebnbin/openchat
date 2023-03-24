@@ -6,7 +6,7 @@ import {EditRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
-import {Chat} from "../../data/data";
+import {Chat} from "../../util/data";
 
 interface HomeAppBarProps {
   chats: Chat[],

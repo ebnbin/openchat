@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
-import {Chat, ChatMessage, defaultModel} from "../../data/data";
+import {Chat, ChatMessage, defaultModel} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 

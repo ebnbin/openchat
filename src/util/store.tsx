@@ -1,4 +1,4 @@
-import {AppData, Chat} from "../data/data";
+import {AppData, Chat} from "./data";
 
 class Store {
   private appData: AppData;

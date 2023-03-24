@@ -3,7 +3,7 @@ import {Card, IconButton, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
 import {api} from "../../util/util";
-import {Chat, ChatMessage, defaultModel} from "../../data/data";
+import {Chat, ChatMessage, defaultModel} from "../../util/data";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {MessageWrapper} from "./ChatPage";

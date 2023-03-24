@@ -1,4 +1,4 @@
-import {Chat, defaultModel} from "../../data/data";
+import {Chat, defaultModel} from "../../util/data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
