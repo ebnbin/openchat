@@ -2,13 +2,13 @@ import Drawer from "@mui/material/Drawer";
 import HomeDrawerContent from "./HomeDrawerContent";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
-import {AppData} from "../../data/data";
+import {Chat} from "../../data/data";
 
 const drawerWidth = 300;
 
 interface HomeDrawerProps {
-  appData: AppData,
-  setAppData: (appData: AppData) => void,
+  chats: Chat[],
+  setChats: (chats: Chat[]) => void,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleChatSettingsDialogOpen: () => void,
@@ -18,7 +18,8 @@ interface HomeDrawerProps {
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
-  const { appData, setAppData, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen, mobileOpen, setMobileOpen } = props
+  const { chats, setChats, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
+    mobileOpen, setMobileOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
@@ -51,8 +52,8 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             }}
           >
             <HomeDrawerContent
-              appData={appData}
-              setAppData={setAppData}
+              chats={chats}
+              setChats={setChats}
               selectedChatId={selectedChatId}
               setSelectedChatId={setSelectedChatId}
               handleClickOpen={handleChatSettingsDialogOpen}
@@ -74,8 +75,8 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             }}
           >
             <HomeDrawerContent
-              appData={appData}
-              setAppData={setAppData}
+              chats={chats}
+              setChats={setChats}
               selectedChatId={selectedChatId}
               setSelectedChatId={setSelectedChatId}
               handleClickOpen={handleChatSettingsDialogOpen}

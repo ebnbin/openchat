@@ -1,6 +1,6 @@
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import List from "@mui/material/List";
-import {AppData, Chat} from "../../data/data";
+import {Chat} from "../../data/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import {EditRounded, SettingsRounded} from "@mui/icons-material";
@@ -11,8 +11,8 @@ import Box from "@mui/material/Box";
 import * as React from "react";
 
 interface HomeDrawerContentProps {
-  appData: AppData,
-  setAppData: (appData: AppData) => void,
+  chats: Chat[],
+  setChats: (chat: Chat[]) => void,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleClickOpen: () => void,
@@ -21,28 +21,24 @@ interface HomeDrawerContentProps {
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
-  const { appData, setAppData, selectedChatId, setSelectedChatId, handleClickOpen, handleItemClick, handleClickSettingsOpen } = props
+  const { chats, setChats, selectedChatId, setSelectedChatId, handleClickOpen, handleItemClick,
+    handleClickSettingsOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
   const handleNewChatClick = () => {
     const id = `${new Date().getTime()}`
-    setAppData(
+    setChats([
+      ...chats,
       {
-        ...appData,
-        chats: [
-          ...appData.chats,
-          {
-            id: id,
-            title: '',
-            context_threshold: 0.7,
-            system_message: '',
-            tokens_per_char: 0,
-            tokens: 0,
-          } as Chat
-        ],
-      } as AppData
-    )
+        id: id,
+        title: '',
+        context_threshold: 0.7,
+        system_message: '',
+        tokens_per_char: 0,
+        tokens: 0,
+      } as Chat
+    ])
     setSelectedChatId(id)
   }
 
@@ -71,7 +67,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           overflow: 'auto',
         }}
       >
-        {appData.chats.slice().reverse().map((chatItem: Chat, index) => (
+        {chats.slice().reverse().map((chatItem: Chat, index) => (
           <ListItem
             key={chatItem.id}
             disablePadding={true}

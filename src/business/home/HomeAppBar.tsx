@@ -6,17 +6,17 @@ import {EditRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
-import {AppData} from "../../data/data";
+import {Chat} from "../../data/data";
 
 interface HomeAppBarProps {
-  appData: AppData,
+  chats: Chat[],
   selectedChatId: string,
   handleChatSettingsDialogOpen: () => void,
   setMobileOpen: (mobileOpen: boolean) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
-  const { appData, selectedChatId, handleChatSettingsDialogOpen, setMobileOpen } = props
+  const { chats, selectedChatId, handleChatSettingsDialogOpen, setMobileOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
@@ -51,7 +51,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                   <MenuRounded/>
                 </IconButton>
                 <Typography variant="h6" noWrap component="div">
-                  {selectedChatId !== '' ? appData.chats.find((chat) => chat.id === selectedChatId)!!.title : 'New chat'}
+                  {selectedChatId !== '' ? chats.find((chat) => chat.id === selectedChatId)!!.title : 'New chat'}
                 </Typography>
                 <Box
                   sx={{

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useEffect, useState} from "react";
 import {createTheme, ThemeProvider} from "@mui/material";
-import {AppData} from "../../data/data";
+import {AppData, Chat} from "../../data/data";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
 import {openAIApiKey, useIsDarkMode} from "../../util/util";
@@ -30,6 +30,15 @@ export default function AppPage() {
     localStorage.setItem('app_data', JSON.stringify(appData))
   }
 
+  const setChats = (chats: Chat[]) => {
+    setAppDataAndStore(
+      {
+        ...appData,
+        chats: chats,
+      } as AppData
+    )
+  }
+
   const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   const handleSettingsClose = () => {
@@ -47,8 +56,8 @@ export default function AppPage() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <HomePage
-        appData={appData}
-        setAppData={setAppDataAndStore}
+        chats={appData.chats}
+        setChats={setChats}
         setSettingsOpen={setSettingsOpen}
       />
       <SettingsDialog
