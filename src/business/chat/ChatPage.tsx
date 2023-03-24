@@ -4,7 +4,7 @@ import {
   ChatCompletionRequestMessageRoleEnum
 } from "openai";
 import Box from "@mui/material/Box";
-import {Chat, AppData, defaultModel, ChatMessage} from "../../data/data";
+import {Chat, defaultModel, ChatMessage} from "../../data/data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {api} from "../../util/util";
 import ChatMessageList from "./ChatMessageList";
@@ -142,29 +142,27 @@ function afterResponseError(
 }
 
 interface ChatProps {
-  appData: AppData,
-  chatId: string
+  apiKey: string,
+  chat: Chat,
   setChat: (chat: Chat) => void
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { appData, chatId, setChat } = props
-
-  const chat = appData.chats.find((chat) => chat.id === chatId)!!
+  const { apiKey, chat, setChat } = props
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
   const setChatMessagesAndStore = (chatMessages: ChatMessage[]) => {
     setChatMessages(chatMessages)
-    localStorage.setItem(`chat_${chatId}`, JSON.stringify(chatMessages))
+    localStorage.setItem(`chat_${chat.id}`, JSON.stringify(chatMessages))
   }
 
   useEffect(() => {
-    const storedChatMessages = localStorage.getItem(`chat_${chatId}`)
+    const storedChatMessages = localStorage.getItem(`chat_${chat.id}`)
     if (storedChatMessages) {
       setChatMessages(JSON.parse(storedChatMessages))
     }
-  }, [chatId])
+  }, [chat.id])
 
   const messageWrappers = chatToMessageWrappers(chat, chatMessages)
 
@@ -177,15 +175,14 @@ export default function ChatPage(props: ChatProps) {
     const requestMessageWrappers = beforeRequest(messageWrappers, input, setRequestingMessage)
     setInput('')
 
-    api(appData.openai_api_key)
+    api(apiKey)
       .createChatCompletion({
         model: defaultModel.model,
         messages: requestMessageWrappers.map((messageWrapper) => messageWrapper.message),
       })
       .then(response => {
         setRequestingMessage(undefined)
-        afterResponse(chat, setChat, chatMessages, setChatMessagesAndStore, requestMessageWrappers,
-          response.data)
+        afterResponse(chat, setChat, chatMessages, setChatMessagesAndStore, requestMessageWrappers, response.data)
         setIsLoading(false)
       })
       .catch(() => {
