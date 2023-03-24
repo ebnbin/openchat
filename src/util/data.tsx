@@ -19,21 +19,21 @@ export interface ChatMessage {
   'content': string
 }
 
-export interface ChatModel {
+export interface ChatGPTModel {
   model: string,
   maxTokens: number,
   extraCharsPerMessage: number,
 }
 
-export const chatModels = new Map<string, ChatModel>([
+export const chatGPTModels = new Map<string, ChatGPTModel>([
   [
     'gpt-3.5-turbo',
     {
       model: 'gpt-3.5-turbo',
       maxTokens: 4096,
       extraCharsPerMessage: 16,
-    } as ChatModel,
+    } as ChatGPTModel,
   ]
 ])
 
-export const defaultModel = chatModels.get('gpt-3.5-turbo')!!
+export const defaultGPTModel = chatGPTModels.get('gpt-3.5-turbo')!!

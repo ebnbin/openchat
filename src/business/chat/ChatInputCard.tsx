@@ -3,7 +3,7 @@ import {Card, IconButton, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
 import {api} from "../../util/util";
-import {Chat, ChatMessage, defaultModel} from "../../util/data";
+import {Chat, ChatMessage, defaultGPTModel} from "../../util/data";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {MessageWrapper} from "./ChatPage";
@@ -56,7 +56,7 @@ function handleResponse(
   const charCount = requestChatMessages
     .map((message) => message.content)
     .concat(responseMessage.content)
-    .reduce((acc, message) => acc + message.length + defaultModel.extraCharsPerMessage, 0)
+    .reduce((acc, message) => acc + message.length + defaultGPTModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chat.tokens + responseTotalTokens
   const nextChat = {
@@ -122,7 +122,7 @@ export default function ChatInputCard(props: InputCardProps) {
 
     api()
       .createChatCompletion({
-        model: defaultModel.model,
+        model: defaultGPTModel.model,
         messages: requestMessages,
       })
       .then(response => {

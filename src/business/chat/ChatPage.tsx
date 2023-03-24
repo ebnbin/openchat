@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
-import {Chat, ChatMessage, defaultModel} from "../../util/data";
+import {Chat, ChatMessage, defaultGPTModel} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 
@@ -17,11 +17,11 @@ export interface MessageWrapper {
 
 function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  const maxContextTokens = defaultModel.maxTokens * chat.context_threshold
+  const maxContextTokens = defaultGPTModel.maxTokens * chat.context_threshold
   let usedTokens = 0
   if (chat.system_message !== '') {
     usedTokens += chat.system_message.length * chat.tokens_per_char +
-      defaultModel.extraCharsPerMessage
+      defaultGPTModel.extraCharsPerMessage
   }
   chatMessages
     .slice()
@@ -31,7 +31,7 @@ function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): Message
       if (usedTokens > maxContextTokens) {
         context = false
       } else {
-        const tokens = (chatMessage.content.length + defaultModel.extraCharsPerMessage) * chat.tokens_per_char
+        const tokens = (chatMessage.content.length + defaultGPTModel.extraCharsPerMessage) * chat.tokens_per_char
         usedTokens += tokens
         context = usedTokens <= maxContextTokens
       }
