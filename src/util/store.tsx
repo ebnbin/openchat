@@ -1,4 +1,4 @@
-import {AppData} from "../data/data";
+import {AppData, Chat} from "../data/data";
 
 class Store {
   private appData: AppData;
@@ -20,15 +20,6 @@ class Store {
     localStorage.setItem('app_data', JSON.stringify(this.appData));
   }
 
-  public getAppData(): AppData {
-    return this.appData;
-  }
-
-  public setAppData(appData: AppData) {
-    this.appData = appData;
-    this.save();
-  }
-
   public getOpenAIApiKey(): string {
     return this.appData.openai_api_key;
   }
@@ -37,6 +28,18 @@ class Store {
     this.appData = {
       ...this.appData,
       openai_api_key: openAIApiKey,
+    } as AppData;
+    this.save();
+  }
+
+  public getChats(): Chat[] {
+    return this.appData.chats;
+  }
+
+  public setChats(chats: Chat[]) {
+    this.appData = {
+      ...this.appData,
+      chats: chats,
     } as AppData;
     this.save();
   }

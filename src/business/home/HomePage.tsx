@@ -6,15 +6,21 @@ import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
 import {Chat} from "../../data/data";
 import {useState} from "react";
+import store from "../../util/store";
 
 interface HomePageProps {
-  chats: Chat[],
-  setChats: (chats: Chat[]) => void,
   setSettingsOpen: (settingsOpen: boolean) => void
 }
 
 export default function HomePage(props: HomePageProps) {
-  const { chats, setChats, setSettingsOpen } = props
+  const [chats, setChats] = useState(store.getChats())
+
+  const storeChats = (chats: Chat[]) => {
+    store.setChats(chats)
+    setChats(store.getChats())
+  }
+
+  const { setSettingsOpen } = props
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -22,11 +28,11 @@ export default function HomePage(props: HomePageProps) {
     const copyChats = chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
     if (index === -1) {
-      setChats([...copyChats, chat])
+      storeChats([...copyChats, chat])
       setSelectedChatId(chat.id)
     } else {
       copyChats[index] = chat
-      setChats(copyChats)
+      storeChats(copyChats)
     }
   }
 
@@ -35,7 +41,7 @@ export default function HomePage(props: HomePageProps) {
     const copyChats = chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chatId)
     copyChats.splice(index, 1)
-    setChats(copyChats)
+    storeChats(copyChats)
     localStorage.removeItem(`chat_${chatId}`)
   }
 
@@ -55,7 +61,7 @@ export default function HomePage(props: HomePageProps) {
       >
         <HomeDrawer
           chats={chats}
-          setChats={setChats}
+          setChats={storeChats}
           selectedChatId={selectedChatId}
           setSelectedChatId={setSelectedChatId}
           handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
