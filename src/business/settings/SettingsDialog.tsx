@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {
   Button,
   Dialog,
@@ -28,11 +28,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   //   )
   // }
 
-  const [openAIApiKey, setOpenAIApiKey] = useState('')
-
-  useEffect(() => {
-    setOpenAIApiKey(store.appData.openai_api_key)
-  }, [])
+  const [openAIApiKey, setOpenAIApiKey] = useState(store.appData.openai_api_key)
 
   return (
     <Dialog

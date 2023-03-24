@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {AppData, Chat} from "../../data/data";
 import {SettingsDialog} from "../settings/SettingsDialog";
@@ -9,17 +9,7 @@ import HomePage from "../home/HomePage";
 import store from "../../util/store";
 
 export default function AppPage() {
-  const [appData, setAppData] = useState<AppData>(
-    {
-      version: 100, // 0.1.0
-      openai_api_key: '',
-      chats: [],
-    } as AppData
-  )
-
-  useEffect(() => {
-    setAppData(store.appData)
-  }, [])
+  const [appData, setAppData] = useState<AppData>(store.appData)
 
   const setAppDataAndStore = (appData: AppData) => {
     setAppData(appData)
