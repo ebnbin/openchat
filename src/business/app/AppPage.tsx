@@ -9,7 +9,7 @@ import HomePage from "../home/HomePage";
 import store from "../../util/store";
 
 export default function AppPage() {
-  const [appData, setAppData] = useState<AppData>(store.appData)
+  const [appData, setAppData] = useState<AppData>(store.getAppData())
 
   const setAppDataAndStore = (appData: AppData) => {
     setAppData(appData)

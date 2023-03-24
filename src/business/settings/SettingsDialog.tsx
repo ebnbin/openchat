@@ -28,7 +28,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   //   )
   // }
 
-  const [openAIApiKey, setOpenAIApiKey] = useState(store.appData.openai_api_key)
+  const [openAIApiKey, setOpenAIApiKey] = useState(store.getOpenAIApiKey())
 
   return (
     <Dialog
