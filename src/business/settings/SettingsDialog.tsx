@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from "react";
+import React, {useEffect, useState} from "react";
 import {
   Button,
   Dialog,
@@ -9,27 +9,30 @@ import {
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import {AppData} from "../../data/data";
-import {openAIApiKey} from "../../util/util";
+import store from "../../util/store";
 
 interface SettingsDialogProps {
-  appData: AppData,
-  setAppData: (appData: AppData) => void
   open: boolean
   handleClose: () => void
 }
 
 export function SettingsDialog(props: SettingsDialogProps) {
-  const { appData, setAppData, open, handleClose } = props
+  const { open, handleClose } = props
 
-  const handleIsDarkModeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAppData(
-      {
-        ...appData,
-        // isDarkMode: event.target.checked,
-      } as AppData
-    )
-  }
+  // const handleIsDarkModeChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   setAppData(
+  //     {
+  //       ...appData,
+  //       // isDarkMode: event.target.checked,
+  //     } as AppData
+  //   )
+  // }
+
+  const [openAIApiKey, setOpenAIApiKey] = useState('')
+
+  useEffect(() => {
+    setOpenAIApiKey(store.appData.openai_api_key)
+  }, [])
 
   return (
     <Dialog
@@ -78,15 +81,10 @@ export function SettingsDialog(props: SettingsDialogProps) {
             fullWidth={true}
             type={'text'}
             placeholder={'API key'}
-            value={appData.openai_api_key}
+            value={openAIApiKey}
             onChange={(event) => {
-              setAppData(
-                {
-                  ...appData,
-                  openai_api_key: event.target.value,
-                } as AppData
-              )
-              openAIApiKey.value = event.target.value
+              setOpenAIApiKey(event.target.value)
+              store.setOpenAIApiKey(event.target.value)
             }}
           />
         </Box>

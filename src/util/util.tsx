@@ -1,9 +1,8 @@
 import {Configuration, OpenAIApi} from "openai";
 import { useState, useEffect } from 'react';
+import store from "./store";
 
-export let openAIApiKey = { value: '' }
-
-export function api(apiKey: string = openAIApiKey.value): OpenAIApi {
+export function api(apiKey: string = store.appData.openai_api_key): OpenAIApi {
   const configuration = new Configuration({
     apiKey: apiKey,
   })

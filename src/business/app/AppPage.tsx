@@ -4,8 +4,9 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import {AppData, Chat} from "../../data/data";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
-import {openAIApiKey, useIsDarkMode} from "../../util/util";
+import {useIsDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
+import store from "../../util/store";
 
 export default function AppPage() {
   const [appData, setAppData] = useState<AppData>(
@@ -17,17 +18,12 @@ export default function AppPage() {
   )
 
   useEffect(() => {
-    const storedAppData = localStorage.getItem('app_data')
-    if (storedAppData) {
-      const appData: AppData = JSON.parse(storedAppData)
-      setAppData(appData)
-      openAIApiKey.value = appData.openai_api_key
-    }
+    setAppData(store.appData)
   }, [])
 
   const setAppDataAndStore = (appData: AppData) => {
     setAppData(appData)
-    localStorage.setItem('app_data', JSON.stringify(appData))
+    store.setAppData(appData)
   }
 
   const setChats = (chats: Chat[]) => {
@@ -61,8 +57,6 @@ export default function AppPage() {
         setSettingsOpen={setSettingsOpen}
       />
       <SettingsDialog
-        appData={appData}
-        setAppData={(setAppDataAndStore)}
         open={settingsOpen}
         handleClose={handleSettingsClose}
       />
