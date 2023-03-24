@@ -2,8 +2,6 @@ import React, {useEffect, useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
 import {Chat, ChatMessage, defaultModel} from "../../data/data";
-import {CreateChatCompletionResponse} from "openai/api";
-import {api} from "../../util/util";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 
@@ -63,83 +61,6 @@ function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): Message
 
 //*********************************************************************************************************************
 
-function getRequestingMessageWrapper(
-  input: string,
-): MessageWrapper {
-  return {
-    id: `${new Date().getTime()}`,
-    message: {
-      content: input,
-      role: ChatCompletionRequestMessageRoleEnum.User,
-    } as ChatCompletionRequestMessage,
-    context: true,
-  } as MessageWrapper
-}
-
-function getRequestMessages(
-  messageWrappers: MessageWrapper[],
-  requestingMessageWrapper: MessageWrapper,
-): ChatCompletionRequestMessage[] {
-  return [...messageWrappers, requestingMessageWrapper]
-    .filter((message) => message.context)
-    .map((messageWrapper) => messageWrapper.message)
-}
-
-function handleResponse(
-  chat: Chat,
-  chatMessages: ChatMessage[],
-  requestChatMessages: ChatCompletionRequestMessage[],
-  requestingMessageWrapper: MessageWrapper,
-  response: CreateChatCompletionResponse,
-): { nextChat: Chat, nextChatMessages: ChatMessage[] } {
-  const id = `${new Date().getTime()}`
-  const responseMessage = response.choices[0].message!!
-  const nextChatMessages = [
-    ...chatMessages,
-    {
-      id: requestingMessageWrapper.id,
-      role: requestingMessageWrapper.message.role,
-      content: requestingMessageWrapper.message.content,
-    } as ChatMessage,
-    {
-      id: id,
-      role: responseMessage.role,
-      content: responseMessage.content,
-    } as ChatMessage,
-  ]
-  const responseTotalTokens = response.usage!!.total_tokens
-  const charCount = requestChatMessages
-    .map((message) => message.content)
-    .concat(responseMessage.content)
-    .reduce((acc, message) => acc + message.length + defaultModel.extraCharsPerMessage, 0)
-  const tokensPerChar = responseTotalTokens / charCount
-  const tokens = chat.tokens + responseTotalTokens
-  const nextChat = {
-    ...chat,
-    tokens_per_char: tokensPerChar,
-    tokens: tokens,
-  } as Chat
-
-  return {
-    nextChat: nextChat,
-    nextChatMessages: nextChatMessages,
-  }
-}
-
-function handleResponseError(
-  chatMessages: ChatMessage[],
-  requestingMessageWrapper: MessageWrapper,
-): ChatMessage[] {
-  return [
-    ...chatMessages,
-    {
-      id: requestingMessageWrapper.id,
-      role: requestingMessageWrapper.message.role,
-      content: requestingMessageWrapper.message.content,
-    } as ChatMessage,
-  ]
-}
-
 interface ChatProps {
   apiKey: string,
   chat: Chat,
@@ -165,37 +86,8 @@ export default function ChatPage(props: ChatProps) {
 
   const messageWrappers = chatToMessageWrappers(chat, chatMessages)
 
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [requestingMessage, setRequestingMessage] = useState<MessageWrapper>()
-
-  const request = () => {
-    setIsLoading(true)
-    const requestingMessageWrapper = getRequestingMessageWrapper(input)
-    setRequestingMessage(requestingMessageWrapper)
-    setInput('')
-    const requestMessages = getRequestMessages(messageWrappers, requestingMessageWrapper)
-
-    api(apiKey)
-      .createChatCompletion({
-        model: defaultModel.model,
-        messages: requestMessages,
-      })
-      .then(response => {
-        const { nextChat, nextChatMessages } = handleResponse(chat, chatMessages, requestMessages,
-          requestingMessageWrapper, response.data)
-        setRequestingMessage(undefined)
-        setChat(nextChat)
-        setChatMessagesAndStore(nextChatMessages)
-        setIsLoading(false)
-      })
-      .catch(() => {
-        const nextChatMessages = handleResponseError(chatMessages, requestingMessageWrapper)
-        setRequestingMessage(undefined)
-        setChatMessagesAndStore(nextChatMessages)
-        setIsLoading(false)
-      })
-  }
+  const [requestingMessageWrapper, setRequestingMessageWrapper] = useState<MessageWrapper | null>(null)
+  const isLoading = requestingMessageWrapper !== null
 
   return (
     <Box
@@ -218,7 +110,7 @@ export default function ChatPage(props: ChatProps) {
       >
         <ChatMessageList
           messageWrappers={messageWrappers}
-          requestingMessage={requestingMessage}
+          requestingMessageWrapper={requestingMessageWrapper}
           isLoading={isLoading}
         />
       </Box>
@@ -237,10 +129,23 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <ChatInputCard
-            input={input}
-            setInput={setInput}
-            isRequesting={isLoading}
-            request={request}
+            apiKey={apiKey}
+            chat={chat}
+            chatMessages={chatMessages}
+            messageWrappers={messageWrappers}
+            isLoading={isLoading}
+            handleRequestStart={(requestingMessageWrapper) => {
+              setRequestingMessageWrapper(requestingMessageWrapper)
+            }}
+            handleRequestSuccess={(chat, chatMessages) => {
+              setRequestingMessageWrapper(null)
+              setChat(chat)
+              setChatMessagesAndStore(chatMessages)
+            }}
+            handleRequestError={(chatMessages) => {
+              setRequestingMessageWrapper(null)
+              setChatMessagesAndStore(chatMessages)
+            }}
           />
         </Box>
       </Box>
