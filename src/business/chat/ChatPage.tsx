@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum
-} from "openai";
+import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
-import {Chat, defaultModel, ChatMessage} from "../../data/data";
+import {Chat, ChatMessage, defaultModel} from "../../data/data";
 import {CreateChatCompletionResponse} from "openai/api";
 import {api} from "../../util/util";
 import ChatMessageList from "./ChatMessageList";
@@ -66,12 +63,10 @@ function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): Message
 
 //*********************************************************************************************************************
 
-function beforeRequest(
-  messageWrappers: MessageWrapper[],
+function getRequestingMessageWrapper(
   input: string,
-  setRequestingMessage: (messageWrapper: MessageWrapper) => void,
-): MessageWrapper[] {
-  const requestingMessage = {
+): MessageWrapper {
+  return {
     id: `${new Date().getTime()}`,
     message: {
       content: input,
@@ -79,28 +74,32 @@ function beforeRequest(
     } as ChatCompletionRequestMessage,
     context: true,
   } as MessageWrapper
-  setRequestingMessage(requestingMessage)
-  return [...messageWrappers, requestingMessage]
-    .filter((message) => message.context)
 }
 
-function afterResponse(
+function getRequestMessages(
+  messageWrappers: MessageWrapper[],
+  requestingMessageWrapper: MessageWrapper,
+): ChatCompletionRequestMessage[] {
+  return [...messageWrappers, requestingMessageWrapper]
+    .filter((message) => message.context)
+    .map((messageWrapper) => messageWrapper.message)
+}
+
+function handleResponse(
   chat: Chat,
-  setChat: (chat: Chat) => void,
   chatMessages: ChatMessage[],
-  setChatMessages: (chatMessages: ChatMessage[]) => void,
-  requestMessageWrappers: MessageWrapper[],
+  requestChatMessages: ChatCompletionRequestMessage[],
+  requestingMessageWrapper: MessageWrapper,
   response: CreateChatCompletionResponse,
-) {
+): { nextChat: Chat, nextChatMessages: ChatMessage[] } {
   const id = `${new Date().getTime()}`
   const responseMessage = response.choices[0].message!!
-  const requestMessageWrapper = requestMessageWrappers[requestMessageWrappers.length - 1]
   const nextChatMessages = [
     ...chatMessages,
     {
-      id: requestMessageWrapper.id,
-      role: requestMessageWrapper.message.role,
-      content: requestMessageWrapper.message.content,
+      id: requestingMessageWrapper.id,
+      role: requestingMessageWrapper.message.role,
+      content: requestingMessageWrapper.message.content,
     } as ChatMessage,
     {
       id: id,
@@ -108,10 +107,9 @@ function afterResponse(
       content: responseMessage.content,
     } as ChatMessage,
   ]
-  setChatMessages(nextChatMessages)
   const responseTotalTokens = response.usage!!.total_tokens
-  const charCount = requestMessageWrappers
-    .map((messageWrapper) => messageWrapper.message.content)
+  const charCount = requestChatMessages
+    .map((message) => message.content)
     .concat(responseMessage.content)
     .reduce((acc, message) => acc + message.length + defaultModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
@@ -121,24 +119,25 @@ function afterResponse(
     tokens_per_char: tokensPerChar,
     tokens: tokens,
   } as Chat
-  setChat(nextChat)
+
+  return {
+    nextChat: nextChat,
+    nextChatMessages: nextChatMessages,
+  }
 }
 
-function afterResponseError(
+function handleResponseError(
   chatMessages: ChatMessage[],
-  setChatMessages: (chatMessages: ChatMessage[]) => void,
-  requestMessageWrappers: MessageWrapper[],
-) {
-  const requestMessageWrapper = requestMessageWrappers[requestMessageWrappers.length - 1]
-  const nextChatMessages = [
+  requestingMessageWrapper: MessageWrapper,
+): ChatMessage[] {
+  return [
     ...chatMessages,
     {
-      id: requestMessageWrapper.id,
-      role: requestMessageWrapper.message.role,
-      content: requestMessageWrapper.message.content,
+      id: requestingMessageWrapper.id,
+      role: requestingMessageWrapper.message.role,
+      content: requestingMessageWrapper.message.content,
     } as ChatMessage,
   ]
-  setChatMessages(nextChatMessages)
 }
 
 interface ChatProps {
@@ -172,22 +171,28 @@ export default function ChatPage(props: ChatProps) {
 
   const request = () => {
     setIsLoading(true)
-    const requestMessageWrappers = beforeRequest(messageWrappers, input, setRequestingMessage)
+    const requestingMessageWrapper = getRequestingMessageWrapper(input)
+    setRequestingMessage(requestingMessageWrapper)
     setInput('')
+    const requestMessages = getRequestMessages(messageWrappers, requestingMessageWrapper)
 
     api(apiKey)
       .createChatCompletion({
         model: defaultModel.model,
-        messages: requestMessageWrappers.map((messageWrapper) => messageWrapper.message),
+        messages: requestMessages,
       })
       .then(response => {
+        const { nextChat, nextChatMessages } = handleResponse(chat, chatMessages, requestMessages,
+          requestingMessageWrapper, response.data)
         setRequestingMessage(undefined)
-        afterResponse(chat, setChat, chatMessages, setChatMessagesAndStore, requestMessageWrappers, response.data)
+        setChat(nextChat)
+        setChatMessagesAndStore(nextChatMessages)
         setIsLoading(false)
       })
       .catch(() => {
+        const nextChatMessages = handleResponseError(chatMessages, requestingMessageWrapper)
         setRequestingMessage(undefined)
-        afterResponseError(chatMessages, setChatMessagesAndStore, requestMessageWrappers)
+        setChatMessagesAndStore(nextChatMessages)
         setIsLoading(false)
       })
   }
