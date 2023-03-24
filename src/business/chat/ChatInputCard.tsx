@@ -86,7 +86,6 @@ function handleResponseError(
 }
 
 interface InputCardProps {
-  apiKey: string
   chat: Chat
   chatMessages: ChatMessage[]
   messageWrappers: MessageWrapper[]
@@ -97,7 +96,7 @@ interface InputCardProps {
 }
 
 export default function ChatInputCard(props: InputCardProps) {
-  const { apiKey, chat, chatMessages, messageWrappers, isLoading, handleRequestStart, handleRequestSuccess,
+  const { chat, chatMessages, messageWrappers, isLoading, handleRequestStart, handleRequestSuccess,
     handleRequestError } = props
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +120,7 @@ export default function ChatInputCard(props: InputCardProps) {
     const requestMessages = getRequestMessages(messageWrappers, requestingMessageWrapper)
     handleRequestStart(requestingMessageWrapper)
 
-    api(apiKey)
+    api()
       .createChatCompletion({
         model: defaultModel.model,
         messages: requestMessages,

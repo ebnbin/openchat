@@ -101,7 +101,6 @@ export default function HomePage(props: HomePageProps) {
             {selectedChatId !== '' ? (
               <ChatPage
                 key={`ChatPage${selectedChatId}`}
-                apiKey={appData.openai_api_key}
                 chat={appData.chats.find((chat) => chat.id === selectedChatId)!!}
                 setChat={setChat}
               />

@@ -62,13 +62,12 @@ function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): Message
 //*********************************************************************************************************************
 
 interface ChatProps {
-  apiKey: string,
   chat: Chat,
   setChat: (chat: Chat) => void
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { apiKey, chat, setChat } = props
+  const { chat, setChat } = props
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
@@ -129,7 +128,6 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <ChatInputCard
-            apiKey={apiKey}
             chat={chat}
             chatMessages={chatMessages}
             messageWrappers={messageWrappers}

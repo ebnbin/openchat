@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import {AppData} from "../../data/data";
+import {openAIApiKey} from "../../util/util";
 
 interface SettingsDialogProps {
   appData: AppData,
@@ -85,6 +86,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                   openai_api_key: event.target.value,
                 } as AppData
               )
+              openAIApiKey.value = event.target.value
             }}
           />
         </Box>

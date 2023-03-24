@@ -4,7 +4,7 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import {AppData} from "../../data/data";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
-import {useIsDarkMode} from "../../util/util";
+import {openAIApiKey, useIsDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
 
 export default function AppPage() {
@@ -17,9 +17,11 @@ export default function AppPage() {
   )
 
   useEffect(() => {
-    const storedSettings = localStorage.getItem('app_data')
-    if (storedSettings) {
-      setAppData(JSON.parse(storedSettings))
+    const storedAppData = localStorage.getItem('app_data')
+    if (storedAppData) {
+      const appData: AppData = JSON.parse(storedAppData)
+      setAppData(appData)
+      openAIApiKey.value = appData.openai_api_key
     }
   }, [])
 
