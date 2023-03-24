@@ -117,7 +117,7 @@ export default function HomePage(props: HomePageProps) {
           setChat={setChat}
           deleteChat={deleteChat}
           open={chatSettingsDialogOpen}
-          handleClose={() => setChatSettingsDialogOpen(true)}
+          handleClose={() => setChatSettingsDialogOpen(false)}
         />
       ) : <></>}
     </>
