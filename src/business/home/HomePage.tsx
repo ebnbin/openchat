@@ -13,11 +13,11 @@ interface HomePageProps {
 }
 
 export default function HomePage(props: HomePageProps) {
-  const [chats, setChats] = useState(store.getChatsData())
+  const [chats, setChats] = useState(store.getChats())
 
   const storeChats = (chats: Chat[]) => {
-    store.setChatsData(chats)
-    setChats(store.getChatsData())
+    store.setChats(chats)
+    setChats(store.getChats())
   }
 
   const { setSettingsOpen } = props
