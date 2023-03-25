@@ -45,3 +45,22 @@ export function useIsDarkMode(): boolean {
 
   return isDarkMode;
 }
+
+export interface ChatGPTModel {
+  model: string,
+  maxTokens: number,
+  extraCharsPerMessage: number,
+}
+
+export const chatGPTModels = new Map<string, ChatGPTModel>([
+  [
+    'gpt-3.5-turbo',
+    {
+      model: 'gpt-3.5-turbo',
+      maxTokens: 4096,
+      extraCharsPerMessage: 16,
+    } as ChatGPTModel,
+  ]
+])
+
+export const defaultGPTModel = chatGPTModels.get('gpt-3.5-turbo')!!

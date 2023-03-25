@@ -2,8 +2,8 @@ import React, {ChangeEvent, useState} from "react";
 import {Card, IconButton, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
-import {api} from "../../util/util";
-import {Chat, ChatMessage, defaultGPTModel} from "../../util/data";
+import {api, defaultGPTModel} from "../../util/util";
+import {ChatData, ChatMessageData} from "../../util/data";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {MessageWrapper} from "./ChatPage";
@@ -31,12 +31,12 @@ function getRequestMessages(
 }
 
 function handleResponse(
-  chat: Chat,
-  chatMessages: ChatMessage[],
+  chat: ChatData,
+  chatMessages: ChatMessageData[],
   requestChatMessages: ChatCompletionRequestMessage[],
   requestingMessageWrapper: MessageWrapper,
   response: CreateChatCompletionResponse,
-): { nextChat: Chat, nextChatMessages: ChatMessage[] } {
+): { nextChat: ChatData, nextChatMessages: ChatMessageData[] } {
   const id = `${new Date().getTime()}`
   const responseMessage = response.choices[0].message!!
   const nextChatMessages = [
@@ -45,12 +45,12 @@ function handleResponse(
       id: requestingMessageWrapper.id,
       role: requestingMessageWrapper.message.role,
       content: requestingMessageWrapper.message.content,
-    } as ChatMessage,
+    } as ChatMessageData,
     {
       id: id,
       role: responseMessage.role,
       content: responseMessage.content,
-    } as ChatMessage,
+    } as ChatMessageData,
   ]
   const responseTotalTokens = response.usage!!.total_tokens
   const charCount = requestChatMessages
@@ -63,7 +63,7 @@ function handleResponse(
     ...chat,
     tokens_per_char: tokensPerChar,
     tokens: tokens,
-  } as Chat
+  } as ChatData
 
   return {
     nextChat: nextChat,
@@ -72,27 +72,27 @@ function handleResponse(
 }
 
 function handleResponseError(
-  chatMessages: ChatMessage[],
+  chatMessages: ChatMessageData[],
   requestingMessageWrapper: MessageWrapper,
-): ChatMessage[] {
+): ChatMessageData[] {
   return [
     ...chatMessages,
     {
       id: requestingMessageWrapper.id,
       role: requestingMessageWrapper.message.role,
       content: requestingMessageWrapper.message.content,
-    } as ChatMessage,
+    } as ChatMessageData,
   ]
 }
 
 interface InputCardProps {
-  chat: Chat
-  chatMessages: ChatMessage[]
+  chat: ChatData
+  chatMessages: ChatMessageData[]
   messageWrappers: MessageWrapper[]
   isLoading: boolean
   handleRequestStart: (requestingMessageWrapper: MessageWrapper) => void
-  handleRequestSuccess: (chat: Chat, chatMessages: ChatMessage[]) => void
-  handleRequestError: (chatMessages: ChatMessage[]) => void
+  handleRequestSuccess: (chat: ChatData, chatMessages: ChatMessageData[]) => void
+  handleRequestError: (chatMessages: ChatMessageData[]) => void
 }
 
 export default function ChatInputCard(props: InputCardProps) {

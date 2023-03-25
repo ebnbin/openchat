@@ -1,4 +1,4 @@
-import {AppData, Chat} from "./data";
+import {AppData, ChatData} from "./data";
 import {AppModel, ChatMessageModel, ChatModel} from "./model";
 
 class Store {
@@ -8,11 +8,11 @@ class Store {
 
   constructor() {
     this.appData = this.readAppData();
-    this.appModel = this.appDataToAppModel(this.appData);
+    this.appModel = this.appDataToModel(this.appData);
   }
 
   private readAppData(): AppData {
-    const appDataJson = localStorage.getItem('app_data');
+    const appDataJson = localStorage.getItem('app');
     if (appDataJson) {
       return JSON.parse(appDataJson);
     }
@@ -23,7 +23,7 @@ class Store {
     } as AppData;
   }
 
-  private appDataToAppModel(appData: AppData): AppModel {
+  private appDataToModel(appData: AppData): AppModel {
     return {
       chats: appData.chats.map((chat) => {
         return {
@@ -41,7 +41,7 @@ class Store {
 
   private writeAppData(appData: AppData) {
     const appDataJson = JSON.stringify(appData);
-    localStorage.setItem('app_data', appDataJson);
+    localStorage.setItem('app', appDataJson);
   }
 
   private save() {
@@ -60,11 +60,11 @@ class Store {
     this.save();
   }
 
-  public getChats(): Chat[] {
+  public getChatsData(): ChatData[] {
     return this.appData.chats;
   }
 
-  public setChats(chats: Chat[]) {
+  public setChatsData(chats: ChatData[]) {
     this.appData = {
       ...this.appData,
       chats: chats,

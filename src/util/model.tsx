@@ -1,8 +1,8 @@
 import {ChatCompletionRequestMessage} from "openai";
 
 export interface AppModel {
-  chats: ChatModel[],
-  chatMessagesMap: Map<string, ChatMessageModel[]>,
+  chats: ChatModel[];
+  chatMessagesMap: Map<string, ChatMessageModel[]>;
 }
 
 export interface ChatModel {
