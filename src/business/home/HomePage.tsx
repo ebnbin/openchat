@@ -13,37 +13,28 @@ interface HomePageProps {
 }
 
 export default function HomePage(props: HomePageProps) {
-  const [chats, setChats] = useState(store.getChats())
+  const [chats, _setChats] = useState(store.getChats())
 
-  const storeChats = (chats: Chat[]) => {
-    store.setChats(chats)
-    setChats(store.getChats())
+  const createChat = () => {
+    const chat = store.createChat();
+    _setChats(store.getChats);
+    return chat;
+  }
+
+  const updateChat = (chat: Chat) => {
+    store.updateChat(chat);
+    _setChats(store.getChats());
+  }
+
+  const deleteChat = (chatId: string) => {
+    setSelectedChatId('');
+    store.deleteChat(chatId);
+    _setChats(store.getChats());
   }
 
   const { setSettingsOpen } = props
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const updateChat = (chat: Chat) => {
-    const copyChats = chats.slice()
-    const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
-    if (index === -1) {
-      storeChats([...copyChats, chat])
-      setSelectedChatId(chat.id)
-    } else {
-      copyChats[index] = chat
-      storeChats(copyChats)
-    }
-  }
-
-  const deleteChat = (chatId: string) => {
-    setSelectedChatId('')
-    const copyChats = chats.slice()
-    const index = copyChats.findIndex((foundChat) => foundChat.id === chatId)
-    copyChats.splice(index, 1)
-    storeChats(copyChats)
-    localStorage.removeItem(`chat_${chatId}`)
-  }
 
   const [selectedChatId, setSelectedChatId] = useState<string>('');
 
@@ -61,7 +52,7 @@ export default function HomePage(props: HomePageProps) {
       >
         <HomeDrawer
           chats={chats}
-          setChats={storeChats}
+          createChat={createChat}
           selectedChatId={selectedChatId}
           setSelectedChatId={setSelectedChatId}
           handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}

@@ -2,14 +2,17 @@ import {AppData, Chat, ChatMessage} from "./data";
 import LocalStorageItem from "./LocalStorageItem";
 
 class Store {
-  private appData: LocalStorageItem<AppData> = new LocalStorageItem<AppData>('app_data', {
-    version: 100, // 0.1.0
-    openai_api_key: '',
-    chats: [],
-  } as AppData);
-  private chatMessagesMap: Map<string, LocalStorageItem<ChatMessage[]>> = new Map();
+  private readonly appData: LocalStorageItem<AppData>;
+  private readonly chatMessagesMap: Map<string, LocalStorageItem<ChatMessage[]>>;
 
-  //*******************************************************************************************************************
+  constructor() {
+    this.appData = new LocalStorageItem<AppData>('app_data', {
+      version: 100, // 0.1.0
+      openai_api_key: '',
+      chats: [],
+    } as AppData);
+    this.chatMessagesMap = new Map();
+  }
 
   public getOpenAIApiKey(): string {
     return this.appData.get().openai_api_key;
@@ -24,23 +27,6 @@ class Store {
 
   public getChats(): Chat[] {
     return this.appData.get().chats;
-  }
-
-  public setChats(chats: Chat[]) {
-    this.appData.set({
-      ...this.appData.get(),
-      chats: chats,
-    } as AppData);
-  }
-
-  //*******************************************************************************************************************
-
-  public getChat(chatId: string): Chat {
-    const chat = this.appData.get().chats.find((chat) => chat.id === chatId);
-    if (!chat) {
-      throw new Error();
-    }
-    return chat;
   }
 
   public createChat(): Chat {
@@ -86,16 +72,16 @@ class Store {
       ...this.appData.get(),
       chats: copyChats,
     } as AppData);
-    this.removeChatMessages(chatId);
+    this.deleteChatMessages(chatId);
   }
 
   public getChatMessages(chatId: string): ChatMessage[] {
     let chatMessages: LocalStorageItem<ChatMessage[]>;
-    if (!this.chatMessagesMap.has(chatId)) {
+    if (this.chatMessagesMap.has(chatId)) {
+      chatMessages = this.chatMessagesMap.get(chatId)!!;
+    } else {
       chatMessages = new LocalStorageItem<ChatMessage[]>(`chat_${chatId}`, []);
       this.chatMessagesMap.set(chatId, chatMessages);
-    } else {
-      chatMessages = this.chatMessagesMap.get(chatId)!!;
     }
     return chatMessages.get();
   }
@@ -108,12 +94,12 @@ class Store {
     chatMessagesLocalStorageItem.set(chatMessages);
   }
 
-  private removeChatMessages(chatId: string) {
+  private deleteChatMessages(chatId: string) {
     if (!this.chatMessagesMap.has(chatId)) {
       return;
     }
     const chatMessages = this.chatMessagesMap.get(chatId)!!;
-    chatMessages.remove()
+    chatMessages.remove();
     this.chatMessagesMap.delete(chatId);
   }
 }

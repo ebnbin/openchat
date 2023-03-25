@@ -12,7 +12,7 @@ import * as React from "react";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
-  setChats: (chat: Chat[]) => void,
+  createChat: () => Chat,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleClickOpen: () => void,
@@ -21,25 +21,14 @@ interface HomeDrawerContentProps {
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
-  const { chats, setChats, selectedChatId, setSelectedChatId, handleClickOpen, handleItemClick,
+  const { chats, createChat, selectedChatId, setSelectedChatId, handleClickOpen, handleItemClick,
     handleClickSettingsOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
   const handleNewChatClick = () => {
-    const id = `${new Date().getTime()}`
-    setChats([
-      ...chats,
-      {
-        id: id,
-        title: '',
-        context_threshold: 0.7,
-        system_message: '',
-        tokens_per_char: 0,
-        tokens: 0,
-      } as Chat
-    ])
-    setSelectedChatId(id)
+    const chat = createChat();
+    setSelectedChatId(chat.id);
   }
 
   return (

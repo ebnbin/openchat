@@ -8,7 +8,7 @@ const drawerWidth = 300;
 
 interface HomeDrawerProps {
   chats: Chat[],
-  setChats: (chats: Chat[]) => void,
+  createChat: () => Chat,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleChatSettingsDialogOpen: () => void,
@@ -18,7 +18,7 @@ interface HomeDrawerProps {
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
-  const { chats, setChats, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
+  const { chats, createChat, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
     mobileOpen, setMobileOpen } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
@@ -53,7 +53,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
           >
             <HomeDrawerContent
               chats={chats}
-              setChats={setChats}
+              createChat={createChat}
               selectedChatId={selectedChatId}
               setSelectedChatId={setSelectedChatId}
               handleClickOpen={handleChatSettingsDialogOpen}
@@ -76,7 +76,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
           >
             <HomeDrawerContent
               chats={chats}
-              setChats={setChats}
+              createChat={createChat}
               selectedChatId={selectedChatId}
               setSelectedChatId={setSelectedChatId}
               handleClickOpen={handleChatSettingsDialogOpen}

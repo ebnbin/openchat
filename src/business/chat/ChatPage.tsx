@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
 import {Chat, ChatMessage} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 import {defaultGPTModel} from "../../util/util";
+import store from "../../util/store";
 
 export const contentWidth = 900
 
@@ -70,19 +71,12 @@ interface ChatProps {
 export default function ChatPage(props: ChatProps) {
   const { chat, setChat } = props
 
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [chatMessages, _setChatMessages] = useState(store.getChatMessages(chat.id));
 
-  const setChatMessagesAndStore = (chatMessages: ChatMessage[]) => {
-    setChatMessages(chatMessages)
-    localStorage.setItem(`chat_${chat.id}`, JSON.stringify(chatMessages))
+  const updateChatMessages = (chatMessages: ChatMessage[]) => {
+    store.updateChatMessages(chat.id, chatMessages);
+    _setChatMessages(store.getChatMessages(chat.id));
   }
-
-  useEffect(() => {
-    const storedChatMessages = localStorage.getItem(`chat_${chat.id}`)
-    if (storedChatMessages) {
-      setChatMessages(JSON.parse(storedChatMessages))
-    }
-  }, [chat.id])
 
   const messageWrappers = chatToMessageWrappers(chat, chatMessages)
 
@@ -139,11 +133,11 @@ export default function ChatPage(props: ChatProps) {
             handleRequestSuccess={(chat, chatMessages) => {
               setRequestingMessageWrapper(null)
               setChat(chat)
-              setChatMessagesAndStore(chatMessages)
+              updateChatMessages(chatMessages)
             }}
             handleRequestError={(chatMessages) => {
               setRequestingMessageWrapper(null)
-              setChatMessagesAndStore(chatMessages)
+              updateChatMessages(chatMessages)
             }}
           />
         </Box>
