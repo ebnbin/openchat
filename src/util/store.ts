@@ -1,14 +1,10 @@
 import {AppData, ChatData} from "./data";
-import {AppModel, ChatMessageModel, ChatModel} from "./model";
 
 class Store {
   private appData: AppData;
 
-  private appModel: AppModel;
-
   constructor() {
     this.appData = this.readAppData();
-    this.appModel = this.appDataToModel(this.appData);
   }
 
   private readAppData(): AppData {
@@ -23,29 +19,9 @@ class Store {
     } as AppData;
   }
 
-  private appDataToModel(appData: AppData): AppModel {
-    return {
-      chats: appData.chats.map((chat) => {
-        return {
-          id: chat.id,
-          title: chat.title,
-          contextThreshold: chat.context_threshold,
-          systemMessage: chat.system_message,
-          tokenPerChar: chat.tokens_per_char,
-          token: chat.tokens,
-        } as ChatModel;
-      }),
-      chatMessagesMap: new Map<string, ChatMessageModel[]>(),
-    } as AppModel;
-  }
-
   private writeAppData(appData: AppData) {
     const appDataJson = JSON.stringify(appData);
     localStorage.setItem('app', appDataJson);
-  }
-
-  private save() {
-    this.writeAppData(this.appData);
   }
 
   public getOpenAIApiKey(): string {
@@ -57,7 +33,7 @@ class Store {
       ...this.appData,
       openai_api_key: openAIApiKey,
     } as AppData;
-    this.save();
+    this.writeAppData(this.appData);
   }
 
   public getChatsData(): ChatData[] {
@@ -69,7 +45,7 @@ class Store {
       ...this.appData,
       chats: chats,
     } as AppData;
-    this.save();
+    this.writeAppData(this.appData);
   }
 }
 
