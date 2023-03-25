@@ -2,13 +2,13 @@ import Drawer from "@mui/material/Drawer";
 import HomeDrawerContent from "./HomeDrawerContent";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
-import {ChatData} from "../../util/data";
+import {Chat} from "../../util/data";
 
 const drawerWidth = 300;
 
 interface HomeDrawerProps {
-  chats: ChatData[],
-  setChats: (chats: ChatData[]) => void,
+  chats: Chat[],
+  setChats: (chats: Chat[]) => void,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleChatSettingsDialogOpen: () => void,

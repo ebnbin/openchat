@@ -1,6 +1,6 @@
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import List from "@mui/material/List";
-import {ChatData} from "../../util/data";
+import {Chat} from "../../util/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import {EditRounded, SettingsRounded} from "@mui/icons-material";
@@ -11,8 +11,8 @@ import Box from "@mui/material/Box";
 import * as React from "react";
 
 interface HomeDrawerContentProps {
-  chats: ChatData[],
-  setChats: (chat: ChatData[]) => void,
+  chats: Chat[],
+  setChats: (chat: Chat[]) => void,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleClickOpen: () => void,
@@ -37,7 +37,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
         system_message: '',
         tokens_per_char: 0,
         tokens: 0,
-      } as ChatData
+      } as Chat
     ])
     setSelectedChatId(id)
   }
@@ -67,7 +67,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           overflow: 'auto',
         }}
       >
-        {chats.slice().reverse().map((chatItem: ChatData, index) => (
+        {chats.slice().reverse().map((chatItem: Chat, index) => (
           <ListItem
             key={chatItem.id}
             disablePadding={true}

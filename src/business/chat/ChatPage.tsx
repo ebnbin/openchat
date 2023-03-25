@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
-import {ChatData, ChatMessageData} from "../../util/data";
+import {Chat, ChatMessage} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 import {defaultGPTModel} from "../../util/util";
@@ -16,7 +16,7 @@ export interface MessageWrapper {
   context: boolean
 }
 
-function chatToMessageWrappers(chat: ChatData, chatMessages: ChatMessageData[]): MessageWrapper[] {
+function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
   const maxContextTokens = defaultGPTModel.maxTokens * chat.context_threshold
   let usedTokens = 0
@@ -63,16 +63,16 @@ function chatToMessageWrappers(chat: ChatData, chatMessages: ChatMessageData[]):
 //*********************************************************************************************************************
 
 interface ChatProps {
-  chat: ChatData,
-  setChat: (chat: ChatData) => void
+  chat: Chat,
+  setChat: (chat: Chat) => void
 }
 
 export default function ChatPage(props: ChatProps) {
   const { chat, setChat } = props
 
-  const [chatMessages, setChatMessages] = useState<ChatMessageData[]>([])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
-  const setChatMessagesAndStore = (chatMessages: ChatMessageData[]) => {
+  const setChatMessagesAndStore = (chatMessages: ChatMessage[]) => {
     setChatMessages(chatMessages)
     localStorage.setItem(`chat_${chat.id}`, JSON.stringify(chatMessages))
   }

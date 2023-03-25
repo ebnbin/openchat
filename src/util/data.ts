@@ -1,10 +1,10 @@
 export interface AppData {
   'version': number;
   'openai_api_key': string;
-  'chats': ChatData[];
+  'chats': Chat[];
 }
 
-export interface ChatData {
+export interface Chat {
   'id': string;
   'title': string;
   'context_threshold': number;
@@ -13,7 +13,7 @@ export interface ChatData {
   'tokens': number;
 }
 
-export interface ChatMessageData {
+export interface ChatMessage {
   'id': string;
   'role': string;
   'content': string;

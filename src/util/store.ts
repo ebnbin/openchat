@@ -1,4 +1,4 @@
-import {AppData, ChatData} from "./data";
+import {AppData, Chat} from "./data";
 
 class Store {
   private appData: AppData;
@@ -8,7 +8,7 @@ class Store {
   }
 
   private readAppData(): AppData {
-    const appDataJson = localStorage.getItem('app');
+    const appDataJson = localStorage.getItem('app_data');
     if (appDataJson) {
       return JSON.parse(appDataJson);
     }
@@ -21,7 +21,7 @@ class Store {
 
   private writeAppData(appData: AppData) {
     const appDataJson = JSON.stringify(appData);
-    localStorage.setItem('app', appDataJson);
+    localStorage.setItem('app_data', appDataJson);
   }
 
   public getOpenAIApiKey(): string {
@@ -36,11 +36,11 @@ class Store {
     this.writeAppData(this.appData);
   }
 
-  public getChatsData(): ChatData[] {
+  public getChatsData(): Chat[] {
     return this.appData.chats;
   }
 
-  public setChatsData(chats: ChatData[]) {
+  public setChatsData(chats: Chat[]) {
     this.appData = {
       ...this.appData,
       chats: chats,

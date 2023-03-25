@@ -4,7 +4,7 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
-import {ChatData} from "../../util/data";
+import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
 
@@ -15,7 +15,7 @@ interface HomePageProps {
 export default function HomePage(props: HomePageProps) {
   const [chats, setChats] = useState(store.getChatsData())
 
-  const storeChats = (chats: ChatData[]) => {
+  const storeChats = (chats: Chat[]) => {
     store.setChatsData(chats)
     setChats(store.getChatsData())
   }
@@ -24,7 +24,7 @@ export default function HomePage(props: HomePageProps) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const updateChat = (chat: ChatData) => {
+  const updateChat = (chat: Chat) => {
     const copyChats = chats.slice()
     const index = copyChats.findIndex((foundChat) => foundChat.id === chat.id)
     if (index === -1) {

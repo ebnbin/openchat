@@ -1,4 +1,4 @@
-import {ChatData} from "../../util/data";
+import {Chat} from "../../util/data";
 import React, {ChangeEvent} from "react";
 import {
   Button,
@@ -14,8 +14,8 @@ import Box from "@mui/material/Box";
 import {defaultGPTModel} from "../../util/util";
 
 interface ChatSettingsDialogProps {
-  chat: ChatData,
-  setChat: (chat: ChatData) => void
+  chat: Chat,
+  setChat: (chat: Chat) => void
   deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
