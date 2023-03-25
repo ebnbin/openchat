@@ -65,11 +65,11 @@ function chatToMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): Message
 
 interface ChatProps {
   chat: Chat,
-  setChat: (chat: Chat) => void
+  updateChat: (chat: Chat) => void
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { chat, setChat } = props
+  const { chat, updateChat } = props
 
   const [chatMessages, _setChatMessages] = useState(store.getChatMessages(chat.id));
 
@@ -132,7 +132,7 @@ export default function ChatPage(props: ChatProps) {
             }}
             handleRequestSuccess={(chat, chatMessages) => {
               setRequestingMessageWrapper(null)
-              setChat(chat)
+              updateChat(chat)
               updateChatMessages(chatMessages)
             }}
             handleRequestError={(chatMessages) => {

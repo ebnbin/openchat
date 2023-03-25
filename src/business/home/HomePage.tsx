@@ -17,7 +17,7 @@ export default function HomePage(props: HomePageProps) {
 
   const createChat = () => {
     const chat = store.createChat();
-    _setChats(store.getChats);
+    _setChats(store.getChats());
     return chat;
   }
 
@@ -84,7 +84,7 @@ export default function HomePage(props: HomePageProps) {
               <ChatPage
                 key={`ChatPage${selectedChatId}`}
                 chat={chats.find((chat) => chat.id === selectedChatId)!!}
-                setChat={updateChat}
+                updateChat={updateChat}
               />
             ) : (
               <></>
@@ -95,7 +95,7 @@ export default function HomePage(props: HomePageProps) {
       {selectedChatId !== '' ? (
         <ChatSettingsDialog
           chat={chats.find((chat) => chat.id === selectedChatId)!!}
-          setChat={updateChat}
+          updateChat={updateChat}
           deleteChat={deleteChat}
           open={chatSettingsDialogOpen}
           handleClose={() => setChatSettingsDialogOpen(false)}

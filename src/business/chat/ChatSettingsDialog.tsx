@@ -15,17 +15,17 @@ import {defaultGPTModel} from "../../util/util";
 
 interface ChatSettingsDialogProps {
   chat: Chat,
-  setChat: (chat: Chat) => void
+  updateChat: (chat: Chat) => void
   deleteChat: (chatId: string) => void
   open: boolean
   handleClose: () => void
 }
 
 export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
-  const { chat, setChat, deleteChat, open, handleClose } = props
+  const { chat, updateChat, deleteChat, open, handleClose } = props
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChat(
+    updateChat(
       {
         ...chat,
         title: event.target.value,
@@ -34,7 +34,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
   }
 
   const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
-    setChat(
+    updateChat(
       {
         ...chat,
         context_threshold: newValue as number,
@@ -43,7 +43,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
   }
 
   const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChat(
+    updateChat(
       {
         ...chat,
         system_message: event.target.value,
