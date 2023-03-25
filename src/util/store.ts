@@ -1,12 +1,12 @@
 import {AppData, Chat, ChatMessage} from "./data";
-import LocalStorageItem from "./LocalStorageItem";
+import Preference from "./Preference";
 
 class Store {
-  private readonly appData: LocalStorageItem<AppData>;
-  private readonly chatMessagesMap: Map<string, LocalStorageItem<ChatMessage[]>>;
+  private readonly appData: Preference<AppData>;
+  private readonly chatMessagesMap: Map<string, Preference<ChatMessage[]>>;
 
   constructor() {
-    this.appData = new LocalStorageItem<AppData>('app_data', {
+    this.appData = new Preference<AppData>('app_data', {
       version: 100, // 0.1.0
       openai_api_key: '',
       chats: [],
@@ -76,11 +76,11 @@ class Store {
   }
 
   public getChatMessages(chatId: string): ChatMessage[] {
-    let chatMessages: LocalStorageItem<ChatMessage[]>;
+    let chatMessages: Preference<ChatMessage[]>;
     if (this.chatMessagesMap.has(chatId)) {
       chatMessages = this.chatMessagesMap.get(chatId)!!;
     } else {
-      chatMessages = new LocalStorageItem<ChatMessage[]>(`chat_${chatId}`, []);
+      chatMessages = new Preference<ChatMessage[]>(`chat_${chatId}`, []);
       this.chatMessagesMap.set(chatId, chatMessages);
     }
     return chatMessages.get();
@@ -90,8 +90,8 @@ class Store {
     if (!this.chatMessagesMap.has(chatId)) {
       return;
     }
-    const chatMessagesLocalStorageItem = this.chatMessagesMap.get(chatId)!!;
-    chatMessagesLocalStorageItem.set(chatMessages);
+    const chatMessagesPreference = this.chatMessagesMap.get(chatId)!!;
+    chatMessagesPreference.set(chatMessages);
   }
 
   private deleteChatMessages(chatId: string) {
