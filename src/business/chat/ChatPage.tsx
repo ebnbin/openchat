@@ -5,6 +5,8 @@ import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 import {defaultGPTModel} from "../../util/util";
 import store from "../../util/store";
+import {Button} from "@mui/material";
+import LogoImage from "../welcome/LogoImage";
 
 export const contentWidth = 900
 
@@ -122,6 +124,7 @@ export default function ChatPage(props: ChatProps) {
           padding: '0px',
           paddingBottom: '128px',
           overflow: 'auto',
+          display: conversationEntities.length === 0 ? 'none' : 'block',
         }}
       >
         <ChatMessageList
@@ -131,7 +134,30 @@ export default function ChatPage(props: ChatProps) {
       <Box
         sx={{
           width: '100%',
-          flexShrink: 0,
+          height: '100%',
+          position: 'absolute',
+          display: conversationEntities.length !== 0 ? 'none' : 'flex',
+          paddingBottom: '72px',
+        }}
+      >
+        <Box
+          sx={{
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <LogoImage/>
+          <Button
+            variant={'outlined'}
+          >
+            New chat settings
+          </Button>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          width: '100%',
           position: 'absolute',
           bottom: 0,
         }}
