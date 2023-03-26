@@ -2,6 +2,7 @@ export interface AppData {
   'version': number;
   'openai_api_key': string;
   'chats': Chat[];
+  'usage': Usage;
 }
 
 export interface Chat {
@@ -18,4 +19,11 @@ export interface ChatConversation {
   'user_message': string;
   'assistant_message': string;
   'finish_reason': string | null;
+}
+
+export interface Usage {
+  'tokens': number;
+  'image_256': number;
+  'image_512': number;
+  'image_1024': number;
 }

@@ -1,4 +1,4 @@
-import {AppData, Chat, ChatConversation} from "./data";
+import {AppData, Chat, ChatConversation, Usage} from "./data";
 import Preference from "./Preference";
 
 class Store {
@@ -10,6 +10,12 @@ class Store {
       version: 200, // 0.2.0
       openai_api_key: '',
       chats: [],
+      usage: {
+        tokens: 0,
+        image_256: 0,
+        image_512: 0,
+        image_1024: 0,
+      } as Usage,
     } as AppData);
     if (this.appData.get().version < 200) {
       this.appData.remove()
