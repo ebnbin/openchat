@@ -6,7 +6,7 @@ import ChatInputCard from "./ChatInputCard";
 import {defaultGPTModel} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
-import LogoImage from "../welcome/LogoImage";
+import LogoImage from "../logo/LogoImage";
 import {EditRounded} from "@mui/icons-material";
 
 export const contentWidth = 900
