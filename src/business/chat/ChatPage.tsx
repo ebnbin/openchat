@@ -26,7 +26,7 @@ export interface ConversationEntity {
   type: ConversationEntityType;
 }
 
-function initConversationEntities(chat: Chat, chatConversations: ChatConversation[]): ConversationEntity[] {
+function initConversationEntities(chatConversations: ChatConversation[]): ConversationEntity[] {
   return chatConversations
     .map((chatConversation) => {
       return {
@@ -88,24 +88,34 @@ function conversationEntitiesToChatConversations(conversationEntities: Conversat
 //*********************************************************************************************************************
 
 interface ChatProps {
-  chat: Chat,
-  updateChat: (chat: Chat) => void
+  chat: Chat | null,
+  createChat: (chat: Chat) => void,
+  updateChat: (chat: Chat) => void,
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { chat, updateChat } = props
+  const { chat, createChat, updateChat } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState(initConversationEntities(chat, store.getChatConversations(chat.id)));
-  const [conversationEntities, setConversationEntities] = useState(updateContext(chat, noContextConversationEntities))
+    useState(chat === null ? [] : initConversationEntities(store.getChatConversations(chat.id)));
+  const [conversationEntities, setConversationEntities] =
+    useState(chat === null ? [] : updateContext(chat, noContextConversationEntities))
 
   useEffect(() => {
-    setConversationEntities(updateContext(chat, noContextConversationEntities))
+    if (chat !== null) {
+      setConversationEntities(updateContext(chat, noContextConversationEntities))
+    }
   }, [chat, noContextConversationEntities])
 
+  const chatId = chat === null ? null : chat.id
+
   useEffect(() => {
-    store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(noContextConversationEntities));
-  }, [chat.id, noContextConversationEntities])
+    if (chatId !== null) {
+      store.updateChatConversations(chatId, conversationEntitiesToChatConversations(noContextConversationEntities));
+    }
+  }, [chatId, noContextConversationEntities])
+
+  const [newChat, setNewChat] = useState<Chat>(store.newChat())
 
   return (
     <Box
@@ -169,8 +179,9 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <ChatInputCard
-            chat={chat}
+            chat={chat === null ? newChat : chat}
             conversationEntities={conversationEntities}
+            handleCreateChat={chat === null ? createChat : null}
             handleRequestStart={(conversationEntities) => {
               setNoContextConversationEntities(conversationEntities)
             }}

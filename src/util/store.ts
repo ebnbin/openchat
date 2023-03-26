@@ -29,15 +29,19 @@ class Store {
     return this.appData.get().chats;
   }
 
-  public createChat(
-    chat: Chat = {
+  public newChat(): Chat {
+    return {
       id: `${new Date().getTime()}`,
       title: '',
       context_threshold: 0.7,
       system_message: '',
       tokens_per_char: 0,
       tokens: 0,
-    } as Chat,
+    } as Chat
+  }
+
+  public createChat(
+    chat: Chat = this.newChat(),
   ): Chat {
     this.appData.set({
       ...this.appData.get(),

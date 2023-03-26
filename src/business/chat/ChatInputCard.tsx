@@ -8,9 +8,9 @@ import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from
 import {CreateChatCompletionResponse} from "openai/api";
 import {ConversationEntity, ConversationEntityType} from "./ChatPage";
 
-function getRequestingConversationEntity(input: string): ConversationEntity {
+function getRequestingConversationEntity(input: string, id: string): ConversationEntity {
   return {
-    id: `${new Date().getTime()}`,
+    id: id,
     userMessage: input,
     assistantMessage: '',
     finishReason: null,
@@ -103,15 +103,16 @@ function handleResponseError(
 }
 
 interface InputCardProps {
-  chat: Chat
+  chat: Chat,
   conversationEntities: ConversationEntity[],
+  handleCreateChat: ((chat: Chat) => void) | null,
   handleRequestStart: (conversationEntities: ConversationEntity[]) => void
   handleRequestSuccess: (chat: Chat, conversationEntities: ((prev: ConversationEntity[]) => ConversationEntity[])) => void
   handleRequestError: (conversationEntities: ((prev: ConversationEntity[]) => ConversationEntity[])) => void
 }
 
 export default function ChatInputCard(props: InputCardProps) {
-  const { chat, conversationEntities, handleRequestStart, handleRequestSuccess,
+  const { chat, conversationEntities, handleCreateChat, handleRequestStart, handleRequestSuccess,
     handleRequestError } = props
 
   const isLoading = conversationEntities.length > 0 &&
@@ -133,9 +134,19 @@ export default function ChatInputCard(props: InputCardProps) {
   const [input, setInput] = useState('')
 
   const request = () => {
-    const requestingConversationEntity = getRequestingConversationEntity(input)
+    const id = `${new Date().getTime()}`
+    let validChat: Chat = chat
+    if (handleCreateChat != null) {
+      validChat = {
+        ...chat,
+        id: id,
+      }
+      handleCreateChat(validChat)
+    }
+
+    const requestingConversationEntity = getRequestingConversationEntity(input, id)
     setInput('')
-    const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
+    const requestMessages = getRequestMessages(validChat, conversationEntities, requestingConversationEntity)
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     handleRequestStart(nextConversationEntities)
 
@@ -145,7 +156,7 @@ export default function ChatInputCard(props: InputCardProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const nextChat = handleResponse1(chat, requestMessages, response.data)
+        const nextChat = handleResponse1(validChat, requestMessages, response.data) // TODO
         handleRequestSuccess(nextChat, (prev) => handleResponse2(prev, response.data))
       })
       .catch(() => {

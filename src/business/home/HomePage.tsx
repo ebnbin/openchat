@@ -90,6 +90,7 @@ export default function HomePage(props: HomePageProps) {
               <ChatPage
                 key={`ChatPage${selectedChatId}`}
                 chat={chats.find((chat) => chat.id === selectedChatId)!!}
+                createChat={createChat}
                 updateChat={updateChat}
               />
             ) : (
