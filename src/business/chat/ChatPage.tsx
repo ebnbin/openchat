@@ -34,7 +34,7 @@ function initConversationEntities(chatConversations: ChatConversation[]): Conver
         id: chatConversation.id,
         userMessage: chatConversation.user_message,
         assistantMessage: chatConversation.assistant_message,
-        finishReason: chatConversation.finish_reason,
+        finishReason: chatConversation.finish_reason === null ? '' : chatConversation.finish_reason,
         type: ConversationEntityType.DEFAULT,
       } as ConversationEntity
     })

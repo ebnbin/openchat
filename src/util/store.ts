@@ -7,10 +7,15 @@ class Store {
 
   constructor() {
     this.appData = new Preference<AppData>('app_data', {
-      version: 100, // 0.1.0
+      version: 200, // 0.2.0
       openai_api_key: '',
       chats: [],
     } as AppData);
+    if (this.appData.get().version < 200) {
+      this.appData.remove()
+      localStorage.clear()
+    }
+
     this.chatConversationsMap = new Map();
   }
 
