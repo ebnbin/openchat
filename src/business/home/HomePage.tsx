@@ -8,6 +8,7 @@ import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
 import {ChatNewSettingsDialog} from "../chat/ChatNewSettingsDialog";
+import {CreateImagePage} from "../../test/CreateImagePage";
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -50,6 +51,11 @@ export default function HomePage(props: HomePageProps) {
     toNewChatPage()
   }
 
+  const handleImageClick = () => {
+    setSelectedChatId('image')
+    setMobileOpen(false)
+  }
+
   const toNewChatPage = () => {
     setNewChat(store.newChat())
     setSelectedChatId('');
@@ -57,6 +63,57 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
+
+  const dialogPage = () => {
+    if (selectedChatId === '') {
+      return (
+        <ChatNewSettingsDialog
+          chat={newChat}
+          updateChat={setNewChat}
+          open={newChatSettingsDialogOpen}
+          handleClose={() => setNewChatSettingsDialogOpen(false)}
+        />
+      )
+    }
+    if (selectedChatId === 'image') {
+      return undefined
+    }
+    return (
+      <ChatSettingsDialog
+        chat={chats.find((chat) => chat.id === selectedChatId)!!}
+        updateChat={updateChat}
+        deleteChat={deleteChat}
+        open={chatSettingsDialogOpen}
+        handleClose={() => setChatSettingsDialogOpen(false)}
+      />
+    )
+  }
+
+  const contentPage = () => {
+    if (selectedChatId === '') {
+      return (
+        <ChatPage
+          key={`ChatPage${newChat.id}`}
+          chat={newChat}
+          isNewChat={true}
+          createOrUpdateChat={createOrUpdateChat}
+          openNewChatSettings={() => setNewChatSettingsDialogOpen(true)}
+        />
+      )
+    }
+    if (selectedChatId === 'image') {
+      return <CreateImagePage apiKey={store.getOpenAIApiKey()}/> // TODO
+    }
+    return (
+      <ChatPage
+        key={`ChatPage${selectedChatId}`}
+        chat={chats.find((chat) => chat.id === selectedChatId)!!}
+        isNewChat={false}
+        createOrUpdateChat={createOrUpdateChat}
+        openNewChatSettings={null}
+      />
+    )
+  }
 
   return (
     <>
@@ -77,6 +134,7 @@ export default function HomePage(props: HomePageProps) {
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
           handleNewChatClick={handleNewChatClick}
+          handleImageClick={handleImageClick}
         />
         <Box
           sx={{
@@ -98,42 +156,11 @@ export default function HomePage(props: HomePageProps) {
               overflow: 'auto',
             }}
           >
-            {selectedChatId !== '' ? (
-              <ChatPage
-                key={`ChatPage${selectedChatId}`}
-                chat={chats.find((chat) => chat.id === selectedChatId)!!}
-                isNewChat={false}
-                createOrUpdateChat={createOrUpdateChat}
-                openNewChatSettings={null}
-              />
-            ) : (
-              <ChatPage
-                key={`ChatPage${newChat.id}`}
-                chat={newChat}
-                isNewChat={true}
-                createOrUpdateChat={createOrUpdateChat}
-                openNewChatSettings={() => setNewChatSettingsDialogOpen(true)}
-              />
-            )}
+            {contentPage()}
           </Box>
         </Box>
       </Box>
-      {selectedChatId !== '' ? (
-        <ChatSettingsDialog
-          chat={chats.find((chat) => chat.id === selectedChatId)!!}
-          updateChat={updateChat}
-          deleteChat={deleteChat}
-          open={chatSettingsDialogOpen}
-          handleClose={() => setChatSettingsDialogOpen(false)}
-        />
-      ) : (
-        <ChatNewSettingsDialog
-          chat={newChat}
-          updateChat={setNewChat}
-          open={newChatSettingsDialogOpen}
-          handleClose={() => setNewChatSettingsDialogOpen(false)}
-        />
-      )}
+      {dialogPage()}
     </>
   )
 }

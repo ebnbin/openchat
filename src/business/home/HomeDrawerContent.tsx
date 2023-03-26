@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 import {Chat} from "../../util/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
-import {EditRounded, SettingsRounded} from "@mui/icons-material";
+import {EditRounded, ImageRounded, SettingsRounded} from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -17,11 +17,12 @@ interface HomeDrawerContentProps {
   handleItemClick: (chatId: string) => void,
   handleClickSettingsOpen: () => void,
   handleNewChatClick: () => void,
+  handleImageClick: () => void,
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
   const { chats, selectedChatId, handleChatSettingsDialogOpen, handleItemClick,
-    handleClickSettingsOpen, handleNewChatClick } = props
+    handleClickSettingsOpen, handleNewChatClick, handleImageClick } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
@@ -33,16 +34,35 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
         flexDirection: 'column',
       }}
     >
-      <Button
-        variant={'outlined'}
-        onClick={handleNewChatClick}
+      <Box
         sx={{
-          margin: '8px',
           flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'row',
         }}
       >
-        New chat
-      </Button>
+        <Button
+          variant={'outlined'}
+          onClick={handleNewChatClick}
+          sx={{
+            margin: '8px',
+            flexGrow: 1,
+          }}
+        >
+          New chat
+        </Button>
+        <Button
+          variant={'outlined'}
+          onClick={handleImageClick}
+          sx={{
+            margin: '8px',
+            marginLeft: '0px',
+            flexShrink: 0,
+          }}
+        >
+          <ImageRounded/>
+        </Button>
+      </Box>
       <Divider />
       <List
         sx={{

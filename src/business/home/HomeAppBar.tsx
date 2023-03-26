@@ -24,6 +24,20 @@ export default function HomeAppBar(props: HomeAppBarProps) {
     setMobileOpen(true);
   };
 
+  const title = () => {
+    if (selectedChatId === '') {
+      return 'OpenChat'
+    }
+    if (selectedChatId === 'image') {
+      return 'Image'
+    }
+    const chat = chats.find((chat) => chat.id === selectedChatId)!!
+    if (chat.title === '') {
+      return 'New chat'
+    }
+    return chat.title
+  }
+
   return (
     <>
       {
@@ -51,7 +65,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                   <MenuRounded/>
                 </IconButton>
                 <Typography variant="h6" noWrap component="div">
-                  {selectedChatId !== '' ? (chats.find((chat) => chat.id === selectedChatId)!!.title === '' ? 'New chat' : chats.find((chat) => chat.id === selectedChatId)!!.title) : 'OpenChat'}
+                  {title()}
                 </Typography>
                 <Box
                   sx={{
@@ -61,9 +75,9 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                 />
                 <IconButton
                   edge="end"
-                  onClick={selectedChatId !== '' ? handleChatSettingsDialogOpen : undefined}
+                  onClick={(selectedChatId !== '' && selectedChatId !== 'image') ? handleChatSettingsDialogOpen : undefined}
                   sx={{
-                    display: selectedChatId !== '' ? 'inherit' : 'none',
+                    display: (selectedChatId !== '' && selectedChatId !== 'image') ? 'inherit' : 'none',
                   }}
                 >
                   <EditRounded />
