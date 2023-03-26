@@ -7,6 +7,7 @@ import * as React from "react";
 import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
+import WelcomePage from "../welcome/WelcomePage";
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -87,7 +88,7 @@ export default function HomePage(props: HomePageProps) {
                 updateChat={updateChat}
               />
             ) : (
-              <></>
+              <WelcomePage/>
             )}
           </Box>
         </Box>
