@@ -22,12 +22,22 @@ function getRequestingMessageWrapper(
 }
 
 function getRequestMessages(
+  chat: Chat,
   messageWrappers: MessageWrapper[],
   requestingMessageWrapper: MessageWrapper,
 ): ChatCompletionRequestMessage[] {
-  return [...messageWrappers, requestingMessageWrapper]
+  const result = [...messageWrappers, requestingMessageWrapper]
     .filter((message) => message.context)
     .map((messageWrapper) => messageWrapper.message)
+  if (chat.system_message !== '') {
+    result.unshift(
+      {
+        role: ChatCompletionRequestMessageRoleEnum.System,
+        content: chat.system_message,
+      } as ChatCompletionRequestMessage
+    )
+  }
+  return result
 }
 
 function handleResponse1(
@@ -100,7 +110,7 @@ export default function ChatInputCard(props: InputCardProps) {
   const request = () => {
     const requestingMessageWrapper = getRequestingMessageWrapper(input)
     setInput('')
-    const requestMessages = getRequestMessages(messageWrappers, requestingMessageWrapper)
+    const requestMessages = getRequestMessages(chat, messageWrappers, requestingMessageWrapper)
     handleRequestStart(requestingMessageWrapper, [...messageWrappers, requestingMessageWrapper])
 
     api()

@@ -42,17 +42,6 @@ function initMessageWrappers(chat: Chat, chatConversations: ChatConversation[]):
       } as MessageWrapper
       result.unshift(userMessageWrapper)
     })
-  if (chat.system_message !== '') {
-    const systemMessageWrapper = {
-      id: chat.id,
-      message: {
-        role: ChatCompletionRequestMessageRoleEnum.System,
-        content: chat.system_message,
-      } as ChatCompletionRequestMessage,
-      context: false,
-    } as MessageWrapper
-    result.unshift(systemMessageWrapper)
-  }
   return result
 }
 
@@ -76,9 +65,6 @@ function updateContext(chat: Chat, messageWrappers: MessageWrapper[], requesting
         usedTokens += tokens
         context = usedTokens <= maxContextTokens
       }
-      if (messageWrapper.message.role === 'system') {
-        context = true
-      }
       if (requestingMessageWrapper?.id === messageWrapper.id) {
         context = true
       }
@@ -100,7 +86,6 @@ function messageWrappersToChatConversations(messageWrappers: MessageWrapper[]): 
     finish_reason: null,
   } as ChatConversation
   messageWrappers
-    .filter((messageWrapper) => messageWrapper.message.role !== 'system')
     .forEach((messageWrapper) => {
       if (messageWrapper.message.role === 'user') {
         currChatConversation = {

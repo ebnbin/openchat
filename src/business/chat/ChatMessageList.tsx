@@ -1,5 +1,4 @@
 import {CircularProgress, List, ListItem} from "@mui/material";
-import {ChatCompletionRequestMessageRoleEnum} from "openai";
 import ChatMessageItem from "./ChatMessageItem";
 import React from "react";
 import {MessageWrapper} from "./ChatPage";
@@ -16,7 +15,6 @@ export default function ChatMessageList(props: MessageListProps) {
     <List>
       {
         messageWrappers
-          .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
           .map((messageWrapper) => (
               <ChatMessageItem
                 key={messageWrapper.id}
