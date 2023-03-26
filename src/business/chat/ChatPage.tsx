@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
 import {Chat, ChatConversation} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
@@ -11,101 +10,77 @@ export const contentWidth = 900
 
 //*********************************************************************************************************************
 
-export interface MessageWrapper {
-  id: string
-  message: ChatCompletionRequestMessage
-  context: boolean
+export enum ConversationEntityType {
+  DEFAULT,
+  CONTEXT,
+  REQUESTING,
 }
 
-function initMessageWrappers(chat: Chat, chatConversations: ChatConversation[]): MessageWrapper[] {
-  const result: MessageWrapper[] = []
-  chatConversations
-    .slice()
-    .reverse()
-    .forEach((chatConversation) => {
-      const assistantMessageWrapper = {
-        id: `${chatConversation.id}_assistant`,
-        message: {
-          role: ChatCompletionRequestMessageRoleEnum.Assistant,
-          content: chatConversation.assistant_message,
-        } as ChatCompletionRequestMessage,
-        context: false,
-      } as MessageWrapper
-      result.unshift(assistantMessageWrapper)
-      const userMessageWrapper = {
-        id: `${chatConversation.id}_user`,
-        message: {
-          role: ChatCompletionRequestMessageRoleEnum.User,
-          content: chatConversation.user_message,
-        } as ChatCompletionRequestMessage,
-        context: false,
-      } as MessageWrapper
-      result.unshift(userMessageWrapper)
+export interface ConversationEntity {
+  id: string;
+  userMessage: string;
+  assistantMessage: string;
+  finishReason: string | null;
+  type: ConversationEntityType;
+}
+
+function initConversationEntities(chat: Chat, chatConversations: ChatConversation[]): ConversationEntity[] {
+  return chatConversations
+    .map((chatConversation) => {
+      return {
+        id: chatConversation.id,
+        userMessage: chatConversation.user_message,
+        assistantMessage: chatConversation.assistant_message,
+        finishReason: chatConversation.finish_reason,
+        type: ConversationEntityType.DEFAULT,
+      } as ConversationEntity
     })
-  return result
 }
 
-function updateContext(chat: Chat, messageWrappers: MessageWrapper[], requestingMessageWrapper: MessageWrapper | null): MessageWrapper[] {
-  const result: MessageWrapper[] = []
+function updateContext(chat: Chat, conversationEntities: ConversationEntity[]): ConversationEntity[] {
+  const result: ConversationEntity[] = []
   const maxContextTokens = defaultGPTModel.maxTokens * chat.context_threshold
   let usedTokens = 0
   if (chat.system_message !== '') {
     usedTokens += chat.system_message.length * chat.tokens_per_char +
       defaultGPTModel.extraCharsPerMessage
   }
-  messageWrappers
+  conversationEntities
     .slice()
     .reverse()
-    .forEach((messageWrapper) => {
+    .forEach((conversationEntity) => {
       let context: boolean
       if (usedTokens > maxContextTokens) {
         context = false
       } else {
-        const tokens = (messageWrapper.message.content.length + defaultGPTModel.extraCharsPerMessage) * chat.tokens_per_char
+        const tokens = (conversationEntity.userMessage.length + conversationEntity.assistantMessage.length) *
+          chat.tokens_per_char + 2 * defaultGPTModel.extraCharsPerMessage
         usedTokens += tokens
         context = usedTokens <= maxContextTokens
       }
-      if (requestingMessageWrapper?.id === messageWrapper.id) {
-        context = true
+      let type = conversationEntity.type
+      if (type !== ConversationEntityType.REQUESTING) {
+        type = context ? ConversationEntityType.CONTEXT : ConversationEntityType.DEFAULT
       }
-      const nextMessageWrapper = {
-        ...messageWrapper,
-        context: context,
-      } as MessageWrapper
-      result.unshift(nextMessageWrapper)
+      const newConversationEntity = {
+        ...conversationEntity,
+        type: type,
+      } as ConversationEntity
+      result.unshift(newConversationEntity)
     })
   return result
 }
 
-function messageWrappersToChatConversations(messageWrappers: MessageWrapper[]): ChatConversation[] {
-  const result: ChatConversation[] = []
-  let currChatConversation = {
-    id: '',
-    user_message: '',
-    assistant_message: '',
-    finish_reason: null,
-  } as ChatConversation
-  messageWrappers
-    .forEach((messageWrapper) => {
-      if (messageWrapper.message.role === 'user') {
-        currChatConversation = {
-          id: messageWrapper.id,
-          user_message: messageWrapper.message.content,
-          assistant_message: '',
-          finish_reason: null,
-        } as ChatConversation
-        result.push(currChatConversation)
-      } else {
-        result.pop()
-        currChatConversation = {
-          ...currChatConversation,
-          assistant_message: messageWrapper.message.content,
-          finish_reason: '',
-        } as ChatConversation
-        result.push(currChatConversation)
-      }
+function conversationEntitiesToChatConversations(conversationEntities: ConversationEntity[]): ChatConversation[] {
+  return conversationEntities
+    .map((conversationEntity) => {
+      return {
+        id: conversationEntity.id,
+        user_message: conversationEntity.userMessage,
+        assistant_message: conversationEntity.assistantMessage,
+        finish_reason: conversationEntity.finishReason,
+      } as ChatConversation
     })
-  return result
 }
 
 //*********************************************************************************************************************
@@ -118,21 +93,17 @@ interface ChatProps {
 export default function ChatPage(props: ChatProps) {
   const { chat, updateChat } = props
 
-  const [requestingMessageWrapper, setRequestingMessageWrapper] = useState<MessageWrapper | null>(null)
-  const isLoading = requestingMessageWrapper !== null
-
-  const [noContextMessageWrappers, setNoContextMessageWrapper] =
-    useState(initMessageWrappers(chat, store.getChatConversations(chat.id)))
-
-  const [messageWrappers, _setMessageWrappers] = useState(updateContext(chat, noContextMessageWrappers, requestingMessageWrapper))
+  const [noContextConversationEntities, setNoContextConversationEntities] =
+    useState(initConversationEntities(chat, store.getChatConversations(chat.id)));
+  const [conversationEntities, setConversationEntities] = useState(updateContext(chat, noContextConversationEntities))
 
   useEffect(() => {
-    _setMessageWrappers(updateContext(chat, noContextMessageWrappers, requestingMessageWrapper))
-  }, [chat, noContextMessageWrappers, requestingMessageWrapper])
+    setConversationEntities(updateContext(chat, noContextConversationEntities))
+  }, [chat, noContextConversationEntities])
 
   useEffect(() => {
-    store.updateChatConversations(chat.id, messageWrappersToChatConversations(noContextMessageWrappers));
-  }, [chat.id, noContextMessageWrappers])
+    store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(noContextConversationEntities));
+  }, [chat.id, noContextConversationEntities])
 
   return (
     <Box
@@ -154,8 +125,7 @@ export default function ChatPage(props: ChatProps) {
         }}
       >
         <ChatMessageList
-          messageWrappers={messageWrappers}
-          isLoading={isLoading}
+          conversationEntities={conversationEntities}
         />
       </Box>
       <Box
@@ -174,19 +144,16 @@ export default function ChatPage(props: ChatProps) {
         >
           <ChatInputCard
             chat={chat}
-            messageWrappers={messageWrappers}
-            isLoading={isLoading}
-            handleRequestStart={(requestingMessageWrapper, messageWrappers) => {
-              setRequestingMessageWrapper(requestingMessageWrapper)
-              setNoContextMessageWrapper(messageWrappers)
+            conversationEntities={conversationEntities}
+            handleRequestStart={(conversationEntities) => {
+              setNoContextConversationEntities(conversationEntities)
             }}
-            handleRequestSuccess={(chat, messageWrappers) => {
-              setRequestingMessageWrapper(null)
+            handleRequestSuccess={(chat, conversationEntities) => {
               updateChat(chat)
-              setNoContextMessageWrapper(messageWrappers)
+              setNoContextConversationEntities(conversationEntities)
             }}
-            handleRequestError={() => {
-              setRequestingMessageWrapper(null)
+            handleRequestError={(conversationEntities) => {
+              setNoContextConversationEntities(conversationEntities)
             }}
           />
         </Box>

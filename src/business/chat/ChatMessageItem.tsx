@@ -3,27 +3,29 @@ import {ChatCompletionRequestMessageRoleEnum} from "openai";
 import {FaceRounded, PsychologyAltRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React from "react";
-import {contentWidth, MessageWrapper} from "./ChatPage";
+import {contentWidth} from "./ChatPage";
 import ChatMessageContent from "./ChatMessageContent";
 
 interface MessageItemProps {
-  messageWrapper: MessageWrapper
+  role: ChatCompletionRequestMessageRoleEnum,
+  message: string,
+  context: boolean,
 }
 
 export default function ChatMessageItem(props: MessageItemProps) {
-  const { messageWrapper } = props
+  const { role, message, context } = props
 
   const theme = useTheme()
 
   function itemColor(): string | undefined {
-    return messageWrapper.message.role === ChatCompletionRequestMessageRoleEnum.Assistant
+    return role === ChatCompletionRequestMessageRoleEnum.Assistant
       ? theme.palette.action.hover
       : undefined
   }
 
   function avatarColor(): string | undefined {
-    if (messageWrapper.context) {
-      switch (messageWrapper.message.role) {
+    if (context) {
+      switch (role) {
         case ChatCompletionRequestMessageRoleEnum.User:
           return 'primary.main'
         case ChatCompletionRequestMessageRoleEnum.Assistant:
@@ -34,7 +36,7 @@ export default function ChatMessageItem(props: MessageItemProps) {
   }
 
   function avatarIcon(): JSX.Element | undefined {
-    switch (messageWrapper.message.role) {
+    switch (role) {
       case ChatCompletionRequestMessageRoleEnum.User:
         return <FaceRounded />
       case ChatCompletionRequestMessageRoleEnum.Assistant:
@@ -79,7 +81,7 @@ export default function ChatMessageItem(props: MessageItemProps) {
           }}
         >
           <ChatMessageContent
-            content={messageWrapper.message.content}
+            content={message}
           />
         </Box>
       </ListItem>

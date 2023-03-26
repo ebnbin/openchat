@@ -6,37 +6,50 @@ import {api, defaultGPTModel} from "../../util/util";
 import {Chat} from "../../util/data";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
-import {MessageWrapper} from "./ChatPage";
+import {ConversationEntity, ConversationEntityType} from "./ChatPage";
 
-function getRequestingMessageWrapper(
-  input: string,
-): MessageWrapper {
+function getRequestingConversationEntity(input: string): ConversationEntity {
   return {
     id: `${new Date().getTime()}`,
-    message: {
-      content: input,
-      role: ChatCompletionRequestMessageRoleEnum.User,
-    } as ChatCompletionRequestMessage,
-    context: true,
-  } as MessageWrapper
+    userMessage: input,
+    assistantMessage: '',
+    finishReason: null,
+    type: ConversationEntityType.REQUESTING,
+  } as ConversationEntity
 }
 
 function getRequestMessages(
   chat: Chat,
-  messageWrappers: MessageWrapper[],
-  requestingMessageWrapper: MessageWrapper,
+  conversationEntities: ConversationEntity[],
+  requestingConversationEntity: ConversationEntity,
 ): ChatCompletionRequestMessage[] {
-  const result = [...messageWrappers, requestingMessageWrapper]
-    .filter((message) => message.context)
-    .map((messageWrapper) => messageWrapper.message)
+  const result: ChatCompletionRequestMessage[] = []
   if (chat.system_message !== '') {
-    result.unshift(
+    result.push(
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
         content: chat.system_message,
       } as ChatCompletionRequestMessage
     )
   }
+  [...conversationEntities, requestingConversationEntity]
+    .filter((conversationEntity) => conversationEntity.type !== ConversationEntityType.DEFAULT)
+    .forEach((conversationEntity) => {
+      result.push(
+        {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: conversationEntity.userMessage,
+        } as ChatCompletionRequestMessage
+      )
+      if (conversationEntity.type !== ConversationEntityType.REQUESTING) {
+        result.push(
+          {
+            role: ChatCompletionRequestMessageRoleEnum.Assistant,
+            content: conversationEntity.assistantMessage,
+          } as ChatCompletionRequestMessage
+        )
+      }
+    })
   return result
 }
 
@@ -61,36 +74,48 @@ function handleResponse1(
 }
 
 function handleResponse2(
-  chat: Chat,
-  messageWrappers: MessageWrapper[],
+  conversationEntities: ConversationEntity[],
   response: CreateChatCompletionResponse,
-): MessageWrapper[] {
+): ConversationEntity[] {
   const responseMessage = response.choices[0].message!!
-  return [
-    ...messageWrappers,
-    {
-      id: `${new Date().getTime()}`,
-      message: {
-        role: responseMessage.role,
-        content: responseMessage.content,
-      } as ChatCompletionRequestMessage,
-      context: false,
-    } as MessageWrapper,
-  ];
+  const lastConversationEntity = conversationEntities[conversationEntities.length - 1]
+  const copy = [...conversationEntities]
+  copy[conversationEntities.length - 1] = {
+    ...lastConversationEntity,
+    assistantMessage: responseMessage.content,
+    finishReason: response.choices[0].finish_reason,
+    type: ConversationEntityType.DEFAULT,
+  } as ConversationEntity
+  return copy
+}
+
+function handleResponseError(
+  conversationEntities: ConversationEntity[],
+): ConversationEntity[] {
+  const lastConversationEntity = conversationEntities[conversationEntities.length - 1]
+  const copy = [...conversationEntities]
+  copy[conversationEntities.length - 1] = {
+    ...lastConversationEntity,
+    finishReason: '',
+    type: ConversationEntityType.DEFAULT,
+  } as ConversationEntity
+  return copy
 }
 
 interface InputCardProps {
   chat: Chat
-  messageWrappers: MessageWrapper[]
-  isLoading: boolean
-  handleRequestStart: (requestingMessageWrapper: MessageWrapper, messageWrapper: MessageWrapper[]) => void
-  handleRequestSuccess: (chat: Chat, messageWrapper: ((prev: MessageWrapper[]) => MessageWrapper[])) => void
-  handleRequestError: () => void
+  conversationEntities: ConversationEntity[],
+  handleRequestStart: (conversationEntities: ConversationEntity[]) => void
+  handleRequestSuccess: (chat: Chat, conversationEntities: ((prev: ConversationEntity[]) => ConversationEntity[])) => void
+  handleRequestError: (conversationEntities: ((prev: ConversationEntity[]) => ConversationEntity[])) => void
 }
 
 export default function ChatInputCard(props: InputCardProps) {
-  const { chat, messageWrappers, isLoading, handleRequestStart, handleRequestSuccess,
+  const { chat, conversationEntities, handleRequestStart, handleRequestSuccess,
     handleRequestError } = props
+
+  const isLoading = conversationEntities.length > 0 &&
+    conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.REQUESTING
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value)
@@ -108,10 +133,11 @@ export default function ChatInputCard(props: InputCardProps) {
   const [input, setInput] = useState('')
 
   const request = () => {
-    const requestingMessageWrapper = getRequestingMessageWrapper(input)
+    const requestingConversationEntity = getRequestingConversationEntity(input)
     setInput('')
-    const requestMessages = getRequestMessages(chat, messageWrappers, requestingMessageWrapper)
-    handleRequestStart(requestingMessageWrapper, [...messageWrappers, requestingMessageWrapper])
+    const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
+    const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
+    handleRequestStart(nextConversationEntities)
 
     api()
       .createChatCompletion({
@@ -120,10 +146,10 @@ export default function ChatInputCard(props: InputCardProps) {
       })
       .then(response => {
         const nextChat = handleResponse1(chat, requestMessages, response.data)
-        handleRequestSuccess(nextChat, (prev) => handleResponse2(nextChat, prev, response.data))
+        handleRequestSuccess(nextChat, (prev) => handleResponse2(prev, response.data))
       })
       .catch(() => {
-        handleRequestError()
+        handleRequestError((prev) => handleResponseError(prev))
       })
   }
 
