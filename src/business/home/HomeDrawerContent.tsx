@@ -12,24 +12,18 @@ import * as React from "react";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
-  createChat: () => Chat,
   selectedChatId: string,
-  setSelectedChatId: (selectedChatId: string) => void,
-  handleClickOpen: () => void,
+  handleChatSettingsDialogOpen: () => void,
   handleItemClick: (chatId: string) => void,
   handleClickSettingsOpen: () => void,
+  handleNewChatClick: () => void,
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
-  const { chats, createChat, selectedChatId, setSelectedChatId, handleClickOpen, handleItemClick,
-    handleClickSettingsOpen } = props
+  const { chats, selectedChatId, handleChatSettingsDialogOpen, handleItemClick,
+    handleClickSettingsOpen, handleNewChatClick } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
-
-  const handleNewChatClick = () => {
-    const chat = createChat();
-    setSelectedChatId(chat.id);
-  }
 
   return (
     <Box
@@ -63,7 +57,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
             secondaryAction={
               <IconButton
                 edge="end"
-                onClick={handleClickOpen} // TODO
+                onClick={handleChatSettingsDialogOpen} // TODO
                 sx={{display: isPageWide && selectedChatId === chatItem.id ? 'flex' : 'none', alignItems: 'center'}} // TODO
               >
                 <EditRounded />

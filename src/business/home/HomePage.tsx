@@ -41,6 +41,11 @@ export default function HomePage(props: HomePageProps) {
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
 
+  const handleNewChatClick = () => {
+    const chat = createChat();
+    setSelectedChatId(chat.id);
+  }
+
   return (
     <>
       <Box
@@ -53,13 +58,13 @@ export default function HomePage(props: HomePageProps) {
       >
         <HomeDrawer
           chats={chats}
-          createChat={createChat}
           selectedChatId={selectedChatId}
           setSelectedChatId={setSelectedChatId}
           handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
           setSettingsOpen={setSettingsOpen}
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
+          handleNewChatClick={handleNewChatClick}
         />
         <Box
           sx={{

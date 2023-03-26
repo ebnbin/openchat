@@ -8,18 +8,18 @@ const drawerWidth = 300;
 
 interface HomeDrawerProps {
   chats: Chat[],
-  createChat: () => Chat,
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
   handleChatSettingsDialogOpen: () => void,
   setSettingsOpen: (settingsOpen: boolean) => void,
   mobileOpen: boolean,
   setMobileOpen: (mobileOpen: boolean) => void,
+  handleNewChatClick: () => void,
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
-  const { chats, createChat, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
-    mobileOpen, setMobileOpen } = props
+  const { chats, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
+    mobileOpen, setMobileOpen, handleNewChatClick } = props
 
   const isPageWide = useMediaQuery('(min-width:900px)')
 
@@ -53,12 +53,11 @@ export default function HomeDrawer(props: HomeDrawerProps) {
           >
             <HomeDrawerContent
               chats={chats}
-              createChat={createChat}
               selectedChatId={selectedChatId}
-              setSelectedChatId={setSelectedChatId}
-              handleClickOpen={handleChatSettingsDialogOpen}
+              handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}
               handleItemClick={handleItemClick}
               handleClickSettingsOpen={handleClickSettingsOpen}
+              handleNewChatClick={handleNewChatClick}
             />
           </Drawer>
         )
@@ -76,12 +75,11 @@ export default function HomeDrawer(props: HomeDrawerProps) {
           >
             <HomeDrawerContent
               chats={chats}
-              createChat={createChat}
               selectedChatId={selectedChatId}
-              setSelectedChatId={setSelectedChatId}
-              handleClickOpen={handleChatSettingsDialogOpen}
+              handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}
               handleItemClick={handleItemClick}
               handleClickSettingsOpen={handleClickSettingsOpen}
+              handleNewChatClick={handleNewChatClick}
             />
           </Drawer>
         )
