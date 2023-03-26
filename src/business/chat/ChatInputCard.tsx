@@ -3,7 +3,7 @@ import {Card, IconButton, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
 import {api, defaultGPTModel} from "../../util/util";
-import {Chat, ChatMessage} from "../../util/data";
+import {Chat} from "../../util/data";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {MessageWrapper} from "./ChatPage";
@@ -30,73 +30,69 @@ function getRequestMessages(
     .map((messageWrapper) => messageWrapper.message)
 }
 
-function handleResponse(
+function handleResponse1(
   chat: Chat,
-  chatMessages: ChatMessage[],
-  requestChatMessages: ChatCompletionRequestMessage[],
-  requestingMessageWrapper: MessageWrapper,
+  requestMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
-): { nextChat: Chat, nextChatMessages: ChatMessage[] } {
-  const id = `${new Date().getTime()}`
+): Chat {
   const responseMessage = response.choices[0].message!!
-  const nextChatMessages = [
-    ...chatMessages,
-    {
-      id: requestingMessageWrapper.id,
-      role: requestingMessageWrapper.message.role,
-      content: requestingMessageWrapper.message.content,
-    } as ChatMessage,
-    {
-      id: id,
-      role: responseMessage.role,
-      content: responseMessage.content,
-    } as ChatMessage,
-  ]
   const responseTotalTokens = response.usage!!.total_tokens
-  const charCount = requestChatMessages
+  const charCount = requestMessages
     .map((message) => message.content)
     .concat(responseMessage.content)
     .reduce((acc, message) => acc + message.length + defaultGPTModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chat.tokens + responseTotalTokens
-  const nextChat = {
+  return {
     ...chat,
     tokens_per_char: tokensPerChar,
     tokens: tokens,
   } as Chat
+}
 
-  return {
-    nextChat: nextChat,
-    nextChatMessages: nextChatMessages,
-  }
+function handleResponse2(
+  chat: Chat,
+  messageWrappers: MessageWrapper[],
+  requestingMessageWrapper: MessageWrapper,
+  response: CreateChatCompletionResponse,
+): MessageWrapper[] {
+  const responseMessage = response.choices[0].message!!
+  return [
+    ...messageWrappers,
+    requestingMessageWrapper,
+    {
+      id: `${new Date().getTime()}`,
+      message: {
+        role: responseMessage.role,
+        content: responseMessage.content,
+      } as ChatCompletionRequestMessage,
+      context: false,
+    } as MessageWrapper,
+  ];
 }
 
 function handleResponseError(
-  chatMessages: ChatMessage[],
+  chat: Chat,
+  messageWrappers: MessageWrapper[],
   requestingMessageWrapper: MessageWrapper,
-): ChatMessage[] {
+): MessageWrapper[] {
   return [
-    ...chatMessages,
-    {
-      id: requestingMessageWrapper.id,
-      role: requestingMessageWrapper.message.role,
-      content: requestingMessageWrapper.message.content,
-    } as ChatMessage,
-  ]
+    ...messageWrappers,
+    requestingMessageWrapper,
+  ];
 }
 
 interface InputCardProps {
   chat: Chat
-  chatMessages: ChatMessage[]
   messageWrappers: MessageWrapper[]
   isLoading: boolean
   handleRequestStart: (requestingMessageWrapper: MessageWrapper) => void
-  handleRequestSuccess: (chat: Chat, chatMessages: ChatMessage[]) => void
-  handleRequestError: (chatMessages: ChatMessage[]) => void
+  handleRequestSuccess: (chat: Chat, messageWrapper: MessageWrapper[]) => void
+  handleRequestError: (messageWrapper: MessageWrapper[]) => void
 }
 
 export default function ChatInputCard(props: InputCardProps) {
-  const { chat, chatMessages, messageWrappers, isLoading, handleRequestStart, handleRequestSuccess,
+  const { chat, messageWrappers, isLoading, handleRequestStart, handleRequestSuccess,
     handleRequestError } = props
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -126,13 +122,13 @@ export default function ChatInputCard(props: InputCardProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const { nextChat, nextChatMessages } = handleResponse(chat, chatMessages, requestMessages,
-          requestingMessageWrapper, response.data)
-        handleRequestSuccess(nextChat, nextChatMessages)
+        const nextChat = handleResponse1(chat, requestMessages, response.data)
+        const nextMessageWrappers = handleResponse2(nextChat, messageWrappers, requestingMessageWrapper, response.data)
+        handleRequestSuccess(nextChat, nextMessageWrappers)
       })
       .catch(() => {
-        const nextChatMessages = handleResponseError(chatMessages, requestingMessageWrapper)
-        handleRequestError(nextChatMessages)
+        const nextMessageWrappers = handleResponseError(chat, messageWrappers, requestingMessageWrapper)
+        handleRequestError(nextMessageWrappers)
       })
   }
 
