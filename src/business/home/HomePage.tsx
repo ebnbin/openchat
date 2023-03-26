@@ -51,10 +51,9 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const toNewChatPage = () => {
-    if (selectedChatId !== '') {
-      setNewChat(store.newChat())
-      setSelectedChatId('');
-    }
+    setNewChat(store.newChat())
+    setSelectedChatId('');
+    setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())

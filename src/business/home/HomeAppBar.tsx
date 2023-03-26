@@ -51,7 +51,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                   <MenuRounded/>
                 </IconButton>
                 <Typography variant="h6" noWrap component="div">
-                  {selectedChatId !== '' ? chats.find((chat) => chat.id === selectedChatId)!!.title : 'New chat'}
+                  {selectedChatId !== '' ? (chats.find((chat) => chat.id === selectedChatId)!!.title === '' ? 'New chat' : chats.find((chat) => chat.id === selectedChatId)!!.title) : 'OpenChat'}
                 </Typography>
                 <Box
                   sx={{

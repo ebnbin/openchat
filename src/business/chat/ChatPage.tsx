@@ -7,6 +7,7 @@ import {defaultGPTModel} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
 import LogoImage from "../welcome/LogoImage";
+import {EditRounded} from "@mui/icons-material";
 
 export const contentWidth = 900
 
@@ -150,11 +151,13 @@ export default function ChatPage(props: ChatProps) {
             margin: 'auto',
             display: 'flex',
             flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
           <LogoImage/>
           <Button
             variant={'outlined'}
+            startIcon={<EditRounded/>}
             onClick={() => {
               if (openNewChatSettings !== null) {
                 openNewChatSettings()

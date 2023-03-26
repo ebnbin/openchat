@@ -68,7 +68,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
               onClick={() => handleItemClick(chatItem.id)}
               selected={selectedChatId === chatItem.id}
             >
-              <ListItemText primary={chatItem.title === '' ? 'untitled' : chatItem.title} />
+              <ListItemText primary={chatItem.title === '' ? 'New chat' : chatItem.title} />
             </ListItemButton>
           </ListItem>
         ))}
