@@ -53,13 +53,11 @@ function handleResponse1(
 function handleResponse2(
   chat: Chat,
   messageWrappers: MessageWrapper[],
-  requestingMessageWrapper: MessageWrapper,
   response: CreateChatCompletionResponse,
 ): MessageWrapper[] {
   const responseMessage = response.choices[0].message!!
   return [
     ...messageWrappers,
-    requestingMessageWrapper,
     {
       id: `${new Date().getTime()}`,
       message: {
@@ -71,24 +69,13 @@ function handleResponse2(
   ];
 }
 
-function handleResponseError(
-  chat: Chat,
-  messageWrappers: MessageWrapper[],
-  requestingMessageWrapper: MessageWrapper,
-): MessageWrapper[] {
-  return [
-    ...messageWrappers,
-    requestingMessageWrapper,
-  ];
-}
-
 interface InputCardProps {
   chat: Chat
   messageWrappers: MessageWrapper[]
   isLoading: boolean
-  handleRequestStart: (requestingMessageWrapper: MessageWrapper) => void
-  handleRequestSuccess: (chat: Chat, messageWrapper: MessageWrapper[]) => void
-  handleRequestError: (messageWrapper: MessageWrapper[]) => void
+  handleRequestStart: (requestingMessageWrapper: MessageWrapper, messageWrapper: MessageWrapper[]) => void
+  handleRequestSuccess: (chat: Chat, messageWrapper: ((prev: MessageWrapper[]) => MessageWrapper[])) => void
+  handleRequestError: () => void
 }
 
 export default function ChatInputCard(props: InputCardProps) {
@@ -114,7 +101,7 @@ export default function ChatInputCard(props: InputCardProps) {
     const requestingMessageWrapper = getRequestingMessageWrapper(input)
     setInput('')
     const requestMessages = getRequestMessages(messageWrappers, requestingMessageWrapper)
-    handleRequestStart(requestingMessageWrapper)
+    handleRequestStart(requestingMessageWrapper, [...messageWrappers, requestingMessageWrapper])
 
     api()
       .createChatCompletion({
@@ -123,12 +110,10 @@ export default function ChatInputCard(props: InputCardProps) {
       })
       .then(response => {
         const nextChat = handleResponse1(chat, requestMessages, response.data)
-        const nextMessageWrappers = handleResponse2(nextChat, messageWrappers, requestingMessageWrapper, response.data)
-        handleRequestSuccess(nextChat, nextMessageWrappers)
+        handleRequestSuccess(nextChat, (prev) => handleResponse2(nextChat, prev, response.data))
       })
       .catch(() => {
-        const nextMessageWrappers = handleResponseError(chat, messageWrappers, requestingMessageWrapper)
-        handleRequestError(nextMessageWrappers)
+        handleRequestError()
       })
   }
 

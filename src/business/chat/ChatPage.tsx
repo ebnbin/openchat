@@ -47,7 +47,7 @@ function initMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): MessageWr
   return result
 }
 
-function updateContext(chat: Chat, messageWrappers: MessageWrapper[]): MessageWrapper[] {
+function updateContext(chat: Chat, messageWrappers: MessageWrapper[], requestingMessageWrapper: MessageWrapper | null): MessageWrapper[] {
   const result: MessageWrapper[] = []
   const maxContextTokens = defaultGPTModel.maxTokens * chat.context_threshold
   let usedTokens = 0
@@ -68,6 +68,9 @@ function updateContext(chat: Chat, messageWrappers: MessageWrapper[]): MessageWr
         context = usedTokens <= maxContextTokens
       }
       if (messageWrapper.message.role === 'system') {
+        context = true
+      }
+      if (requestingMessageWrapper?.id === messageWrapper.id) {
         context = true
       }
       const nextMessageWrapper = {
@@ -101,21 +104,21 @@ interface ChatProps {
 export default function ChatPage(props: ChatProps) {
   const { chat, updateChat } = props
 
+  const [requestingMessageWrapper, setRequestingMessageWrapper] = useState<MessageWrapper | null>(null)
+  const isLoading = requestingMessageWrapper !== null
+
   const [noContextMessageWrappers, setNoContextMessageWrapper] =
     useState(initMessageWrappers(chat, store.getChatMessages(chat.id)))
 
-  const [messageWrappers, _setMessageWrappers] = useState(updateContext(chat, noContextMessageWrappers))
+  const [messageWrappers, _setMessageWrappers] = useState(updateContext(chat, noContextMessageWrappers, requestingMessageWrapper))
 
   useEffect(() => {
-    _setMessageWrappers(updateContext(chat, noContextMessageWrappers))
-  }, [chat, noContextMessageWrappers])
+    _setMessageWrappers(updateContext(chat, noContextMessageWrappers, requestingMessageWrapper))
+  }, [chat, noContextMessageWrappers, requestingMessageWrapper])
 
   useEffect(() => {
     store.updateChatMessages(chat.id, messageWrappersToChatMessages(noContextMessageWrappers));
   }, [chat.id, noContextMessageWrappers])
-
-  const [requestingMessageWrapper, setRequestingMessageWrapper] = useState<MessageWrapper | null>(null)
-  const isLoading = requestingMessageWrapper !== null
 
   return (
     <Box
@@ -138,7 +141,6 @@ export default function ChatPage(props: ChatProps) {
       >
         <ChatMessageList
           messageWrappers={messageWrappers}
-          requestingMessageWrapper={requestingMessageWrapper}
           isLoading={isLoading}
         />
       </Box>
@@ -160,17 +162,17 @@ export default function ChatPage(props: ChatProps) {
             chat={chat}
             messageWrappers={messageWrappers}
             isLoading={isLoading}
-            handleRequestStart={(requestingMessageWrapper) => {
+            handleRequestStart={(requestingMessageWrapper, messageWrappers) => {
               setRequestingMessageWrapper(requestingMessageWrapper)
+              setNoContextMessageWrapper(messageWrappers)
             }}
             handleRequestSuccess={(chat, messageWrappers) => {
               setRequestingMessageWrapper(null)
               updateChat(chat)
               setNoContextMessageWrapper(messageWrappers)
             }}
-            handleRequestError={(messageWrappers) => {
+            handleRequestError={() => {
               setRequestingMessageWrapper(null)
-              setNoContextMessageWrapper(messageWrappers)
             }}
           />
         </Box>

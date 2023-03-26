@@ -6,20 +6,16 @@ import {MessageWrapper} from "./ChatPage";
 
 interface MessageListProps {
   messageWrappers: MessageWrapper[]
-  requestingMessageWrapper: MessageWrapper | null
   isLoading: boolean
 }
 
 export default function ChatMessageList(props: MessageListProps) {
-  const { messageWrappers, requestingMessageWrapper, isLoading } = props
+  const { messageWrappers, isLoading } = props
 
-  const validMessageWrappers = requestingMessageWrapper
-    ? [...messageWrappers, requestingMessageWrapper]
-    : messageWrappers
   return (
     <List>
       {
-        validMessageWrappers
+        messageWrappers
           .filter((messageWrapper) => messageWrapper.message.role !== ChatCompletionRequestMessageRoleEnum.System)
           .map((messageWrapper) => (
               <ChatMessageItem
