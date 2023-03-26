@@ -7,6 +7,7 @@ import * as React from "react";
 import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
+import {ChatNewSettingsDialog} from "../chat/ChatNewSettingsDialog";
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -43,6 +44,7 @@ export default function HomePage(props: HomePageProps) {
   const [selectedChatId, setSelectedChatId] = useState<string>('');
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
+  const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = React.useState(false);
 
   const handleNewChatClick = () => {
     toNewChatPage()
@@ -103,6 +105,7 @@ export default function HomePage(props: HomePageProps) {
                 chat={chats.find((chat) => chat.id === selectedChatId)!!}
                 isNewChat={false}
                 createOrUpdateChat={createOrUpdateChat}
+                openNewChatSettings={null}
               />
             ) : (
               <ChatPage
@@ -110,6 +113,7 @@ export default function HomePage(props: HomePageProps) {
                 chat={newChat}
                 isNewChat={true}
                 createOrUpdateChat={createOrUpdateChat}
+                openNewChatSettings={() => setNewChatSettingsDialogOpen(true)}
               />
             )}
           </Box>
@@ -123,7 +127,14 @@ export default function HomePage(props: HomePageProps) {
           open={chatSettingsDialogOpen}
           handleClose={() => setChatSettingsDialogOpen(false)}
         />
-      ) : <></>}
+      ) : (
+        <ChatNewSettingsDialog
+          chat={newChat}
+          updateChat={setNewChat}
+          open={newChatSettingsDialogOpen}
+          handleClose={() => setNewChatSettingsDialogOpen(false)}
+        />
+      )}
     </>
   )
 }

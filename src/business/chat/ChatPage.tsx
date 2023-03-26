@@ -91,10 +91,11 @@ interface ChatProps {
   chat: Chat,
   isNewChat: boolean,
   createOrUpdateChat: (chat: Chat, isNewChat: boolean) => void,
+  openNewChatSettings: (() => void) | null,
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { chat, isNewChat, createOrUpdateChat } = props
+  const { chat, isNewChat, createOrUpdateChat, openNewChatSettings } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
     useState(initConversationEntities(store.getChatConversations(chat.id)));
@@ -154,6 +155,11 @@ export default function ChatPage(props: ChatProps) {
           <LogoImage/>
           <Button
             variant={'outlined'}
+            onClick={() => {
+              if (openNewChatSettings !== null) {
+                openNewChatSettings()
+              }
+            }}
           >
             New chat settings
           </Button>
