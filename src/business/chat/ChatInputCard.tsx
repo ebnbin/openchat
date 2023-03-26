@@ -8,9 +8,9 @@ import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from
 import {CreateChatCompletionResponse} from "openai/api";
 import {ConversationEntity, ConversationEntityType} from "./ChatPage";
 
-function getRequestingConversationEntity(input: string, id: string): ConversationEntity {
+function getRequestingConversationEntity(input: string): ConversationEntity {
   return {
-    id: id,
+    id: `${new Date().getTime()}`,
     userMessage: input,
     assistantMessage: '',
     finishReason: null,
@@ -134,19 +134,13 @@ export default function ChatInputCard(props: InputCardProps) {
   const [input, setInput] = useState('')
 
   const request = () => {
-    const id = `${new Date().getTime()}`
-    let validChat: Chat = chat
     if (handleCreateChat != null) {
-      validChat = {
-        ...chat,
-        id: id,
-      }
-      handleCreateChat(validChat)
+      handleCreateChat(chat)
     }
 
-    const requestingConversationEntity = getRequestingConversationEntity(input, id)
+    const requestingConversationEntity = getRequestingConversationEntity(input)
     setInput('')
-    const requestMessages = getRequestMessages(validChat, conversationEntities, requestingConversationEntity)
+    const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     handleRequestStart(nextConversationEntities)
 
@@ -156,7 +150,7 @@ export default function ChatInputCard(props: InputCardProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const nextChat = handleResponse1(validChat, requestMessages, response.data) // TODO
+        const nextChat = handleResponse1(chat, requestMessages, response.data) // TODO
         handleRequestSuccess(nextChat, (prev) => handleResponse2(prev, response.data))
       })
       .catch(() => {

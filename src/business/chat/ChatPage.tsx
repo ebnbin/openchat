@@ -88,34 +88,28 @@ function conversationEntitiesToChatConversations(conversationEntities: Conversat
 //*********************************************************************************************************************
 
 interface ChatProps {
-  chat: Chat | null,
-  createChat: (chat: Chat) => void,
-  updateChat: (chat: Chat) => void,
+  chat: Chat,
+  isNewChat: boolean,
+  createOrUpdateChat: (chat: Chat, isNewChat: boolean) => void,
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { chat, createChat, updateChat } = props
+  const { chat, isNewChat, createOrUpdateChat } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState(chat === null ? [] : initConversationEntities(store.getChatConversations(chat.id)));
+    useState(initConversationEntities(store.getChatConversations(chat.id)));
   const [conversationEntities, setConversationEntities] =
-    useState(chat === null ? [] : updateContext(chat, noContextConversationEntities))
+    useState(updateContext(chat, noContextConversationEntities))
 
   useEffect(() => {
-    if (chat !== null) {
-      setConversationEntities(updateContext(chat, noContextConversationEntities))
-    }
+    setConversationEntities(updateContext(chat, noContextConversationEntities))
   }, [chat, noContextConversationEntities])
 
-  const chatId = chat === null ? null : chat.id
-
   useEffect(() => {
-    if (chatId !== null) {
-      store.updateChatConversations(chatId, conversationEntitiesToChatConversations(noContextConversationEntities));
+    if (!isNewChat) {
+      store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(noContextConversationEntities));
     }
-  }, [chatId, noContextConversationEntities])
-
-  const [newChat, setNewChat] = useState<Chat>(store.newChat())
+  }, [isNewChat, chat.id, noContextConversationEntities])
 
   return (
     <Box
@@ -134,7 +128,7 @@ export default function ChatPage(props: ChatProps) {
           padding: '0px',
           paddingBottom: '128px',
           overflow: 'auto',
-          display: conversationEntities.length === 0 ? 'none' : 'block',
+          display: isNewChat ? 'none' : 'block',
         }}
       >
         <ChatMessageList
@@ -146,7 +140,7 @@ export default function ChatPage(props: ChatProps) {
           width: '100%',
           height: '100%',
           position: 'absolute',
-          display: conversationEntities.length !== 0 ? 'none' : 'flex',
+          display: !isNewChat ? 'none' : 'flex',
           paddingBottom: '72px',
         }}
       >
@@ -179,14 +173,14 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <ChatInputCard
-            chat={chat === null ? newChat : chat}
+            chat={chat}
             conversationEntities={conversationEntities}
-            handleCreateChat={chat === null ? createChat : null}
+            handleCreateChat={isNewChat ? ((chat) => createOrUpdateChat(chat, true)) : null}
             handleRequestStart={(conversationEntities) => {
               setNoContextConversationEntities(conversationEntities)
             }}
             handleRequestSuccess={(chat, conversationEntities) => {
-              updateChat(chat)
+              createOrUpdateChat(chat, false)
               setNoContextConversationEntities(conversationEntities)
             }}
             handleRequestError={(conversationEntities) => {

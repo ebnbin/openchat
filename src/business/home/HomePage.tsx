@@ -7,7 +7,6 @@ import * as React from "react";
 import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
-import WelcomePage from "../welcome/WelcomePage";
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -16,19 +15,23 @@ interface HomePageProps {
 export default function HomePage(props: HomePageProps) {
   const [chats, _setChats] = useState(store.getChats())
 
-  const createChat = () => {
-    const chat = store.createChat();
-    _setChats(store.getChats());
-    return chat;
-  }
-
   const updateChat = (chat: Chat) => {
     store.updateChat(chat);
     _setChats(store.getChats());
   }
 
+  const createOrUpdateChat = (chat: Chat, isNewChat: boolean) => {
+    if (isNewChat) {
+      store.createChat(chat)
+      _setChats(store.getChats());
+      setSelectedChatId(chat.id)
+    } else {
+      updateChat(chat)
+    }
+  }
+
   const deleteChat = (chatId: string) => {
-    setSelectedChatId('');
+    toNewChatPage()
     store.deleteChat(chatId);
     _setChats(store.getChats());
   }
@@ -42,9 +45,17 @@ export default function HomePage(props: HomePageProps) {
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
 
   const handleNewChatClick = () => {
-    const chat = createChat();
-    setSelectedChatId(chat.id);
+    toNewChatPage()
   }
+
+  const toNewChatPage = () => {
+    if (selectedChatId !== '') {
+      setNewChat(store.newChat())
+      setSelectedChatId('');
+    }
+  }
+
+  const [newChat, setNewChat] = useState(store.newChat())
 
   return (
     <>
@@ -90,11 +101,16 @@ export default function HomePage(props: HomePageProps) {
               <ChatPage
                 key={`ChatPage${selectedChatId}`}
                 chat={chats.find((chat) => chat.id === selectedChatId)!!}
-                createChat={createChat}
-                updateChat={updateChat}
+                isNewChat={false}
+                createOrUpdateChat={createOrUpdateChat}
               />
             ) : (
-              <WelcomePage/>
+              <ChatPage
+                key={`ChatPage${newChat.id}`}
+                chat={newChat}
+                isNewChat={true}
+                createOrUpdateChat={createOrUpdateChat}
+              />
             )}
           </Box>
         </Box>
