@@ -13,8 +13,9 @@ export interface Chat {
   'tokens': number;
 }
 
-export interface ChatMessage {
+export interface ChatConversation {
   'id': string;
-  'role': string;
-  'content': string;
+  'user_message': string;
+  'assistant_message': string;
+  'finish_reason': string | null;
 }

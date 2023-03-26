@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import Box from "@mui/material/Box";
-import {Chat, ChatMessage} from "../../util/data";
+import {Chat, ChatConversation} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 import {defaultGPTModel} from "../../util/util";
@@ -17,21 +17,30 @@ export interface MessageWrapper {
   context: boolean
 }
 
-function initMessageWrappers(chat: Chat, chatMessages: ChatMessage[]): MessageWrapper[] {
+function initMessageWrappers(chat: Chat, chatConversations: ChatConversation[]): MessageWrapper[] {
   const result: MessageWrapper[] = []
-  chatMessages
+  chatConversations
     .slice()
     .reverse()
-    .forEach((chatMessage) => {
-      const messageWrapper = {
-        id: chatMessage.id,
+    .forEach((chatConversation) => {
+      const assistantMessageWrapper = {
+        id: `${chatConversation.id}_assistant`,
         message: {
-          role: chatMessage.role,
-          content: chatMessage.content,
+          role: ChatCompletionRequestMessageRoleEnum.Assistant,
+          content: chatConversation.assistant_message,
         } as ChatCompletionRequestMessage,
         context: false,
       } as MessageWrapper
-      result.unshift(messageWrapper)
+      result.unshift(assistantMessageWrapper)
+      const userMessageWrapper = {
+        id: `${chatConversation.id}_user`,
+        message: {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: chatConversation.user_message,
+        } as ChatCompletionRequestMessage,
+        context: false,
+      } as MessageWrapper
+      result.unshift(userMessageWrapper)
     })
   if (chat.system_message !== '') {
     const systemMessageWrapper = {
@@ -82,16 +91,36 @@ function updateContext(chat: Chat, messageWrappers: MessageWrapper[], requesting
   return result
 }
 
-function messageWrappersToChatMessages(messageWrappers: MessageWrapper[]): ChatMessage[] {
-  return messageWrappers
+function messageWrappersToChatConversations(messageWrappers: MessageWrapper[]): ChatConversation[] {
+  const result: ChatConversation[] = []
+  let currChatConversation = {
+    id: '',
+    user_message: '',
+    assistant_message: '',
+    finish_reason: null,
+  } as ChatConversation
+  messageWrappers
     .filter((messageWrapper) => messageWrapper.message.role !== 'system')
-    .map((messageWrapper) => {
-      return {
-        id: messageWrapper.id,
-        role: messageWrapper.message.role,
-        content: messageWrapper.message.content,
-      } as ChatMessage
+    .forEach((messageWrapper) => {
+      if (messageWrapper.message.role === 'user') {
+        currChatConversation = {
+          id: messageWrapper.id,
+          user_message: messageWrapper.message.content,
+          assistant_message: '',
+          finish_reason: null,
+        } as ChatConversation
+        result.push(currChatConversation)
+      } else {
+        result.pop()
+        currChatConversation = {
+          ...currChatConversation,
+          assistant_message: messageWrapper.message.content,
+          finish_reason: '',
+        } as ChatConversation
+        result.push(currChatConversation)
+      }
     })
+  return result
 }
 
 //*********************************************************************************************************************
@@ -108,7 +137,7 @@ export default function ChatPage(props: ChatProps) {
   const isLoading = requestingMessageWrapper !== null
 
   const [noContextMessageWrappers, setNoContextMessageWrapper] =
-    useState(initMessageWrappers(chat, store.getChatMessages(chat.id)))
+    useState(initMessageWrappers(chat, store.getChatConversations(chat.id)))
 
   const [messageWrappers, _setMessageWrappers] = useState(updateContext(chat, noContextMessageWrappers, requestingMessageWrapper))
 
@@ -117,7 +146,7 @@ export default function ChatPage(props: ChatProps) {
   }, [chat, noContextMessageWrappers, requestingMessageWrapper])
 
   useEffect(() => {
-    store.updateChatMessages(chat.id, messageWrappersToChatMessages(noContextMessageWrappers));
+    store.updateChatConversations(chat.id, messageWrappersToChatConversations(noContextMessageWrappers));
   }, [chat.id, noContextMessageWrappers])
 
   return (

@@ -1,9 +1,9 @@
-import {AppData, Chat, ChatMessage} from "./data";
+import {AppData, Chat, ChatConversation} from "./data";
 import Preference from "./Preference";
 
 class Store {
   private readonly appData: Preference<AppData>;
-  private readonly chatMessagesMap: Map<string, Preference<ChatMessage[]>>;
+  private readonly chatConversationsMap: Map<string, Preference<ChatConversation[]>>;
 
   constructor() {
     this.appData = new Preference<AppData>('app_data', {
@@ -11,7 +11,7 @@ class Store {
       openai_api_key: '',
       chats: [],
     } as AppData);
-    this.chatMessagesMap = new Map();
+    this.chatConversationsMap = new Map();
   }
 
   public getOpenAIApiKey(): string {
@@ -72,35 +72,35 @@ class Store {
       ...this.appData.get(),
       chats: copyChats,
     } as AppData);
-    this.deleteChatMessages(chatId);
+    this.deleteChatConversations(chatId);
   }
 
-  public getChatMessages(chatId: string): ChatMessage[] {
-    let chatMessages: Preference<ChatMessage[]>;
-    if (this.chatMessagesMap.has(chatId)) {
-      chatMessages = this.chatMessagesMap.get(chatId)!!;
+  public getChatConversations(chatId: string): ChatConversation[] {
+    let chatConversations: Preference<ChatConversation[]>;
+    if (this.chatConversationsMap.has(chatId)) {
+      chatConversations = this.chatConversationsMap.get(chatId)!!;
     } else {
-      chatMessages = new Preference<ChatMessage[]>(`chat_${chatId}`, []);
-      this.chatMessagesMap.set(chatId, chatMessages);
+      chatConversations = new Preference<ChatConversation[]>(`chat_${chatId}`, []);
+      this.chatConversationsMap.set(chatId, chatConversations);
     }
-    return chatMessages.get();
+    return chatConversations.get();
   }
 
-  public updateChatMessages(chatId: string, chatMessages: ChatMessage[]) {
-    if (!this.chatMessagesMap.has(chatId)) {
+  public updateChatConversations(chatId: string, chatConversations: ChatConversation[]) {
+    if (!this.chatConversationsMap.has(chatId)) {
       return;
     }
-    const chatMessagesPreference = this.chatMessagesMap.get(chatId)!!;
-    chatMessagesPreference.set(chatMessages);
+    const chatConversationsPreference = this.chatConversationsMap.get(chatId)!!;
+    chatConversationsPreference.set(chatConversations);
   }
 
-  private deleteChatMessages(chatId: string) {
-    if (!this.chatMessagesMap.has(chatId)) {
+  private deleteChatConversations(chatId: string) {
+    if (!this.chatConversationsMap.has(chatId)) {
       return;
     }
-    const chatMessages = this.chatMessagesMap.get(chatId)!!;
-    chatMessages.remove();
-    this.chatMessagesMap.delete(chatId);
+    const chatConversations = this.chatConversationsMap.get(chatId)!!;
+    chatConversations.remove();
+    this.chatConversationsMap.delete(chatId);
   }
 }
 
