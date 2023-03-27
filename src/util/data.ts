@@ -10,6 +10,7 @@ export interface Chat {
   'title': string;
   'context_threshold': number;
   'system_message': string;
+  'user_message_template': string;
   'tokens_per_char': number;
   'tokens': number;
 }

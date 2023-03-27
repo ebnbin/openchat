@@ -8,10 +8,13 @@ import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from
 import {CreateChatCompletionResponse} from "openai/api";
 import {ConversationEntity, ConversationEntityType} from "./ChatPage";
 
-function getRequestingConversationEntity(input: string): ConversationEntity {
+function getRequestingConversationEntity(chat: Chat, input: string): ConversationEntity {
+  const validInput = chat.user_message_template.includes('${message}')
+    ? chat.user_message_template.replaceAll('${message}', input)
+    : input
   return {
     id: `${new Date().getTime()}`,
-    userMessage: input,
+    userMessage: validInput,
     assistantMessage: '',
     finishReason: null,
     type: ConversationEntityType.REQUESTING,
@@ -138,7 +141,7 @@ export default function ChatInputCard(props: InputCardProps) {
       handleCreateChat(chat)
     }
 
-    const requestingConversationEntity = getRequestingConversationEntity(input)
+    const requestingConversationEntity = getRequestingConversationEntity(chat, input)
     setInput('')
     const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
