@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, ChatConversation} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
@@ -113,6 +113,19 @@ export default function ChatPage(props: ChatProps) {
     }
   }, [isNewChat, chat.id, noContextConversationEntities])
 
+  const listRef = useRef<HTMLUListElement>(null)
+
+  const scrollToBottom = () => {
+    const listNode = listRef.current
+    if (listNode) {
+      listNode.scrollTop = listNode.scrollHeight
+    }
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  })
+
   return (
     <Box
       sx={{
@@ -124,6 +137,7 @@ export default function ChatPage(props: ChatProps) {
       }}
     >
       <Box
+        ref={listRef}
         sx={{
           width: '100%',
           flexGrow: 1,
@@ -187,6 +201,7 @@ export default function ChatPage(props: ChatProps) {
             handleCreateChat={isNewChat ? ((chat) => createOrUpdateChat(chat, true)) : null}
             handleRequestStart={(conversationEntities) => {
               setNoContextConversationEntities(conversationEntities)
+              scrollToBottom()
             }}
             handleRequestSuccess={(chat, conversationEntities) => {
               createOrUpdateChat(chat, false)
