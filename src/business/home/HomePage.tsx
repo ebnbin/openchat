@@ -8,7 +8,7 @@ import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
 import {ChatNewSettingsDialog} from "../chat/ChatNewSettingsDialog";
-import {CreateImagePage} from "../../test/CreateImagePage";
+import ImagePage from "../image/ImagePage";
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -102,7 +102,9 @@ export default function HomePage(props: HomePageProps) {
       )
     }
     if (selectedChatId === 'image') {
-      return <CreateImagePage apiKey={store.getOpenAIApiKey()}/> // TODO
+      return <ImagePage
+        key={'image'}
+      />
     }
     return (
       <ChatPage
