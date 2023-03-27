@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import {defaultGPTModel} from "../../util/util";
+import store from "../../util/store";
 
 interface ChatSettingsDialogProps {
   chat: Chat,
@@ -210,6 +211,8 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             Model: {defaultGPTModel.model} ({defaultGPTModel.maxTokens} tokens)
             <br />
             Cumulative tokens used: {chat.tokens}
+            <br />
+            Conversations count: {store.getChatConversations(chat.id).length}
           </DialogContentText>
         </Box>
         <Box
