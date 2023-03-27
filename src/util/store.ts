@@ -46,6 +46,7 @@ class Store {
       title: '',
       context_threshold: 0.7,
       system_message: '',
+      user_message_template: '',
       tokens_per_char: 0,
       tokens: 0,
     } as Chat
