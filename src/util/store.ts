@@ -7,7 +7,7 @@ class Store {
 
   constructor() {
     this.appData = new Preference<AppData>('app_data', {
-      version: 200, // 0.2.0
+      version: 300, // 0.3.0
       openai_api_key: '',
       chats: [],
       usage: {
@@ -17,7 +17,7 @@ class Store {
         image_1024: 0,
       } as Usage,
     } as AppData);
-    if (this.appData.get().version < 200) {
+    if (this.appData.get().version < 300) {
       this.appData.remove()
       localStorage.clear()
     }
