@@ -12,14 +12,16 @@ interface MessageListProps {
 export default function ChatMessageList(props: MessageListProps) {
   const { conversationEntities, setConversationEntities } = props
 
-  const setRaw = (id: string, raw: boolean) => {
+  const setRaw = (id: string, isUser: boolean, raw: boolean) => {
     const foundIndex = conversationEntities.findIndex((c) => c.id === id)
     if (foundIndex === -1) {
       return
     }
+    const foundConversationEntity = conversationEntities[foundIndex]
     const copyConversationEntity = {
-      ...conversationEntities[foundIndex],
-      assistantMessageRaw: raw
+      ...foundConversationEntity,
+      userMessageRaw: isUser ? raw : foundConversationEntity.userMessageRaw,
+      assistantMessageRaw: isUser ? foundConversationEntity.assistantMessageRaw : raw,
     } as ConversationEntity
     const copyConversationEntities = [
       ...conversationEntities,
@@ -41,9 +43,9 @@ export default function ChatMessageList(props: MessageListProps) {
                 role={ChatCompletionRequestMessageRoleEnum.User}
                 message={conversationEntity.userMessage}
                 context={conversationEntity.type !== ConversationEntityType.DEFAULT}
-                isLoading={false}
-                raw={false}
-                setRaw={null}
+                isLoading={conversationEntity.type === ConversationEntityType.REQUESTING}
+                raw={conversationEntity.userMessageRaw}
+                setRaw={setRaw}
               />
               <ChatMessageItem
                 id={conversationEntity.id}

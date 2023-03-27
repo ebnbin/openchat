@@ -18,6 +18,7 @@ function getRequestingConversationEntity(chat: Chat, input: string): Conversatio
     userMessage: validInput,
     assistantMessage: '',
     finishReason: null,
+    userMessageRaw: false,
     assistantMessageRaw: false,
     type: ConversationEntityType.REQUESTING,
   } as ConversationEntity

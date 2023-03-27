@@ -13,7 +13,7 @@ interface MessageItemProps {
   context: boolean,
   isLoading: boolean,
   raw: boolean,
-  setRaw: ((id: string, raw: boolean) => void) | null,
+  setRaw: (id: string, isUser: boolean, raw: boolean) => void,
 }
 
 export default function ChatMessageItem(props: MessageItemProps) {
@@ -50,10 +50,10 @@ export default function ChatMessageItem(props: MessageItemProps) {
   }
 
   const avatarOnClick = () => {
-    if (setRaw === null) {
+    if (isLoading) {
       return
     }
-    setRaw(id, !raw)
+    setRaw(id, role === "user", !raw)
   }
 
   return (
@@ -92,7 +92,7 @@ export default function ChatMessageItem(props: MessageItemProps) {
             width: '0px',
           }}
         >
-          {isLoading ? (
+          {(role === "assistant" && isLoading) ? (
               <Box
                 sx={{
                   height: '56px',
