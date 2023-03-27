@@ -130,8 +130,8 @@ export default function ImageInputCard(props: ImageInputCardProps) {
           fullWidth={true}
           multiline={true}
           maxRows={8}
-          label={'Message'}
-          placeholder={'Hello, who are you?'}
+          label={'Prompt'}
+          placeholder={'A cute baby sea otter'}
           value={input}
           autoFocus={true}
           onChange={handleInputChange}
