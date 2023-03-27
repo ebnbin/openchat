@@ -3,10 +3,11 @@ import {Card, IconButton, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
 import {api, defaultGPTModel} from "../../util/util";
-import {Chat} from "../../util/data";
+import {Chat, Usage} from "../../util/data";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {ConversationEntity, ConversationEntityType} from "./ChatPage";
+import store from "../../util/store";
 
 function getRequestingConversationEntity(chat: Chat, input: string): ConversationEntity {
   const validInput = chat.user_message_template.includes('${message}')
@@ -69,6 +70,12 @@ function handleResponse1(
     .reduce((acc, message) => acc + message.length + defaultGPTModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chat.tokens + responseTotalTokens
+  store.updateUsage({
+    tokens: responseTotalTokens,
+    image_256: 0,
+    image_512: 0,
+    image_1024: 0,
+  } as Usage)
   return {
     ...chat,
     tokens_per_char: tokensPerChar,

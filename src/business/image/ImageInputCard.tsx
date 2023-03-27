@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
 import {api} from "../../util/util";
 import {ImageData} from "./ImagePage";
+import store from "../../util/store";
+import {Usage} from "../../util/data";
 
 interface ImageInputCardProps {
   handleRequestStart: (imageData: ImageData) => void
@@ -47,6 +49,12 @@ export default function ImageInputCard(props: ImageInputCardProps) {
         size: '256x256',
       })
       .then(response => {
+        store.updateUsage({
+          tokens: 0,
+          image_256: 1,
+          image_512: 0,
+          image_1024: 0,
+        } as Usage)
         const responseImageData = {
           ...imageData,
           url: response.data.data[0].url,

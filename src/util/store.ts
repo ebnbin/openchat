@@ -118,6 +118,25 @@ class Store {
     chatConversations.remove();
     this.chatConversationsMap.delete(chatId);
   }
+
+  getUsage() {
+    return this.appData.get().usage;
+  }
+
+  updateUsage(usage: Usage) {
+    const currentUsage = this.appData.get().usage
+    const nextUsage = {
+      ...currentUsage,
+      tokens: currentUsage.tokens + usage.tokens,
+      image_256: currentUsage.image_256 + usage.image_256,
+      image_512: currentUsage.image_512 + usage.image_512,
+      image_1024: currentUsage.image_1024 + usage.image_1024,
+    } as Usage
+    this.appData.set({
+      ...this.appData.get(),
+      usage: nextUsage,
+    } as AppData);
+  }
 }
 
 const store = new Store();

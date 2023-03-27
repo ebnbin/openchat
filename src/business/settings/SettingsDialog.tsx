@@ -3,7 +3,7 @@ import {
   Button,
   Dialog,
   DialogActions,
-  DialogContent,
+  DialogContent, DialogContentText,
   DialogTitle,
   Link, TextField,
   Typography
@@ -29,6 +29,12 @@ export function SettingsDialog(props: SettingsDialogProps) {
   // }
 
   const [openAIApiKey, setOpenAIApiKey] = useState(store.getOpenAIApiKey())
+
+  const usage = store.getUsage()
+
+  const price = () => {
+    return (usage.tokens / 1000 * 0.002 + usage.image_256 * 0.016 + usage.image_512 * 0.018 + usage.image_1024 * 0.02).toFixed(2)
+  }
 
   return (
     <Dialog
@@ -101,6 +107,30 @@ export function SettingsDialog(props: SettingsDialogProps) {
         {/*    onChange={handleIsDarkModeChange}*/}
         {/*  />*/}
         {/*</Box>*/}
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            Usage
+          </Typography>
+          <DialogContentText>
+            tokens: {usage.tokens}
+            <br/>
+            image_256: {usage.image_256}
+            <br/>
+            image_512: {usage.image_512}
+            <br/>
+            image_1024: {usage.image_1024}
+            <br/>
+            Estimated price: ${price()}
+          </DialogContentText>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button
