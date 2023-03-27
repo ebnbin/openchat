@@ -50,6 +50,15 @@ export function ChatNewSettingsDialog(props: ChatNewSettingsDialogProps) {
     )
   }
 
+  const handleUserMessageTemplateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    updateChat(
+      {
+        ...chat,
+        user_message_template: event.target.value,
+      },
+    )
+  }
+
   return (
     <Dialog
       fullWidth={true}
@@ -153,6 +162,36 @@ export function ChatNewSettingsDialog(props: ChatNewSettingsDialogProps) {
             placeholder={'You are a helpful assistant.'}
             value={chat.system_message}
             onChange={handleSystemMessageChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            User message template
+          </Typography>
+          <Typography
+            variant={'body2'}
+            color={'text.secondary'}
+            gutterBottom={true}
+          >
+            {'Template for each user message. ${message} represents the input message. ${message} must exist'}
+          </Typography>
+          <TextField
+            variant={'outlined'}
+            fullWidth={true}
+            type={'text'}
+            multiline={true}
+            maxRows={8}
+            placeholder={'```javascript\n${message}\n```'}
+            value={chat.user_message_template}
+            onChange={handleUserMessageTemplateChange}
           />
         </Box>
         <Box
