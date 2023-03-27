@@ -126,7 +126,7 @@ export default function ChatPage(props: ChatProps) {
 
   useEffect(() => {
     scrollToBottom()
-  })
+  }, [])
 
   return (
     <Box
