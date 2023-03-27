@@ -3,15 +3,31 @@ import React, {useState} from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ImageInputCard from "./ImageInputCard";
 import {CircularProgress, Typography} from "@mui/material";
+import {CreateImageRequestSizeEnum} from "openai";
 
 export interface ImageData {
   prompt: string;
+  size: CreateImageRequestSizeEnum,
   url: string;
   error: boolean;
 }
 
 export default function ImagePage() {
   const [imageData, setImageData] = useState<ImageData | null>(null)
+
+  const imageSize = () => {
+    if (imageData === null) {
+      return 'auto'
+    }
+    switch (imageData.size) {
+      case "1024x1024":
+        return '1024px'
+      case "256x256":
+        return '256px'
+      case "512x512":
+        return '512px'
+    }
+  }
 
   const content = () => {
     if (imageData === null) {
@@ -26,6 +42,7 @@ export default function ImagePage() {
             position: 'absolute',
             display: 'flex',
             paddingBottom: '72px',
+            overflow: 'auto',
           }}
         >
           <Box
@@ -39,8 +56,8 @@ export default function ImagePage() {
             <img
               src={imageData.url}
               style={{
-                maxWidth: '256px',
-                maxHeight: '256px',
+                maxWidth: imageSize(),
+                maxHeight: imageSize(),
               }}
             />
           </Box>
