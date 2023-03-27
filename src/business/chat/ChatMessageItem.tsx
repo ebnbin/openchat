@@ -7,14 +7,17 @@ import {contentWidth} from "./ChatPage";
 import ChatMessageContent from "./ChatMessageContent";
 
 interface MessageItemProps {
+  id: string,
   role: ChatCompletionRequestMessageRoleEnum,
   message: string,
   context: boolean,
   isLoading: boolean,
+  raw: boolean,
+  setRaw: ((id: string, raw: boolean) => void) | null,
 }
 
 export default function ChatMessageItem(props: MessageItemProps) {
-  const { role, message, context, isLoading } = props
+  const { id, role, message, context, isLoading, raw, setRaw } = props
 
   const theme = useTheme()
 
@@ -46,6 +49,13 @@ export default function ChatMessageItem(props: MessageItemProps) {
     return undefined
   }
 
+  const avatarOnClick = () => {
+    if (setRaw === null) {
+      return
+    }
+    setRaw(id, !raw)
+  }
+
   return (
     <Box
       sx={{
@@ -66,6 +76,7 @@ export default function ChatMessageItem(props: MessageItemProps) {
             flexShrink: 0,
             placeItems: 'center',
           }}
+          onClick={avatarOnClick}
         >
           <Avatar
             sx={{
@@ -94,6 +105,7 @@ export default function ChatMessageItem(props: MessageItemProps) {
             ) : (
             <ChatMessageContent
               content={message}
+              raw={raw}
             />
           )}
         </Box>

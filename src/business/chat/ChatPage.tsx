@@ -24,6 +24,7 @@ export interface ConversationEntity {
   userMessage: string;
   assistantMessage: string;
   finishReason: string | null;
+  assistantMessageRaw: boolean,
   type: ConversationEntityType;
 }
 
@@ -35,6 +36,7 @@ function initConversationEntities(chatConversations: ChatConversation[]): Conver
         userMessage: chatConversation.user_message,
         assistantMessage: chatConversation.assistant_message,
         finishReason: chatConversation.finish_reason === null ? '' : chatConversation.finish_reason,
+        assistantMessageRaw: false,
         type: ConversationEntityType.DEFAULT,
       } as ConversationEntity
     })
@@ -149,6 +151,7 @@ export default function ChatPage(props: ChatProps) {
       >
         <ChatMessageList
           conversationEntities={conversationEntities}
+          setConversationEntities={setConversationEntities}
         />
       </Box>
       <Box

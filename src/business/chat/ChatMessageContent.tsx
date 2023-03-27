@@ -9,10 +9,11 @@ import remarkMath from "remark-math";
 import 'katex/dist/katex.min.css'
 
 interface MessageContentProps {
-  content: string
+  content: string,
+  raw: boolean,
 }
 
-function InternalMessageContent({ content }: MessageContentProps) {
+function InternalMessageContent({ content, raw }: MessageContentProps) {
   const theme = useTheme()
   const style: any = theme.palette.mode === 'dark' ? oneDark : oneLight
 
@@ -20,7 +21,15 @@ function InternalMessageContent({ content }: MessageContentProps) {
     copy(text)
   }
 
-  return (
+  return raw ? (
+    <Typography
+      sx={{
+        whiteSpace: 'pre-wrap',
+      }}
+    >
+      {content}
+    </Typography>
+    ) : (
     <ReactMarkdown
       children={content}
       remarkPlugins={[remarkMath]}
