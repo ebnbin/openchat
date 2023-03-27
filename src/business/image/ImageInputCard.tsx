@@ -21,7 +21,7 @@ export default function ImageInputCard(props: ImageInputCardProps) {
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === 'Enter' && event.metaKey) {
       event.preventDefault()
       if (input !== '') {
         request()
