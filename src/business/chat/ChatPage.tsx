@@ -23,7 +23,6 @@ export interface ConversationEntity {
   id: string;
   userMessage: string;
   assistantMessage: string;
-  finishReason: string | null;
   userMessageRaw: boolean,
   assistantMessageRaw: boolean,
   type: ConversationEntityType;
@@ -36,7 +35,6 @@ function initConversationEntities(chatConversations: ChatConversation[]): Conver
         id: chatConversation.id,
         userMessage: chatConversation.user_message,
         assistantMessage: chatConversation.assistant_message,
-        finishReason: chatConversation.finish_reason === null ? '' : chatConversation.finish_reason,
         userMessageRaw: false,
         assistantMessageRaw: false,
         type: ConversationEntityType.DEFAULT,
@@ -85,7 +83,6 @@ function conversationEntitiesToChatConversations(conversationEntities: Conversat
         id: conversationEntity.id,
         user_message: conversationEntity.userMessage,
         assistant_message: conversationEntity.assistantMessage,
-        finish_reason: conversationEntity.finishReason,
       } as ChatConversation
     })
 }

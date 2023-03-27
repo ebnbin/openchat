@@ -17,7 +17,6 @@ function getRequestingConversationEntity(chat: Chat, input: string): Conversatio
     id: `${new Date().getTime()}`,
     userMessage: validInput,
     assistantMessage: '',
-    finishReason: null,
     userMessageRaw: false,
     assistantMessageRaw: false,
     type: ConversationEntityType.REQUESTING,
@@ -95,7 +94,6 @@ function handleResponse2(
   copy[conversationEntities.length - 1] = {
     ...lastConversationEntity,
     assistantMessage: responseMessage.content,
-    finishReason: response.choices[0].finish_reason,
     type: ConversationEntityType.DEFAULT,
   } as ConversationEntity
   return copy
@@ -108,7 +106,6 @@ function handleResponseError(
   const copy = [...conversationEntities]
   copy[conversationEntities.length - 1] = {
     ...lastConversationEntity,
-    finishReason: '',
     type: ConversationEntityType.DEFAULT,
   } as ConversationEntity
   return copy
