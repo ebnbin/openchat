@@ -110,12 +110,6 @@ export default function ChatPage(props: ChatProps) {
     setConversationEntities(updateContext(chat, noContextConversationEntities))
   }, [chat, noContextConversationEntities])
 
-  useEffect(() => {
-    if (!isNewChat) {
-      store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(noContextConversationEntities));
-    }
-  }, [isNewChat, chat.id, noContextConversationEntities])
-
   const listRef = useRef<HTMLUListElement>(null)
 
   const scrollToBottom = () => {
@@ -243,6 +237,7 @@ export default function ChatPage(props: ChatProps) {
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     // start
     setNoContextConversationEntities(nextConversationEntities)
+    store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities));
     scrollToBottom()
 
     api()
@@ -251,12 +246,16 @@ export default function ChatPage(props: ChatProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const nextChat = handleResponse1(chat, requestMessages, response.data) // TODO
+        const nextChat = handleResponse1(chat, requestMessages, response.data)
         createOrUpdateChat(nextChat, false)
-        setNoContextConversationEntities((prev) => handleResponse2(prev, response.data))
+        const nextConversationEntities2 = handleResponse2(nextConversationEntities, response.data)
+        setNoContextConversationEntities(nextConversationEntities2)
+        store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities2));
       })
       .catch(() => {
-        setNoContextConversationEntities((prev) => handleResponseError(prev))
+        const nextConversationEntities2 = handleResponseError(nextConversationEntities)
+        setNoContextConversationEntities(nextConversationEntities2)
+        store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities2));
       })
   }
 
