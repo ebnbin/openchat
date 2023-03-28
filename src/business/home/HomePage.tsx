@@ -17,19 +17,15 @@ interface HomePageProps {
 export default function HomePage(props: HomePageProps) {
   const [chats, _setChats] = useState(store.getChats())
 
+  const createChat = (chat: Chat) => {
+    store.createChat(chat)
+    _setChats(store.getChats());
+    setSelectedChatId(chat.id)
+  }
+
   const updateChat = (chat: Chat) => {
     store.updateChat(chat);
     _setChats(store.getChats());
-  }
-
-  const createOrUpdateChat = (chat: Chat, isNewChat: boolean) => {
-    if (isNewChat) {
-      store.createChat(chat)
-      _setChats(store.getChats());
-      setSelectedChatId(chat.id)
-    } else {
-      updateChat(chat)
-    }
   }
 
   const deleteChat = (chatId: string) => {
@@ -96,7 +92,8 @@ export default function HomePage(props: HomePageProps) {
           key={`ChatPage${newChat.id}`}
           chat={newChat}
           isNewChat={true}
-          createOrUpdateChat={createOrUpdateChat}
+          createChat={createChat}
+          updateChat={updateChat}
           openNewChatSettings={() => setNewChatSettingsDialogOpen(true)}
         />
       )
@@ -111,7 +108,8 @@ export default function HomePage(props: HomePageProps) {
         key={`ChatPage${selectedChatId}`}
         chat={chats.find((chat) => chat.id === selectedChatId)!!}
         isNewChat={false}
-        createOrUpdateChat={createOrUpdateChat}
+        createChat={createChat}
+        updateChat={updateChat}
         openNewChatSettings={null}
       />
     )

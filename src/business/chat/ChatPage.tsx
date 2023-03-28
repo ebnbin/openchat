@@ -94,12 +94,13 @@ function conversationEntitiesToChatConversations(conversationEntities: Conversat
 interface ChatProps {
   chat: Chat,
   isNewChat: boolean,
-  createOrUpdateChat: (chat: Chat, isNewChat: boolean) => void,
+  createChat: (chat: Chat) => void,
+  updateChat: (chat: Chat) => void,
   openNewChatSettings: (() => void) | null,
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { chat, isNewChat, createOrUpdateChat, openNewChatSettings } = props
+  const { chat, isNewChat, createChat, updateChat, openNewChatSettings } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
     useState(initConversationEntities(store.getChatConversations(chat.id)));
@@ -229,7 +230,7 @@ export default function ChatPage(props: ChatProps) {
 
   const handleRequest = (input: string) => {
     if (isNewChat) {
-      createOrUpdateChat(chat, true)
+      createChat(chat)
     }
 
     const requestingConversationEntity = getRequestingConversationEntity(chat, input)
@@ -247,7 +248,7 @@ export default function ChatPage(props: ChatProps) {
       })
       .then(response => {
         const nextChat = handleResponse1(chat, requestMessages, response.data)
-        createOrUpdateChat(nextChat, false)
+        updateChat(nextChat)
         const nextConversationEntities2 = handleResponse2(nextConversationEntities, response.data)
         setNoContextConversationEntities(nextConversationEntities2)
         store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities2));
