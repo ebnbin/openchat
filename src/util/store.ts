@@ -9,6 +9,8 @@ class Store {
     this.appData = new Preference<AppData>('app_data', {
       version: 300, // 0.3.0
       openai_api_key: '',
+      github_token: '',
+      github_gist_id: '',
       chats: [],
       usage: {
         tokens: 0,
@@ -25,6 +27,10 @@ class Store {
     this.chatConversationsMap = new Map();
   }
 
+  getAppData(): AppData {
+    return this.appData.get();
+  }
+
   public getOpenAIApiKey(): string {
     return this.appData.get().openai_api_key;
   }
@@ -33,6 +39,28 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       openai_api_key: openAIApiKey,
+    } as AppData);
+  }
+
+  public getGithubToken(): string {
+    return this.appData.get().github_token;
+  }
+
+  public setGithubToken(githubToken: string) {
+    this.appData.set({
+      ...this.appData.get(),
+      github_token: githubToken,
+    } as AppData);
+  }
+
+  public getGithubGistId(): string {
+    return this.appData.get().github_gist_id;
+  }
+
+  public setGithubGistId(github_gist_id: string) {
+    this.appData.set({
+      ...this.appData.get(),
+      github_gist_id: github_gist_id,
     } as AppData);
   }
 

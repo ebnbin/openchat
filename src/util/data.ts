@@ -1,6 +1,8 @@
 export interface AppData {
   'version': number;
   'openai_api_key': string;
+  'github_token': string;
+  'github_gist_id': string;
   'chats': Chat[];
   'usage': Usage;
 }

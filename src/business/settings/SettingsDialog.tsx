@@ -29,11 +29,56 @@ export function SettingsDialog(props: SettingsDialogProps) {
   // }
 
   const [openAIApiKey, setOpenAIApiKey] = useState(store.getOpenAIApiKey())
+  const [githubToken, setGithubToken] = useState(store.getGithubToken())
+  const [githubGistId, setGithubGistId] = useState(store.getGithubToken())
 
   const usage = store.getUsage()
 
   const price = () => {
     return (usage.tokens / 1000 * 0.002 + usage.image_256 * 0.016 + usage.image_512 * 0.018 + usage.image_1024 * 0.02).toFixed(2)
+  }
+
+  const gistOnClick = () => {
+    // fetch('https://api.github.com/gists', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${githubToken}`,
+    //     'Accept': 'application/vnd.github.v3+json',
+    //   },
+    //   body: JSON.stringify(
+    //     {
+    //       'public': false,
+    //       'files': {
+    //         'openchat_data.json': {
+    //           'content': JSON.stringify(store.getAppData()),
+    //         }
+    //       },
+    //     }
+    //   )
+    // })
+    //   .then(response => alert(`success`))
+    //   .catch(error => alert('error'));
+
+    fetch(`https://api.github.com/gists/${githubGistId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${githubToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+      body: JSON.stringify(
+        {
+          'files': {
+            'openchat_data.json': {
+              'content': JSON.stringify(store.getAppData()),
+            }
+          },
+        }
+      )
+    })
+      .then(response => alert(`success`))
+      .catch(error => alert('error'));
   }
 
   return (
@@ -90,6 +135,54 @@ export function SettingsDialog(props: SettingsDialogProps) {
             }}
           />
         </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            GitHub token
+          </Typography>
+          <TextField
+            variant={'standard'}
+            fullWidth={true}
+            type={'text'}
+            placeholder={'GitHub token'}
+            value={githubToken}
+            onChange={(event) => {
+              setGithubToken(event.target.value)
+              store.setGithubToken(event.target.value)
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Typography
+            variant={'subtitle1'}
+            gutterBottom={true}
+          >
+            GitHub gist id
+          </Typography>
+          <TextField
+            variant={'standard'}
+            fullWidth={true}
+            type={'text'}
+            placeholder={'GitHub gist id'}
+            value={githubGistId}
+            onChange={(event) => {
+              setGithubGistId(event.target.value)
+              store.setGithubGistId(event.target.value)
+            }}
+          />
+        </Box>
         {/*<Box*/}
         {/*  sx={{*/}
         {/*    paddingX: '24px',*/}
@@ -130,6 +223,18 @@ export function SettingsDialog(props: SettingsDialogProps) {
             <br/>
             Estimated price: ${price()}
           </DialogContentText>
+        </Box>
+        <Box
+          sx={{
+            paddingX: '24px',
+            paddingY: '16px',
+          }}
+        >
+          <Button
+            onClick={gistOnClick}
+          >
+            Test gist upload
+          </Button>
         </Box>
       </DialogContent>
       <DialogActions>
