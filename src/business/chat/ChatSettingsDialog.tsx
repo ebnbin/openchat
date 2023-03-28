@@ -212,7 +212,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             <br />
             Cumulative tokens used: {chat.tokens}
             <br />
-            Conversations count: {store.getChatConversations(chat.id).length}
+            Conversations count: {store.getChatConversations2(chat).length}
           </DialogContentText>
         </Box>
         <Box

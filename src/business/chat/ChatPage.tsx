@@ -89,6 +89,14 @@ function conversationEntitiesToChatConversations(conversationEntities: Conversat
     })
 }
 
+function conversationEntityToChatConversation(conversationEntity: ConversationEntity): ChatConversation {
+  return {
+    id: conversationEntity.id,
+    user_message: conversationEntity.userMessage,
+    assistant_message: conversationEntity.assistantMessage,
+  } as ChatConversation
+}
+
 //*********************************************************************************************************************
 
 interface ChatProps {
@@ -103,7 +111,7 @@ export default function ChatPage(props: ChatProps) {
   const { chat, isNewChat, createChat, updateChat, openNewChatSettings } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState(initConversationEntities(store.getChatConversations(chat.id)));
+    useState(initConversationEntities(store.getChatConversations2(chat)));
   const [conversationEntities, setConversationEntities] =
     useState(updateContext(chat, noContextConversationEntities))
 
@@ -216,6 +224,18 @@ export default function ChatPage(props: ChatProps) {
     return copy
   }
 
+  function handleResponse2ConversationEntity(
+    lastConversationEntity: ConversationEntity,
+    response: CreateChatCompletionResponse,
+  ): ConversationEntity {
+    const responseMessage = response.choices[0].message!!
+    return {
+      ...lastConversationEntity,
+      assistantMessage: responseMessage.content,
+      type: ConversationEntityType.DEFAULT,
+    } as ConversationEntity
+  }
+
   function handleResponseError(
     conversationEntities: ConversationEntity[],
   ): ConversationEntity[] {
@@ -228,6 +248,15 @@ export default function ChatPage(props: ChatProps) {
     return copy
   }
 
+  function handleResponseErrorConversationEntity(
+    lastConversationEntity: ConversationEntity,
+  ) {
+    return {
+      ...lastConversationEntity,
+      type: ConversationEntityType.DEFAULT,
+    } as ConversationEntity
+  }
+
   const handleRequest = (input: string) => {
     if (isNewChat) {
       createChat(chat)
@@ -238,7 +267,10 @@ export default function ChatPage(props: ChatProps) {
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     // start
     setNoContextConversationEntities(nextConversationEntities)
-    store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities));
+
+    const newConversation = conversationEntityToChatConversation(requestingConversationEntity)
+    store.createConversation(chat.id, newConversation)
+
     scrollToBottom()
 
     api()
@@ -251,12 +283,16 @@ export default function ChatPage(props: ChatProps) {
         updateChat(nextChat)
         const nextConversationEntities2 = handleResponse2(nextConversationEntities, response.data)
         setNoContextConversationEntities(nextConversationEntities2)
-        store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities2));
+
+        const conversationEntity2 = handleResponse2ConversationEntity(requestingConversationEntity, response.data)
+        store.updateConversation(conversationEntityToChatConversation(conversationEntity2))
       })
       .catch(() => {
         const nextConversationEntities2 = handleResponseError(nextConversationEntities)
         setNoContextConversationEntities(nextConversationEntities2)
-        store.updateChatConversations(chat.id, conversationEntitiesToChatConversations(nextConversationEntities2));
+
+        // const conversationEntity2 = handleResponseErrorConversationEntity(requestingConversationEntity)
+        // store.updateConversation(conversationEntityToChatConversation(conversationEntity2))
       })
   }
 

@@ -3,7 +3,6 @@ import Preference from "./Preference";
 
 class Store {
   private readonly appData: Preference<AppData>;
-  private readonly chatConversationsMap: Map<string, Preference<ChatConversation[]>>;
 
   constructor() {
     this.appData = new Preference<AppData>('app_data', {
@@ -12,6 +11,7 @@ class Store {
       github_token: '',
       github_gist_id: '',
       chats: [],
+      conversations: [],
       usage: {
         tokens: 0,
         image_256: 0,
@@ -23,8 +23,6 @@ class Store {
       this.appData.remove()
       localStorage.clear()
     }
-
-    this.chatConversationsMap = new Map();
   }
 
   getAppData(): AppData {
@@ -77,6 +75,7 @@ class Store {
       user_message_template: '',
       tokens_per_char: 0,
       tokens: 0,
+      conversations: [],
     } as Chat
   }
 
@@ -106,6 +105,23 @@ class Store {
     } as AppData);
   }
 
+  public updateChatToken(chat: Chat) {
+    const index = this.appData.get().chats.findIndex((foundChat) => foundChat.id === chat.id);
+    if (index === -1) {
+      return;
+    }
+    const copyChats = [...this.appData.get().chats];
+    copyChats[index] = {
+      ...copyChats[index],
+      tokens_per_char: chat.tokens_per_char,
+      tokens: chat.tokens,
+    };
+    this.appData.set({
+      ...this.appData.get(),
+      chats: copyChats,
+    } as AppData);
+  }
+
   public deleteChat(chatId: string) {
     const index = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
     if (index === -1) {
@@ -117,35 +133,72 @@ class Store {
       ...this.appData.get(),
       chats: copyChats,
     } as AppData);
-    this.deleteChatConversations(chatId);
+    this.deleteConversations(chatId);
   }
 
-  public getChatConversations(chatId: string): ChatConversation[] {
-    let chatConversations: Preference<ChatConversation[]>;
-    if (this.chatConversationsMap.has(chatId)) {
-      chatConversations = this.chatConversationsMap.get(chatId)!!;
-    } else {
-      chatConversations = new Preference<ChatConversation[]>(`chat_${chatId}`, []);
-      this.chatConversationsMap.set(chatId, chatConversations);
-    }
-    return chatConversations.get();
+  getConversations(): ChatConversation[] {
+    return this.appData.get().conversations;
   }
 
-  public updateChatConversations(chatId: string, chatConversations: ChatConversation[]) {
-    if (!this.chatConversationsMap.has(chatId)) {
+  getChatConversations2(chat: Chat): ChatConversation[] {
+    return chat.conversations
+      .map((conversationId) => {
+        return this.appData.get().conversations.find((conversation) => conversation.id === conversationId) ?? null;
+      })
+      .filter((conversation) => conversation !== null) as ChatConversation[];
+  }
+
+  createConversation(chatId: string, conversation: ChatConversation) {
+    const chatIndex = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
+    if (chatIndex === -1) {
       return;
     }
-    const chatConversationsPreference = this.chatConversationsMap.get(chatId)!!;
-    chatConversationsPreference.set(chatConversations);
+    const chat = this.appData.get().chats[chatIndex];
+    const copyChat = {
+      ...chat,
+      conversations: [
+        ...chat.conversations,
+        conversation.id,
+      ]
+    } as Chat;
+    const copyChats = [...this.appData.get().chats];
+    copyChats[chatIndex] = copyChat;
+    const copyConversations = [...this.appData.get().conversations, conversation];
+    const copyAppData = {
+      ...this.appData.get(),
+      chats: copyChats,
+      conversations: copyConversations,
+    } as AppData;
+    this.appData.set(copyAppData);
   }
 
-  private deleteChatConversations(chatId: string) {
-    if (!this.chatConversationsMap.has(chatId)) {
+  updateConversation(conversation: ChatConversation) {
+    const conversationIndex = this.appData.get().conversations.findIndex((foundConversation) => foundConversation.id === conversation.id);
+    if (conversationIndex === -1) {
       return;
     }
-    const chatConversations = this.chatConversationsMap.get(chatId)!!;
-    chatConversations.remove();
-    this.chatConversationsMap.delete(chatId);
+    const copyConversation = [...this.appData.get().conversations];
+    copyConversation[conversationIndex] = conversation;
+    const copyAppData = {
+      ...this.appData.get(),
+      conversations: copyConversation,
+    } as AppData;
+    this.appData.set(copyAppData);
+  }
+
+  deleteConversations(chatId: string) {
+    const chatIndex = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
+    if (chatIndex === -1) {
+      return;
+    }
+    const chat = this.appData.get().chats[chatIndex];
+    const copyConversations = this.appData.get().conversations
+      .filter((conversation) => !chat.conversations.includes(conversation.id))
+    const copyAppData = {
+      ...this.appData.get(),
+      conversations: copyConversations,
+    } as AppData;
+    this.appData.set(copyAppData);
   }
 
   getUsage() {

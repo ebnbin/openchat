@@ -4,6 +4,7 @@ export interface AppData {
   'github_token': string;
   'github_gist_id': string;
   'chats': Chat[];
+  'conversations': ChatConversation[];
   'usage': Usage;
 }
 
@@ -15,6 +16,7 @@ export interface Chat {
   'user_message_template': string;
   'tokens_per_char': number;
   'tokens': number;
+  'conversations': string[];
 }
 
 export interface ChatConversation {
