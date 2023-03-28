@@ -1,13 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, ChatConversation} from "../../util/data";
+import {Chat, ChatConversation, Usage} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
-import {defaultGPTModel} from "../../util/util";
+import {api, defaultGPTModel} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
 import LogoImage from "../logo/LogoImage";
 import {EditRounded} from "@mui/icons-material";
+import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
+import {CreateChatCompletionResponse} from "openai/api";
 
 export const contentWidth = 900
 
@@ -127,6 +129,139 @@ export default function ChatPage(props: ChatProps) {
     scrollToBottom()
   }, [])
 
+  //*******************************************************************************************************************
+
+  function getRequestingConversationEntity(chat: Chat, input: string): ConversationEntity {
+    const validInput = chat.user_message_template.includes('${message}')
+      ? chat.user_message_template.replaceAll('${message}', input)
+      : input
+    return {
+      id: `${new Date().getTime()}`,
+      userMessage: validInput,
+      assistantMessage: '',
+      userMessageRaw: false,
+      assistantMessageRaw: false,
+      type: ConversationEntityType.REQUESTING,
+    } as ConversationEntity
+  }
+
+  function getRequestMessages(
+    chat: Chat,
+    conversationEntities: ConversationEntity[],
+    requestingConversationEntity: ConversationEntity,
+  ): ChatCompletionRequestMessage[] {
+    const result: ChatCompletionRequestMessage[] = []
+    if (chat.system_message !== '') {
+      result.push(
+        {
+          role: ChatCompletionRequestMessageRoleEnum.System,
+          content: chat.system_message,
+        } as ChatCompletionRequestMessage
+      )
+    }
+    [...conversationEntities, requestingConversationEntity]
+      .filter((conversationEntity) => conversationEntity.type !== ConversationEntityType.DEFAULT)
+      .forEach((conversationEntity) => {
+        result.push(
+          {
+            role: ChatCompletionRequestMessageRoleEnum.User,
+            content: conversationEntity.userMessage,
+          } as ChatCompletionRequestMessage
+        )
+        if (conversationEntity.type !== ConversationEntityType.REQUESTING) {
+          result.push(
+            {
+              role: ChatCompletionRequestMessageRoleEnum.Assistant,
+              content: conversationEntity.assistantMessage,
+            } as ChatCompletionRequestMessage
+          )
+        }
+      })
+    return result
+  }
+
+  function handleResponse1(
+    chat: Chat,
+    requestMessages: ChatCompletionRequestMessage[],
+    response: CreateChatCompletionResponse,
+  ): Chat {
+    const responseMessage = response.choices[0].message!!
+    const responseTotalTokens = response.usage!!.total_tokens
+    const charCount = requestMessages
+      .map((message) => message.content)
+      .concat(responseMessage.content)
+      .reduce((acc, message) => acc + message.length + defaultGPTModel.extraCharsPerMessage, 0)
+    const tokensPerChar = responseTotalTokens / charCount
+    const tokens = chat.tokens + responseTotalTokens
+    store.updateUsage({
+      tokens: responseTotalTokens,
+      image_256: 0,
+      image_512: 0,
+      image_1024: 0,
+    } as Usage)
+    return {
+      ...chat,
+      tokens_per_char: tokensPerChar,
+      tokens: tokens,
+    } as Chat
+  }
+
+  function handleResponse2(
+    conversationEntities: ConversationEntity[],
+    response: CreateChatCompletionResponse,
+  ): ConversationEntity[] {
+    const responseMessage = response.choices[0].message!!
+    const lastConversationEntity = conversationEntities[conversationEntities.length - 1]
+    const copy = [...conversationEntities]
+    copy[conversationEntities.length - 1] = {
+      ...lastConversationEntity,
+      assistantMessage: responseMessage.content,
+      type: ConversationEntityType.DEFAULT,
+    } as ConversationEntity
+    return copy
+  }
+
+  function handleResponseError(
+    conversationEntities: ConversationEntity[],
+  ): ConversationEntity[] {
+    const lastConversationEntity = conversationEntities[conversationEntities.length - 1]
+    const copy = [...conversationEntities]
+    copy[conversationEntities.length - 1] = {
+      ...lastConversationEntity,
+      type: ConversationEntityType.DEFAULT,
+    } as ConversationEntity
+    return copy
+  }
+
+  const handleRequest = (input: string) => {
+    if (isNewChat) {
+      createOrUpdateChat(chat, true)
+    }
+
+    const requestingConversationEntity = getRequestingConversationEntity(chat, input)
+    const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
+    const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
+    // start
+    setNoContextConversationEntities(nextConversationEntities)
+    scrollToBottom()
+
+    api()
+      .createChatCompletion({
+        model: defaultGPTModel.model,
+        messages: requestMessages,
+      })
+      .then(response => {
+        const nextChat = handleResponse1(chat, requestMessages, response.data) // TODO
+        createOrUpdateChat(nextChat, false)
+        setNoContextConversationEntities((prev) => handleResponse2(prev, response.data))
+      })
+      .catch(() => {
+        setNoContextConversationEntities((prev) => handleResponseError(prev))
+      })
+  }
+
+  //*******************************************************************************************************************
+
   return (
     <Box
       sx={{
@@ -198,20 +333,8 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <ChatInputCard
-            chat={chat}
-            conversationEntities={conversationEntities}
-            handleCreateChat={isNewChat ? ((chat) => createOrUpdateChat(chat, true)) : null}
-            handleRequestStart={(conversationEntities) => {
-              setNoContextConversationEntities(conversationEntities)
-              scrollToBottom()
-            }}
-            handleRequestSuccess={(chat, conversationEntities) => {
-              createOrUpdateChat(chat, false)
-              setNoContextConversationEntities(conversationEntities)
-            }}
-            handleRequestError={(conversationEntities) => {
-              setNoContextConversationEntities(conversationEntities)
-            }}
+            isLoading={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.REQUESTING}
+            handleRequest={handleRequest}
           />
         </Box>
       </Box>
