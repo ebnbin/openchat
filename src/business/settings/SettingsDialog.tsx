@@ -30,7 +30,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
 
   const [openAIApiKey, setOpenAIApiKey] = useState(store.getOpenAIApiKey())
   const [githubToken, setGithubToken] = useState(store.getGithubToken())
-  const [githubGistId, setGithubGistId] = useState(store.getGithubToken())
+  const [githubGistId, setGithubGistId] = useState(store.getGithubGistId())
 
   const usage = store.getUsage()
 
