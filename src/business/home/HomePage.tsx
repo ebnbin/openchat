@@ -33,7 +33,7 @@ export default function HomePage(props: HomePageProps) {
     _setChats(store.getChats());
   }
 
-  const deleteChat = (chatId: string) => {
+  const deleteChat = (chatId: number) => {
     toNewChatPage()
     store.deleteChat(chatId);
     _setChats(store.getChats());
@@ -43,7 +43,7 @@ export default function HomePage(props: HomePageProps) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const [selectedChatId, setSelectedChatId] = useState<string>('');
+  const [selectedChatId, setSelectedChatId] = useState<number>(0);
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
   const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = React.useState(false);
@@ -53,20 +53,20 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const handleImageClick = () => {
-    setSelectedChatId('image')
+    setSelectedChatId(-1)
     setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
-    setSelectedChatId('');
+    setSelectedChatId(0);
     setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
 
   const dialogPage = () => {
-    if (selectedChatId === '') {
+    if (selectedChatId === 0) {
       return (
         <ChatNewSettingsDialog
           chat={newChat}
@@ -76,7 +76,7 @@ export default function HomePage(props: HomePageProps) {
         />
       )
     }
-    if (selectedChatId === 'image') {
+    if (selectedChatId === -1) {
       return undefined
     }
     return (
@@ -91,7 +91,7 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const contentPage = () => {
-    if (selectedChatId === '') {
+    if (selectedChatId === 0) {
       return (
         <ChatPage
           key={`ChatPage${newChat.id}`}
@@ -103,7 +103,7 @@ export default function HomePage(props: HomePageProps) {
         />
       )
     }
-    if (selectedChatId === 'image') {
+    if (selectedChatId === -1) {
       return <ImagePage
         key={'image'}
       />

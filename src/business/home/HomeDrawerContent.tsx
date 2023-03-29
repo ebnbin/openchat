@@ -12,9 +12,9 @@ import * as React from "react";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
-  selectedChatId: string,
+  selectedChatId: number,
   handleChatSettingsDialogOpen: () => void,
-  handleItemClick: (chatId: string) => void,
+  handleItemClick: (chatId: number) => void,
   handleClickSettingsOpen: () => void,
   handleNewChatClick: () => void,
   handleImageClick: () => void,

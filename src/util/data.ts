@@ -9,18 +9,18 @@ export interface AppData {
 }
 
 export interface Chat {
-  'id': string;
+  'id': number;
   'title': string;
   'context_threshold': number;
   'system_message': string;
   'user_message_template': string;
   'tokens_per_char': number;
   'tokens': number;
-  'conversations': string[];
+  'conversations': number[];
 }
 
 export interface ChatConversation {
-  'id': string;
+  'id': number;
   'user_message': string;
   'assistant_message': string;
 }

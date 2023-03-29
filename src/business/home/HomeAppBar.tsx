@@ -10,7 +10,7 @@ import {Chat} from "../../util/data";
 
 interface HomeAppBarProps {
   chats: Chat[],
-  selectedChatId: string,
+  selectedChatId: number,
   handleChatSettingsDialogOpen: () => void,
   setMobileOpen: (mobileOpen: boolean) => void,
 }
@@ -25,10 +25,10 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   };
 
   const title = () => {
-    if (selectedChatId === '') {
+    if (selectedChatId === 0) {
       return 'OpenChat'
     }
-    if (selectedChatId === 'image') {
+    if (selectedChatId === -1) {
       return 'Image'
     }
     const chat = chats.find((chat) => chat.id === selectedChatId)!!
@@ -75,9 +75,9 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                 />
                 <IconButton
                   edge="end"
-                  onClick={(selectedChatId !== '' && selectedChatId !== 'image') ? handleChatSettingsDialogOpen : undefined}
+                  onClick={(selectedChatId !== 0 && selectedChatId !== -1) ? handleChatSettingsDialogOpen : undefined}
                   sx={{
-                    display: (selectedChatId !== '' && selectedChatId !== 'image') ? 'inherit' : 'none',
+                    display: (selectedChatId !== 0 && selectedChatId !== -1) ? 'inherit' : 'none',
                   }}
                 >
                   <EditRounded />

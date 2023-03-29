@@ -17,7 +17,7 @@ import store from "../../util/store";
 interface ChatSettingsDialogProps {
   chat: Chat,
   updateChat: (chat: Chat) => void
-  deleteChat: (chatId: string) => void
+  deleteChat: (chatId: number) => void
   open: boolean
   handleClose: () => void
 }

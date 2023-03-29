@@ -12,7 +12,7 @@ interface MessageListProps {
 export default function ChatMessageList(props: MessageListProps) {
   const { conversationEntities, setConversationEntities } = props
 
-  const setRaw = (id: string, isUser: boolean, raw: boolean) => {
+  const setRaw = (id: number, isUser: boolean, raw: boolean) => {
     const foundIndex = conversationEntities.findIndex((c) => c.id === id)
     if (foundIndex === -1) {
       return

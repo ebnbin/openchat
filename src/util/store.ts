@@ -68,7 +68,7 @@ class Store {
 
   public newChat(): Chat {
     return {
-      id: `${new Date().getTime()}`,
+      id: new Date().getTime(),
       title: '',
       context_threshold: 0.7,
       system_message: '',
@@ -122,7 +122,7 @@ class Store {
     } as AppData);
   }
 
-  public deleteChat(chatId: string) {
+  public deleteChat(chatId: number) {
     const index = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
     if (index === -1) {
       return;

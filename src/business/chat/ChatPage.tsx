@@ -22,7 +22,7 @@ export enum ConversationEntityType {
 }
 
 export interface ConversationEntity {
-  id: string;
+  id: number;
   userMessage: string;
   assistantMessage: string;
   userMessageRaw: boolean,
@@ -139,7 +139,7 @@ export default function ChatPage(props: ChatProps) {
       ? chat.user_message_template.replaceAll('${message}', input)
       : input
     return {
-      id: `${new Date().getTime()}`,
+      id: new Date().getTime(),
       userMessage: validInput,
       assistantMessage: '',
       userMessageRaw: false,

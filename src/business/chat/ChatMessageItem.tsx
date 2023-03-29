@@ -7,13 +7,13 @@ import {contentWidth} from "./ChatPage";
 import ChatMessageContent from "./ChatMessageContent";
 
 interface MessageItemProps {
-  id: string,
+  id: number,
   role: ChatCompletionRequestMessageRoleEnum,
   message: string,
   context: boolean,
   isLoading: boolean,
   raw: boolean,
-  setRaw: (id: string, isUser: boolean, raw: boolean) => void,
+  setRaw: (id: number, isUser: boolean, raw: boolean) => void,
 }
 
 export default function ChatMessageItem(props: MessageItemProps) {
