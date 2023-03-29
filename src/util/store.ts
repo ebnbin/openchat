@@ -127,13 +127,14 @@ class Store {
     if (index === -1) {
       return;
     }
+    const chat = this.appData.get().chats[index];
     const copyChats = [...this.appData.get().chats];
     copyChats.splice(index, 1);
     this.appData.set({
       ...this.appData.get(),
       chats: copyChats,
     } as AppData);
-    this.deleteConversations(chatId);
+    this.deleteConversations(chat);
   }
 
   getConversations(): ChatConversation[] {
@@ -186,12 +187,7 @@ class Store {
     this.appData.set(copyAppData);
   }
 
-  deleteConversations(chatId: string) {
-    const chatIndex = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
-    if (chatIndex === -1) {
-      return;
-    }
-    const chat = this.appData.get().chats[chatIndex];
+  deleteConversations(chat: Chat) {
     const copyConversations = this.appData.get().conversations
       .filter((conversation) => !chat.conversations.includes(conversation.id))
     const copyAppData = {
