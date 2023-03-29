@@ -137,11 +137,7 @@ class Store {
     this.deleteConversations(chat);
   }
 
-  getConversations(): ChatConversation[] {
-    return this.appData.get().conversations;
-  }
-
-  getChatConversations2(chat: Chat): ChatConversation[] {
+  getChatConversations(chat: Chat): ChatConversation[] {
     return chat.conversations
       .map((conversationId) => {
         return this.appData.get().conversations.find((conversation) => conversation.id === conversationId) ?? null;
@@ -149,12 +145,11 @@ class Store {
       .filter((conversation) => conversation !== null) as ChatConversation[];
   }
 
-  createConversation(chatId: string, conversation: ChatConversation) {
-    const chatIndex = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
+  createConversation(chat: Chat, conversation: ChatConversation): Chat {
+    const chatIndex = this.appData.get().chats.findIndex((foundChat) => foundChat.id === chat.id);
     if (chatIndex === -1) {
-      return;
+      return chat;
     }
-    const chat = this.appData.get().chats[chatIndex];
     const copyChat = {
       ...chat,
       conversations: [
@@ -171,6 +166,7 @@ class Store {
       conversations: copyConversations,
     } as AppData;
     this.appData.set(copyAppData);
+    return copyChat;
   }
 
   updateConversation(conversation: ChatConversation) {

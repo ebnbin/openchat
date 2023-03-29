@@ -16,7 +16,6 @@ interface HomePageProps {
 
 export default function HomePage(props: HomePageProps) {
   const [chats, _setChats] = useState(store.getChats())
-  const [conversation, _setConversation] = useState(store.getConversations())
 
   const createChat = (chat: Chat) => {
     store.createChat(chat)

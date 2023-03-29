@@ -111,7 +111,7 @@ export default function ChatPage(props: ChatProps) {
   const { chat, isNewChat, createChat, updateChat, openNewChatSettings } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState(initConversationEntities(store.getChatConversations2(chat)));
+    useState(initConversationEntities(store.getChatConversations(chat)));
   const [conversationEntities, setConversationEntities] =
     useState(updateContext(chat, noContextConversationEntities))
 
@@ -269,7 +269,7 @@ export default function ChatPage(props: ChatProps) {
     setNoContextConversationEntities(nextConversationEntities)
 
     const newConversation = conversationEntityToChatConversation(requestingConversationEntity)
-    store.createConversation(chat.id, newConversation)
+    const nextChat1 = store.createConversation(chat, newConversation)
 
     scrollToBottom()
 
@@ -279,7 +279,7 @@ export default function ChatPage(props: ChatProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const nextChat = handleResponse1(chat, requestMessages, response.data)
+        const nextChat = handleResponse1(nextChat1, requestMessages, response.data)
         updateChat(nextChat)
         const nextConversationEntities2 = handleResponse2(nextConversationEntities, response.data)
         setNoContextConversationEntities(nextConversationEntities2)
