@@ -6,7 +6,7 @@ import ChatInputCard from "./ChatInputCard";
 import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
-import LogoImage from "../logo/LogoImage";
+import Logo from "../logo/Logo";
 import {EditRounded} from "@mui/icons-material";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
@@ -347,10 +347,13 @@ export default function ChatPage(props: ChatProps) {
             alignItems: 'center',
           }}
         >
-          <LogoImage/>
+          <Logo/>
           <Button
             variant={'outlined'}
             startIcon={<EditRounded/>}
+            sx={{
+              marginTop: '32px',
+            }}
             onClick={() => {
               if (openNewChatSettings !== null) {
                 openNewChatSettings()
