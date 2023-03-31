@@ -103,7 +103,7 @@ interface ChatProps {
   chat: Chat,
   isNewChat: boolean,
   createChat: (chat: Chat) => void,
-  updateChat: (chat: Chat) => void,
+  updateChat: (chatId: number, chat: Partial<Chat>) => void,
   openNewChatSettings: (() => void) | null,
 }
 
@@ -111,7 +111,7 @@ export default function ChatPage(props: ChatProps) {
   const { chat, isNewChat, createChat, updateChat, openNewChatSettings } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState(initConversationEntities(store.getChatConversations(chat)));
+    useState(initConversationEntities(store.getConversations(chat)));
   const [conversationEntities, setConversationEntities] =
     useState(updateContext(chat, noContextConversationEntities))
 
@@ -134,14 +134,20 @@ export default function ChatPage(props: ChatProps) {
 
   //*******************************************************************************************************************
 
-  function getRequestingConversationEntity(chat: Chat, input: string): ConversationEntity {
+  function newRequestingConversation(input: string): Conversation {
     const validInput = chat.user_message_template.includes('${message}')
       ? chat.user_message_template.replaceAll('${message}', input)
       : input
+    return store.newConversation({
+      user_message: validInput,
+    })
+  }
+
+  function getRequestingConversationEntity(chat: Chat, conversation: Conversation): ConversationEntity {
     return {
-      id: new Date().getTime(),
-      userMessage: validInput,
-      assistantMessage: '',
+      id: conversation.id,
+      userMessage: conversation.user_message,
+      assistantMessage: conversation.assistant_message,
       userMessageRaw: false,
       assistantMessageRaw: false,
       type: ConversationEntityType.REQUESTING,
@@ -196,12 +202,9 @@ export default function ChatPage(props: ChatProps) {
       .reduce((acc, message) => acc + message.length + defaultGPTModel.extraCharsPerMessage, 0)
     const tokensPerChar = responseTotalTokens / charCount
     const tokens = chat.tokens + responseTotalTokens
-    store.updateUsage({
+    store.increaseUsage({
       tokens: responseTotalTokens,
-      image_256: 0,
-      image_512: 0,
-      image_1024: 0,
-    } as Usage)
+    })
     return {
       ...chat,
       tokens_per_char: tokensPerChar,
@@ -262,13 +265,13 @@ export default function ChatPage(props: ChatProps) {
       createChat(chat)
     }
 
-    const requestingConversationEntity = getRequestingConversationEntity(chat, input)
+    const newConversation = newRequestingConversation(input)
+    const requestingConversationEntity = getRequestingConversationEntity(chat, newConversation)
     const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     // start
     setNoContextConversationEntities(nextConversationEntities)
 
-    const newConversation = conversationEntityToChatConversation(requestingConversationEntity)
     const nextChat1 = store.createConversation(chat, newConversation)
 
     scrollToBottom()
@@ -280,12 +283,15 @@ export default function ChatPage(props: ChatProps) {
       })
       .then(response => {
         const nextChat = handleResponse1(nextChat1, requestMessages, response.data)
-        updateChat(nextChat)
+        updateChat(nextChat1.id, {
+          tokens_per_char: nextChat.tokens_per_char,
+          tokens: nextChat.tokens,
+        })
         const nextConversationEntities2 = handleResponse2(nextConversationEntities, response.data)
         setNoContextConversationEntities(nextConversationEntities2)
 
         const conversationEntity2 = handleResponse2ConversationEntity(requestingConversationEntity, response.data)
-        store.updateConversation(conversationEntityToChatConversation(conversationEntity2))
+        store.updateConversation(newConversation.id, conversationEntityToChatConversation(conversationEntity2))
       })
       .catch(() => {
         const nextConversationEntities2 = handleResponseError(nextConversationEntities)

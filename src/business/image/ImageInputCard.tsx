@@ -82,12 +82,11 @@ export default function ImageInputCard(props: ImageInputCardProps) {
         size: imageData.size,
       })
       .then(response => {
-        store.updateUsage({
-          tokens: 0,
+        store.increaseUsage({
           image_256: imageData.size === "256x256" ? 1 : 0,
           image_512: imageData.size === "512x512" ? 1 : 0,
           image_1024: imageData.size === "1024x1024" ? 1 : 0,
-        } as Usage)
+        })
         const responseImageData = {
           ...imageData,
           url: response.data.data[0].url,

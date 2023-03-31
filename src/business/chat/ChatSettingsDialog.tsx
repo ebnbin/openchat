@@ -16,7 +16,7 @@ import store from "../../util/store";
 
 interface ChatSettingsDialogProps {
   chat: Chat,
-  updateChat: (chat: Chat) => void
+  updateChat: (chatId: number, chat: Partial<Chat>) => void
   deleteChat: (chatId: number) => void
   open: boolean
   handleClose: () => void
@@ -26,39 +26,27 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
   const { chat, updateChat, deleteChat, open, handleClose } = props
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateChat(
-      {
-        ...chat,
-        title: event.target.value,
-      },
-    )
+    updateChat(chat.id, {
+      title: event.target.value,
+    });
   }
 
   const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
-    updateChat(
-      {
-        ...chat,
-        context_threshold: newValue as number,
-      },
-    )
+    updateChat(chat.id, {
+      context_threshold: newValue as number,
+    });
   }
 
   const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateChat(
-      {
-        ...chat,
-        system_message: event.target.value,
-      },
-    )
+    updateChat(chat.id, {
+      system_message: event.target.value,
+    });
   }
 
   const handleUserMessageTemplateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateChat(
-      {
-        ...chat,
-        user_message_template: event.target.value,
-      },
-    )
+    updateChat(chat.id, {
+      user_message_template: event.target.value,
+    });
   }
 
   const handleDeleteClick = () => {
@@ -212,7 +200,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             <br />
             Cumulative tokens used: {chat.tokens}
             <br />
-            Conversations count: {store.getChatConversations(chat).length}
+            Conversations count: {store.getConversations(chat).length}
           </DialogContentText>
         </Box>
         <Box

@@ -2,10 +2,10 @@ import {Data, Chat, Conversation, Usage} from "./data";
 import Preference from "./Preference";
 
 class Store {
-  private readonly appData: Preference<Data>;
+  private readonly data: Preference<Data>;
 
   constructor() {
-    this.appData = new Preference<Data>('app_data', {
+    this.data = new Preference<Data>('data', {
       version: 300, // 0.3.0
       openai_api_key: '',
       github_token: '',
@@ -17,56 +17,62 @@ class Store {
         image_256: 0,
         image_512: 0,
         image_1024: 0,
-      } as Usage,
-    } as Data);
-    if (this.appData.get().version < 300) {
-      this.appData.remove()
-      localStorage.clear()
+      },
+    });
+    this.migrate();
+  }
+
+  private migrate() {
+    if (this.data.get().version < 300) {
+      this.data.remove();
+      localStorage.clear();
     }
   }
 
-  getAppData(): Data {
-    return this.appData.get();
+  getDataJson(): string {
+    return JSON.stringify(this.data.get(), (key, value) => {
+      if (key === 'openai_api_key' || key === 'github_token' || key === 'github_gist_id') {
+        return undefined;
+      }
+      return value;
+    });
   }
 
-  public getOpenAIApiKey(): string {
-    return this.appData.get().openai_api_key;
+  getOpenAIApiKey(): string {
+    return this.data.get().openai_api_key;
   }
 
-  public setOpenAIApiKey(openAIApiKey: string) {
-    this.appData.set({
-      ...this.appData.get(),
+  setOpenAIApiKey(openAIApiKey: string) {
+    this.data.update({
       openai_api_key: openAIApiKey,
-    } as Data);
+    });
   }
 
-  public getGithubToken(): string {
-    return this.appData.get().github_token;
+  getGithubToken(): string {
+    return this.data.get().github_token;
   }
 
-  public setGithubToken(githubToken: string) {
-    this.appData.set({
-      ...this.appData.get(),
+  setGithubToken(githubToken: string) {
+    this.data.update({
       github_token: githubToken,
-    } as Data);
+    });
   }
 
-  public getGithubGistId(): string {
-    return this.appData.get().github_gist_id;
+  getGithubGistId(): string {
+    return this.data.get().github_gist_id;
   }
 
-  public setGithubGistId(github_gist_id: string) {
-    this.appData.set({
-      ...this.appData.get(),
-      github_gist_id: github_gist_id,
-    } as Data);
+  setGithubGistId(githubGistId: string) {
+    this.data.update({
+      github_gist_id: githubGistId,
+    });
   }
 
-  public getChats(): Chat[] {
-    return this.appData.get().chats;
+  getChats(): Chat[] {
+    return this.data.get().chats;
   }
 
-  public newChat(): Chat {
+  newChat(): Chat {
     return {
       id: new Date().getTime(),
       title: '',
@@ -76,140 +82,119 @@ class Store {
       tokens_per_char: 0,
       tokens: 0,
       conversations: [],
-    } as Chat
+    };
   }
 
-  public createChat(
-    chat: Chat = this.newChat(),
-  ): Chat {
-    this.appData.set({
-      ...this.appData.get(),
+  createChat(chat: Chat) {
+    this.data.update({
       chats: [
-        ...this.appData.get().chats,
+        ...this.data.get().chats,
         chat,
       ],
-    } as Data);
-    return chat;
+    });
   }
 
-  public updateChat(chat: Chat) {
-    const index = this.appData.get().chats.findIndex((foundChat) => foundChat.id === chat.id);
-    if (index === -1) {
-      return;
-    }
-    const copyChats = [...this.appData.get().chats];
-    copyChats[index] = chat;
-    this.appData.set({
-      ...this.appData.get(),
-      chats: copyChats,
-    } as Data);
+  updateChat(chatId: number, chat: Partial<Chat>): Chat | null {
+    let updatedChat: Chat | null = null;
+    this.data.update({
+      chats: this.data.get().chats.map((foundChat) => {
+        if (foundChat.id === chatId) {
+          updatedChat = {
+            ...foundChat,
+            ...chat,
+          };
+          return updatedChat;
+        }
+        return foundChat;
+      }),
+    });
+    return updatedChat;
   }
 
-  public updateChatToken(chat: Chat) {
-    const index = this.appData.get().chats.findIndex((foundChat) => foundChat.id === chat.id);
-    if (index === -1) {
-      return;
+  deleteChat(chatId: number): boolean {
+    const chat = this.data.get().chats.find((foundChat) => foundChat.id === chatId);
+    if (!chat) {
+      return false;
     }
-    const copyChats = [...this.appData.get().chats];
-    copyChats[index] = {
-      ...copyChats[index],
-      tokens_per_char: chat.tokens_per_char,
-      tokens: chat.tokens,
+    this.data.update({
+      chats: this.data.get().chats.filter((foundChat) => foundChat.id !== chatId),
+      conversations: this.data.get().conversations
+        .filter((conversation) => !chat.conversations.includes(conversation.id)),
+    })
+    return true;
+  }
+
+  getConversations(chat: Chat): Conversation[] {
+    return this.data.get().conversations
+      .filter((conversation) => chat.conversations.includes(conversation.id));
+  }
+
+  newConversation(conversation: Partial<Conversation>): Conversation {
+    return {
+      id: new Date().getTime(),
+      user_message: '',
+      assistant_message: '',
+      ...conversation,
     };
-    this.appData.set({
-      ...this.appData.get(),
-      chats: copyChats,
-    } as Data);
-  }
-
-  public deleteChat(chatId: number) {
-    const index = this.appData.get().chats.findIndex((chat) => chat.id === chatId);
-    if (index === -1) {
-      return;
-    }
-    const chat = this.appData.get().chats[index];
-    const copyChats = [...this.appData.get().chats];
-    copyChats.splice(index, 1);
-    this.appData.set({
-      ...this.appData.get(),
-      chats: copyChats,
-    } as Data);
-    this.deleteConversations(chat);
-  }
-
-  getChatConversations(chat: Chat): Conversation[] {
-    return chat.conversations
-      .map((conversationId) => {
-        return this.appData.get().conversations.find((conversation) => conversation.id === conversationId) ?? null;
-      })
-      .filter((conversation) => conversation !== null) as Conversation[];
   }
 
   createConversation(chat: Chat, conversation: Conversation): Chat {
-    const chatIndex = this.appData.get().chats.findIndex((foundChat) => foundChat.id === chat.id);
-    if (chatIndex === -1) {
+    if (!this.data.get().chats.find((foundChat) => foundChat.id === chat.id)) {
       return chat;
     }
-    const copyChat = {
+    const updatedChat = {
       ...chat,
       conversations: [
         ...chat.conversations,
         conversation.id,
-      ]
-    } as Chat;
-    const copyChats = [...this.appData.get().chats];
-    copyChats[chatIndex] = copyChat;
-    const copyConversations = [...this.appData.get().conversations, conversation];
-    const copyAppData = {
-      ...this.appData.get(),
-      chats: copyChats,
-      conversations: copyConversations,
-    } as Data;
-    this.appData.set(copyAppData);
-    return copyChat;
+      ],
+    };
+    this.data.update({
+      chats: this.data.get().chats.map((foundChat) => {
+        if (foundChat.id === chat.id) {
+          return updatedChat;
+        }
+        return foundChat;
+      }),
+      conversations: [
+        ...this.data.get().conversations,
+        conversation,
+      ],
+    });
+    return updatedChat;
   }
 
-  updateConversation(conversation: Conversation) {
-    const conversationIndex = this.appData.get().conversations.findIndex((foundConversation) => foundConversation.id === conversation.id);
-    if (conversationIndex === -1) {
-      return;
-    }
-    const copyConversation = [...this.appData.get().conversations];
-    copyConversation[conversationIndex] = conversation;
-    const copyAppData = {
-      ...this.appData.get(),
-      conversations: copyConversation,
-    } as Data;
-    this.appData.set(copyAppData);
+  updateConversation(conversationId: number, conversation: Partial<Conversation>): Conversation | null {
+    let updatedConversation: Conversation | null = null;
+    this.data.update({
+      conversations: this.data.get().conversations.map((foundConversation) => {
+        if (foundConversation.id === conversationId) {
+          updatedConversation = {
+            ...foundConversation,
+            ...conversation,
+          };
+          return updatedConversation;
+        }
+        return foundConversation;
+      }),
+    });
+    return updatedConversation;
   }
 
-  deleteConversations(chat: Chat) {
-    const copyConversations = this.appData.get().conversations
-      .filter((conversation) => !chat.conversations.includes(conversation.id))
-    const copyAppData = {
-      ...this.appData.get(),
-      conversations: copyConversations,
-    } as Data;
-    this.appData.set(copyAppData);
+  getUsage(): Usage {
+    return this.data.get().usage;
   }
 
-  getUsage() {
-    return this.appData.get().usage;
-  }
-
-  updateUsage(usage: Usage) {
-    const currentUsage = this.appData.get().usage
-    const nextUsage = {
-      ...currentUsage,
-      tokens: currentUsage.tokens + usage.tokens,
-      image_256: currentUsage.image_256 + usage.image_256,
-      image_512: currentUsage.image_512 + usage.image_512,
-      image_1024: currentUsage.image_1024 + usage.image_1024,
-    } as Usage
-    this.appData.set({
-      ...this.appData.get(),
-      usage: nextUsage,
-    } as Data);
+  increaseUsage(usage: Partial<Usage>) {
+    const currentUsage = this.data.get().usage;
+    this.data.update({
+      usage: {
+        tokens: currentUsage.tokens + (usage.tokens ?? 0),
+        image_256: currentUsage.image_256 + (usage.image_256 ?? 0),
+        image_512: currentUsage.image_512 + (usage.image_512 ?? 0),
+        image_1024: currentUsage.image_1024 + (usage.image_1024 ?? 0),
+      },
+    });
   }
 }
 

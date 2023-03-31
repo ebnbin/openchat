@@ -71,7 +71,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
         {
           'files': {
             'openchat_data.json': {
-              'content': JSON.stringify(store.getAppData()),
+              'content': store.getDataJson(),
             }
           },
         }

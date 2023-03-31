@@ -46,11 +46,12 @@ export default class Preference<T> {
     localStorage.setItem(this.key, json);
   }
 
-  update(value: Partial<T>) {
+  update(value: Partial<T>): T {
     this.set({
       ...this.get(),
       ...value,
     });
+    return this.get();
   }
 
   remove() {

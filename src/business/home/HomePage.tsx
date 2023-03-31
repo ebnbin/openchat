@@ -23,13 +23,8 @@ export default function HomePage(props: HomePageProps) {
     setSelectedChatId(chat.id)
   }
 
-  const updateChat = (chat: Chat) => {
-    store.updateChat(chat);
-    _setChats(store.getChats());
-  }
-
-  const updateChatToken = (chat: Chat) => {
-    store.updateChatToken(chat);
+  const updateChat = (chatId: number, chat: Partial<Chat>) => {
+    store.updateChat(chatId, chat);
     _setChats(store.getChats());
   }
 
@@ -98,7 +93,7 @@ export default function HomePage(props: HomePageProps) {
           chat={newChat}
           isNewChat={true}
           createChat={createChat}
-          updateChat={updateChatToken}
+          updateChat={updateChat}
           openNewChatSettings={() => setNewChatSettingsDialogOpen(true)}
         />
       )
@@ -114,7 +109,7 @@ export default function HomePage(props: HomePageProps) {
         chat={chats.find((chat) => chat.id === selectedChatId)!!}
         isNewChat={false}
         createChat={createChat}
-        updateChat={updateChatToken}
+        updateChat={updateChat}
         openNewChatSettings={null}
       />
     )
