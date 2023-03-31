@@ -21,11 +21,15 @@ export default class Preference<T> {
       return this.cacheValue;
     }
     const json = localStorage.getItem(this.key);
-    let value;
+    let value: T;
     if (json === null) {
       value = this.defaultValue;
     } else {
-      value = JSON.parse(json);
+      const parsedValue = JSON.parse(json);
+      value = {
+        ...this.defaultValue,
+        ...parsedValue,
+      };
     }
     this.cacheValue = value;
     this.cached = true;
