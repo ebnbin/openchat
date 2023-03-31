@@ -46,6 +46,13 @@ export default class Preference<T> {
     localStorage.setItem(this.key, json);
   }
 
+  update(value: Partial<T>) {
+    this.set({
+      ...this.get(),
+      ...value,
+    });
+  }
+
   remove() {
     this.cacheValue = this.defaultValue;
     this.cached = false;
