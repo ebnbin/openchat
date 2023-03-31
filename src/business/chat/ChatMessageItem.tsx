@@ -1,4 +1,4 @@
-import {Avatar, CircularProgress, ListItem, ListItemAvatar, useTheme} from "@mui/material";
+import {Avatar, CircularProgress, ListItem, ListItemAvatar, Typography, useTheme} from "@mui/material";
 import {ChatCompletionRequestMessageRoleEnum} from "openai";
 import {FaceRounded, PsychologyAltRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";
@@ -6,7 +6,7 @@ import React from "react";
 import {contentWidth} from "./ChatPage";
 import ChatMessageContent from "./ChatMessageContent";
 
-interface MessageItemProps {
+interface ChatMessageItemProps {
   id: number,
   role: ChatCompletionRequestMessageRoleEnum,
   message: string,
@@ -16,7 +16,7 @@ interface MessageItemProps {
   setRaw: (id: number, isUser: boolean, raw: boolean) => void,
 }
 
-export default function ChatMessageItem(props: MessageItemProps) {
+export default function ChatMessageItem(props: ChatMessageItemProps) {
   const { id, role, message, context, isLoading, raw, setRaw } = props
 
   const theme = useTheme()
@@ -103,10 +103,19 @@ export default function ChatMessageItem(props: MessageItemProps) {
                 <CircularProgress/>
               </Box>
             ) : (
-            <ChatMessageContent
-              content={message}
-              raw={raw}
-            />
+              raw ? (
+                  <Typography
+                    sx={{
+                      whiteSpace: 'pre-wrap',
+                    }}
+                  >
+                    {message}
+                  </Typography>
+                ) : (
+                <ChatMessageContent
+                  content={message}
+                />
+              )
           )}
         </Box>
       </ListItem>

@@ -2,119 +2,114 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import {Box, Chip, Snackbar, Typography, useTheme} from "@mui/material";
+import {Box, Button, Typography, useTheme} from "@mui/material";
 import {copy} from "../../util/util";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import 'katex/dist/katex.min.css'
+import {ContentCopyRounded} from "@mui/icons-material";
+import remarkGfm from "remark-gfm";
 
-interface MessageContentProps {
+interface ChatMarkdownMessageProps {
   content: string,
-  raw: boolean,
 }
 
-function InternalMessageContent({ content, raw }: MessageContentProps) {
-  const theme = useTheme()
-  const style: any = theme.palette.mode === 'dark' ? oneDark : oneLight
+function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
+  const { content } = props;
+
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  const style: any = isDarkMode ? oneDark : oneLight;
 
   const handleCopyCodeClick = async (text: string) => {
-    await copy(text, (success: boolean) => {
-      setSuccess(success)
-      setSnackbarOpen(true)
-    });
+    await copy(text, null);
   }
 
-  const [success, setSuccess] = React.useState(false);
-
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-
   return (
-    <Box>
-      {raw ? (
-      <Typography
-        sx={{
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        {content}
-      </Typography>
-      ) : (
-      <ReactMarkdown
-        children={content}
-        remarkPlugins={[remarkMath]}
-        rehypePlugins={[rehypeKatex]}
-        components={{
-          code({node, inline, className, children, ...props}) {
-            const match = /language-(\w+)/.exec(className || '')
-            return !inline ? (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
+      components={{
+        img: ({ node, ...props }) => {
+          return (
+            <img
+              alt={`${node.properties?.alt}`}
+              style={{
+                maxWidth: '100%',
+              }}
+              {...props}
+            />
+          )
+        },
+        code: ({ inline, className, children, ...props }) => {
+          const language = /language-(\w+)/.exec(className ?? '')?.[1];
+          const code = String(children).replace(/\n$/, '');
+          return inline ? (
+            <code
+              className={className}
+              style={{
+                fontWeight: 'bold',
+              }}
+              {...props}
+            >
+              {children}
+            </code>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
+                  flexDirection: 'row',
+                  marginBottom: '-8px',
+                  paddingX: '16px',
+                  borderTopLeftRadius: '4px',
+                  borderTopRightRadius: '4px',
+                  alignItems: 'center',
+                  bgcolor: theme.palette.action.selected,
                 }}
               >
-                <Box
+                <Typography
+                  variant={'subtitle2'}
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    marginBottom: '-8px',
-                    paddingX: '16px',
-                    borderTopLeftRadius: '8px',
-                    borderTopRightRadius: '8px',
-                    alignItems: 'center',
-                    bgcolor: theme.palette.divider,
+                    flexGrow: 1,
+                    align: 'center',
+                    fontWeight: 'bold',
                   }}
                 >
-                  <Typography
-                    variant={'subtitle2'}
-                    sx={{
-                      flexGrow: 1,
-                      align: 'center',
-                    }}
-                  >
-                    {match?.[1]}
-                  </Typography>
-                  <Chip
-                    label={'Copy code'}
-                    onClick={() => handleCopyCodeClick(String(children).replace(/\n$/, ''))}
-                  />
-                </Box>
-                <SyntaxHighlighter
-                  children={String(children).replace(/\n$/, '')}
-                  style={style}
-                  language={match?.[1]}
-                  PreTag="div"
-                  showLineNumbers={true}
-                  {...props}
-                />
+                  {language}
+                </Typography>
+                <Button
+                  color={'inherit'}
+                  startIcon={<ContentCopyRounded/>}
+                  size={'small'}
+                  onClick={() => handleCopyCodeClick(code)}
+                  style={{
+                    textTransform: 'none',
+                  }}
+                >
+                  Copy code
+                </Button>
               </Box>
-            ) : (
-              <code
-                className={className}
+              <SyntaxHighlighter
+                language={language}
+                style={style}
                 {...props}
-                style={{
-                  borderRadius: '2px',
-                  padding: '1px',
-                  backgroundColor: theme.palette.action.selected,
-                }}
               >
-                {children}
-              </code>
-            )
-          },
-        }}
-      />
-      )}
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        message={success ? 'Copied to clipboard' : 'Failed to copy to clipboard'}
-      />
-    </Box>
-  )
+                {code}
+              </SyntaxHighlighter>
+            </Box>
+          );
+        },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
 }
 
-const ChatMessageContent = React.memo(InternalMessageContent);
-export default ChatMessageContent;
+export default React.memo(ChatMarkdownMessage);
