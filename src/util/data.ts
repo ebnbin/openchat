@@ -1,10 +1,10 @@
-export interface AppData {
+export interface Data {
   'version': number;
   'openai_api_key': string;
   'github_token': string;
   'github_gist_id': string;
   'chats': Chat[];
-  'conversations': ChatConversation[];
+  'conversations': Conversation[];
   'usage': Usage;
 }
 
@@ -19,7 +19,7 @@ export interface Chat {
   'conversations': number[];
 }
 
-export interface ChatConversation {
+export interface Conversation {
   'id': number;
   'user_message': string;
   'assistant_message': string;

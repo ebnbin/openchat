@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, ChatConversation, Usage} from "../../util/data";
+import {Chat, Conversation, Usage} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
 import {api, defaultGPTModel} from "../../util/util";
@@ -30,7 +30,7 @@ export interface ConversationEntity {
   type: ConversationEntityType;
 }
 
-function initConversationEntities(chatConversations: ChatConversation[]): ConversationEntity[] {
+function initConversationEntities(chatConversations: Conversation[]): ConversationEntity[] {
   return chatConversations
     .map((chatConversation) => {
       return {
@@ -78,23 +78,23 @@ function updateContext(chat: Chat, conversationEntities: ConversationEntity[]): 
   return result
 }
 
-function conversationEntitiesToChatConversations(conversationEntities: ConversationEntity[]): ChatConversation[] {
+function conversationEntitiesToChatConversations(conversationEntities: ConversationEntity[]): Conversation[] {
   return conversationEntities
     .map((conversationEntity) => {
       return {
         id: conversationEntity.id,
         user_message: conversationEntity.userMessage,
         assistant_message: conversationEntity.assistantMessage,
-      } as ChatConversation
+      } as Conversation
     })
 }
 
-function conversationEntityToChatConversation(conversationEntity: ConversationEntity): ChatConversation {
+function conversationEntityToChatConversation(conversationEntity: ConversationEntity): Conversation {
   return {
     id: conversationEntity.id,
     user_message: conversationEntity.userMessage,
     assistant_message: conversationEntity.assistantMessage,
-  } as ChatConversation
+  } as Conversation
 }
 
 //*********************************************************************************************************************

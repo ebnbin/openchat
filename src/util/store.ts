@@ -1,11 +1,11 @@
-import {AppData, Chat, ChatConversation, Usage} from "./data";
+import {Data, Chat, Conversation, Usage} from "./data";
 import Preference from "./Preference";
 
 class Store {
-  private readonly appData: Preference<AppData>;
+  private readonly appData: Preference<Data>;
 
   constructor() {
-    this.appData = new Preference<AppData>('app_data', {
+    this.appData = new Preference<Data>('app_data', {
       version: 300, // 0.3.0
       openai_api_key: '',
       github_token: '',
@@ -18,14 +18,14 @@ class Store {
         image_512: 0,
         image_1024: 0,
       } as Usage,
-    } as AppData);
+    } as Data);
     if (this.appData.get().version < 300) {
       this.appData.remove()
       localStorage.clear()
     }
   }
 
-  getAppData(): AppData {
+  getAppData(): Data {
     return this.appData.get();
   }
 
@@ -37,7 +37,7 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       openai_api_key: openAIApiKey,
-    } as AppData);
+    } as Data);
   }
 
   public getGithubToken(): string {
@@ -48,7 +48,7 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       github_token: githubToken,
-    } as AppData);
+    } as Data);
   }
 
   public getGithubGistId(): string {
@@ -59,7 +59,7 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       github_gist_id: github_gist_id,
-    } as AppData);
+    } as Data);
   }
 
   public getChats(): Chat[] {
@@ -88,7 +88,7 @@ class Store {
         ...this.appData.get().chats,
         chat,
       ],
-    } as AppData);
+    } as Data);
     return chat;
   }
 
@@ -102,7 +102,7 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       chats: copyChats,
-    } as AppData);
+    } as Data);
   }
 
   public updateChatToken(chat: Chat) {
@@ -119,7 +119,7 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       chats: copyChats,
-    } as AppData);
+    } as Data);
   }
 
   public deleteChat(chatId: number) {
@@ -133,19 +133,19 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       chats: copyChats,
-    } as AppData);
+    } as Data);
     this.deleteConversations(chat);
   }
 
-  getChatConversations(chat: Chat): ChatConversation[] {
+  getChatConversations(chat: Chat): Conversation[] {
     return chat.conversations
       .map((conversationId) => {
         return this.appData.get().conversations.find((conversation) => conversation.id === conversationId) ?? null;
       })
-      .filter((conversation) => conversation !== null) as ChatConversation[];
+      .filter((conversation) => conversation !== null) as Conversation[];
   }
 
-  createConversation(chat: Chat, conversation: ChatConversation): Chat {
+  createConversation(chat: Chat, conversation: Conversation): Chat {
     const chatIndex = this.appData.get().chats.findIndex((foundChat) => foundChat.id === chat.id);
     if (chatIndex === -1) {
       return chat;
@@ -164,12 +164,12 @@ class Store {
       ...this.appData.get(),
       chats: copyChats,
       conversations: copyConversations,
-    } as AppData;
+    } as Data;
     this.appData.set(copyAppData);
     return copyChat;
   }
 
-  updateConversation(conversation: ChatConversation) {
+  updateConversation(conversation: Conversation) {
     const conversationIndex = this.appData.get().conversations.findIndex((foundConversation) => foundConversation.id === conversation.id);
     if (conversationIndex === -1) {
       return;
@@ -179,7 +179,7 @@ class Store {
     const copyAppData = {
       ...this.appData.get(),
       conversations: copyConversation,
-    } as AppData;
+    } as Data;
     this.appData.set(copyAppData);
   }
 
@@ -189,7 +189,7 @@ class Store {
     const copyAppData = {
       ...this.appData.get(),
       conversations: copyConversations,
-    } as AppData;
+    } as Data;
     this.appData.set(copyAppData);
   }
 
@@ -209,7 +209,7 @@ class Store {
     this.appData.set({
       ...this.appData.get(),
       usage: nextUsage,
-    } as AppData);
+    } as Data);
   }
 }
 
