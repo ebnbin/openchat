@@ -6,10 +6,9 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import {SendRounded} from "@mui/icons-material";
-import {api} from "../../util/util";
+import {openAIApi} from "../../util/util";
 import {ImageData} from "./ImagePage";
 import store from "../../util/store";
-import {Usage} from "../../util/data";
 import {CreateImageRequestSizeEnum} from "openai";
 
 interface ImageInputCardProps {
@@ -76,7 +75,7 @@ export default function ImageInputCard(props: ImageInputCardProps) {
     handleRequestStart(imageData)
     setIsLoading(true)
 
-    api()
+    openAIApi()
       .createImage({
         prompt: imageData.prompt,
         size: imageData.size,

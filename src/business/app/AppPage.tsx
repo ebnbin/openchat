@@ -2,7 +2,7 @@ import * as React from 'react';
 import {createTheme, ThemeProvider} from "@mui/material";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
-import {useIsDarkMode} from "../../util/util";
+import {useDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
 
 export default function AppPage() {
@@ -12,7 +12,7 @@ export default function AppPage() {
     setSettingsOpen(false);
   };
 
-  const isDarkMode = useIsDarkMode()
+  const isDarkMode = useDarkMode()
   const theme = createTheme({
     palette: {
       mode: isDarkMode ? 'dark' : 'light',

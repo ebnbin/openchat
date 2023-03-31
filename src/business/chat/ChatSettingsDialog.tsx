@@ -11,7 +11,7 @@ import {
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import {defaultGPTModel} from "../../util/util";
+import {defaultOpenAIModel} from "../../util/util";
 import store from "../../util/store";
 
 interface ChatSettingsDialogProps {
@@ -111,7 +111,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             Conversation histories that can be remembered as context for the next conversation
             <br />
             Current value: {(chat.context_threshold * 100).toFixed(0)}% of maximum tokens
-            (about {(defaultGPTModel.maxTokens * chat.context_threshold / 4 * 3).toFixed(0)} words)
+            (about {(defaultOpenAIModel.maxTokens * chat.context_threshold / 4 * 3).toFixed(0)} words)
           </Typography>
           <Box
             sx={{
@@ -196,7 +196,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           }}
         >
           <DialogContentText>
-            Model: {defaultGPTModel.model} ({defaultGPTModel.maxTokens} tokens)
+            Model: {defaultOpenAIModel.model} ({defaultOpenAIModel.maxTokens} tokens)
             <br />
             Cumulative tokens used: {chat.tokens}
             <br />

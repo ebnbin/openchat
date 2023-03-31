@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, Conversation, Usage} from "../../util/data";
+import {Chat, Conversation} from "../../util/data";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputCard from "./ChatInputCard";
-import {api, defaultGPTModel} from "../../util/util";
+import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
 import LogoImage from "../logo/LogoImage";
@@ -46,11 +46,11 @@ function initConversationEntities(chatConversations: Conversation[]): Conversati
 
 function updateContext(chat: Chat, conversationEntities: ConversationEntity[]): ConversationEntity[] {
   const result: ConversationEntity[] = []
-  const maxContextTokens = defaultGPTModel.maxTokens * chat.context_threshold
+  const maxContextTokens = defaultOpenAIModel.maxTokens * chat.context_threshold
   let usedTokens = 0
   if (chat.system_message !== '') {
     usedTokens += chat.system_message.length * chat.tokens_per_char +
-      defaultGPTModel.extraCharsPerMessage
+      defaultOpenAIModel.extraCharsPerMessage
   }
   conversationEntities
     .slice()
@@ -61,7 +61,7 @@ function updateContext(chat: Chat, conversationEntities: ConversationEntity[]): 
         context = false
       } else {
         const tokens = (conversationEntity.userMessage.length + conversationEntity.assistantMessage.length) *
-          chat.tokens_per_char + 2 * defaultGPTModel.extraCharsPerMessage
+          chat.tokens_per_char + 2 * defaultOpenAIModel.extraCharsPerMessage
         usedTokens += tokens
         context = usedTokens <= maxContextTokens
       }
@@ -199,7 +199,7 @@ export default function ChatPage(props: ChatProps) {
     const charCount = requestMessages
       .map((message) => message.content)
       .concat(responseMessage.content)
-      .reduce((acc, message) => acc + message.length + defaultGPTModel.extraCharsPerMessage, 0)
+      .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
     const tokensPerChar = responseTotalTokens / charCount
     const tokens = chat.tokens + responseTotalTokens
     store.increaseUsage({
@@ -276,9 +276,9 @@ export default function ChatPage(props: ChatProps) {
 
     scrollToBottom()
 
-    api()
+    openAIApi()
       .createChatCompletion({
-        model: defaultGPTModel.model,
+        model: defaultOpenAIModel.model,
         messages: requestMessages,
       })
       .then(response => {

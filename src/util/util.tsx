@@ -2,65 +2,56 @@ import {Configuration, OpenAIApi} from "openai";
 import { useState, useEffect } from 'react';
 import store from "./store";
 
-export function api(apiKey: string = store.getOpenAIApiKey()): OpenAIApi {
+export function openAIApi(): OpenAIApi {
   const configuration = new Configuration({
-    apiKey: apiKey,
-  })
-  return new OpenAIApi(configuration)
+    apiKey: store.getOpenAIApiKey(),
+  });
+  return new OpenAIApi(configuration);
 }
 
-export function copy(text: string): void {
-  const textField = document.createElement('textarea');
-  textField.value = text;
-  document.body.appendChild(textField);
-  textField.select();
-  document.execCommand('copy');
-  textField.remove();
-}
-
-function checkIsDarkMode(): boolean {
+export async function copy(text: string, callback: ((success: boolean) => void) | null): Promise<void> {
   try {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  } catch (err) {
-    return false;
+    await navigator.clipboard.writeText(text);
+    if (callback) {
+      callback(true);
+    }
+  } catch (error) {
+    if (callback) {
+      callback(false);
+    }
   }
 }
 
-export function useIsDarkMode(): boolean {
-  const [isDarkMode, setIsDarkMode] = useState(checkIsDarkMode());
+export function useDarkMode(): boolean {
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const mqList = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const listener = (event: MediaQueryListEvent) => {
+    const handleDarkModeChange = (event: MediaQueryListEvent) => {
       setIsDarkMode(event.matches);
-    };
+    }
 
-    mqList.addEventListener('change', listener);
+    const darkModeMediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+    setIsDarkMode(darkModeMediaQueryList.matches);
+
+    darkModeMediaQueryList.addEventListener('change', handleDarkModeChange);
 
     return () => {
-      mqList.removeEventListener('change', listener);
-    };
+      darkModeMediaQueryList.removeEventListener('change', handleDarkModeChange);
+    }
   }, []);
 
   return isDarkMode;
 }
 
-export interface ChatGPTModel {
+interface OpenAIModel {
   model: string,
   maxTokens: number,
   extraCharsPerMessage: number,
 }
 
-export const chatGPTModels = new Map<string, ChatGPTModel>([
-  [
-    'gpt-3.5-turbo',
-    {
-      model: 'gpt-3.5-turbo',
-      maxTokens: 4096,
-      extraCharsPerMessage: 16,
-    } as ChatGPTModel,
-  ]
-])
-
-export const defaultGPTModel = chatGPTModels.get('gpt-3.5-turbo')!!
+export const defaultOpenAIModel: OpenAIModel = {
+  model: 'gpt-3.5-turbo',
+  maxTokens: 4096,
+  extraCharsPerMessage: 16,
+} as const;
