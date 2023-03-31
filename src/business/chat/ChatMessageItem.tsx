@@ -4,7 +4,7 @@ import {FaceRounded, PsychologyAltRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React from "react";
 import {contentWidth} from "./ChatPage";
-import ChatMessageContent from "./ChatMessageContent";
+import ChatMarkdownMessage from "./ChatMarkdownMessage";
 
 interface ChatMessageItemProps {
   id: number,
@@ -112,7 +112,7 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
                     {message}
                   </Typography>
                 ) : (
-                <ChatMessageContent
+                <ChatMarkdownMessage
                   content={message}
                 />
               )
