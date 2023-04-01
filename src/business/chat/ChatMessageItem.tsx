@@ -62,30 +62,37 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
         bgcolor: itemColor(),
       }}
     >
-      <ListItem
+      <Box
         sx={{
           maxWidth: contentWidth,
           margin: '0 auto',
+          paddingRight: '16px',
+          paddingY: '0px',
+          display: 'flex',
+          flexDirection: 'row',
           alignItems: 'flex-start',
         }}
       >
-        <ListItemAvatar
+        <Box
           sx={{
             display: 'flex',
             height: '56px',
             flexShrink: 0,
             placeItems: 'center',
+            paddingX: '16px',
           }}
           onClick={avatarOnClick}
         >
           <Avatar
             sx={{
+              width: '32px',
+              height: '32px',
               bgcolor: avatarColor()
             }}
           >
             {avatarIcon()}
           </Avatar>
-        </ListItemAvatar>
+        </Box>
         <Box
           sx={{
             flexGrow: 1,
@@ -93,32 +100,35 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
           }}
         >
           {(role === "assistant" && isLoading) ? (
-              <Box
+            <Box
+              sx={{
+                height: '56px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <CircularProgress
+                size={32}
+              />
+            </Box>
+          ) : (
+            raw ? (
+              <Typography
                 sx={{
-                  height: '56px',
-                  display: 'flex',
-                  alignItems: 'center',
+                  paddingY: '16px',
+                  whiteSpace: 'pre-wrap',
                 }}
               >
-                <CircularProgress/>
-              </Box>
+                {message}
+              </Typography>
             ) : (
-              raw ? (
-                  <Typography
-                    sx={{
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
-                    {message}
-                  </Typography>
-                ) : (
-                <ChatMarkdownMessage
-                  content={message}
-                />
-              )
+              <ChatMarkdownMessage
+                content={message}
+              />
+            )
           )}
         </Box>
-      </ListItem>
+      </Box>
     </Box>
   )
 }
