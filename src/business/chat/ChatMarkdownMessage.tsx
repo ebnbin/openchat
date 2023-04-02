@@ -26,89 +26,103 @@ function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
   }
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex]}
-      components={{
-        img: ({ node, ...props }) => {
-          return (
-            <img
-              alt={`${node.properties?.alt}`}
-              style={{
-                maxWidth: '100%',
-              }}
-              {...props}
-            />
-          )
-        },
-        code: ({ inline, className, children, ...props }) => {
-          const language = /language-(\w+)/.exec(className ?? '')?.[1];
-          const code = String(children).replace(/\n$/, '');
-          return inline ? (
-            <code
-              className={className}
-              style={{
-                fontWeight: 'bold',
-              }}
-              {...props}
-            >
-              {children}
-            </code>
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  marginBottom: '-8px',
-                  paddingX: '16px',
-                  borderTopLeftRadius: '4px',
-                  borderTopRightRadius: '4px',
-                  alignItems: 'center',
-                  bgcolor: theme.palette.action.selected,
-                }}
-              >
-                <Typography
-                  variant={'subtitle2'}
-                  sx={{
-                    flexGrow: 1,
-                    align: 'center',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {language}
-                </Typography>
-                <Button
-                  color={'inherit'}
-                  startIcon={<ContentCopyRounded/>}
-                  size={'small'}
-                  onClick={() => handleCopyCodeClick(code)}
-                  style={{
-                    textTransform: 'none',
-                  }}
-                >
-                  Copy code
-                </Button>
-              </Box>
-              <SyntaxHighlighter
-                language={language}
-                style={style}
-                {...props}
-              >
-                {code}
-              </SyntaxHighlighter>
-            </Box>
-          );
-        },
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
       }}
     >
-      {content}
-    </ReactMarkdown>
+      <Box
+        sx={{
+          width: '0px',
+          flexGrow: 1,
+        }}
+      >
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+          components={{
+            img: ({ node, ...props }) => {
+              return (
+                <img
+                  alt={`${node.properties?.alt}`}
+                  style={{
+                    maxWidth: '100%',
+                  }}
+                  {...props}
+                />
+              )
+            },
+            code: ({ inline, className, children, ...props }) => {
+              const language = /language-(\w+)/.exec(className ?? '')?.[1];
+              const code = String(children).replace(/\n$/, '');
+              return inline ? (
+                <code
+                  className={className}
+                  style={{
+                    fontWeight: 'bold',
+                  }}
+                  {...props}
+                >
+                  {children}
+                </code>
+              ) : (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      marginBottom: '-8px',
+                      paddingX: '16px',
+                      borderTopLeftRadius: '4px',
+                      borderTopRightRadius: '4px',
+                      alignItems: 'center',
+                      bgcolor: theme.palette.action.selected,
+                    }}
+                  >
+                    <Typography
+                      variant={'subtitle2'}
+                      sx={{
+                        flexGrow: 1,
+                        align: 'center',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {language}
+                    </Typography>
+                    <Button
+                      color={'inherit'}
+                      startIcon={<ContentCopyRounded/>}
+                      size={'small'}
+                      onClick={() => handleCopyCodeClick(code)}
+                      style={{
+                        textTransform: 'none',
+                      }}
+                    >
+                      Copy code
+                    </Button>
+                  </Box>
+                  <SyntaxHighlighter
+                    language={language}
+                    style={style}
+                    {...props}
+                  >
+                    {code}
+                  </SyntaxHighlighter>
+                </Box>
+              );
+            },
+          }}
+        >
+          {content}
+        </ReactMarkdown>
+      </Box>
+    </Box>
   );
 }
 

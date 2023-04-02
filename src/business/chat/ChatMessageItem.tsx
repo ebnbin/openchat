@@ -1,10 +1,16 @@
-import {Avatar, CircularProgress, ListItem, ListItemAvatar, Typography, useTheme} from "@mui/material";
+import {Avatar, Button, CircularProgress, Typography, useTheme} from "@mui/material";
 import {ChatCompletionRequestMessageRoleEnum} from "openai";
-import {FaceRounded, PsychologyAltRounded} from "@mui/icons-material";
+import {
+  ContentCopyRounded,
+  FaceRounded,
+  PsychologyAltRounded,
+  TextFormatRounded
+} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React from "react";
 import {contentWidth} from "./ChatPage";
 import ChatMarkdownMessage from "./ChatMarkdownMessage";
+import {copy} from "../../util/util";
 
 interface ChatMessageItemProps {
   id: number,
@@ -49,11 +55,15 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
     return undefined
   }
 
-  const avatarOnClick = () => {
+  const rawOnClick = () => {
     if (isLoading) {
       return
     }
     setRaw(id, role === "user", !raw)
+  }
+
+  const handleCopyClick = async (text: string) => {
+    await copy(text, null);
   }
 
   return (
@@ -66,37 +76,68 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
         sx={{
           maxWidth: contentWidth,
           margin: '0 auto',
-          paddingRight: '16px',
+          paddingX: '16px',
           paddingY: '0px',
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-start',
+          flexDirection: 'column',
         }}
       >
         <Box
           sx={{
             display: 'flex',
-            height: '56px',
-            flexShrink: 0,
+            flexDirection: 'row',
             placeItems: 'center',
-            paddingX: '16px',
+            paddingTop: '8px',
           }}
-          onClick={avatarOnClick}
         >
           <Avatar
             sx={{
-              width: '32px',
-              height: '32px',
+              width: '24px',
+              height: '24px',
+              marginRight: '8px',
               bgcolor: avatarColor()
             }}
           >
             {avatarIcon()}
           </Avatar>
+          <Typography
+            variant={'subtitle2'}
+            color={context ? theme.palette.text.primary : theme.palette.text.disabled}
+            sx={{
+              fontWeight: 'bold',
+              flexGrow: 1,
+            }}
+          >
+            {role === "user" ? "You" : "OpenAI"}
+          </Typography>
+          <Button
+            variant={'text'}
+            size={'small'}
+            onClick={rawOnClick}
+            startIcon={<TextFormatRounded/>}
+            color={'info'}
+            sx={{
+              textTransform: 'none',
+            }}
+          >
+            {raw ? 'Raw Text' : 'Markdown'}
+          </Button>
+          <Button
+            variant={'text'}
+            size={'small'}
+            startIcon={<ContentCopyRounded/>}
+            onClick={() => handleCopyClick(message)}
+            color={'info'}
+            sx={{
+              textTransform: 'none',
+            }}
+          >
+            {'Copy'}
+          </Button>
         </Box>
         <Box
           sx={{
-            flexGrow: 1,
-            width: '0px',
+            width: '100%',
           }}
         >
           {(role === "assistant" && isLoading) ? (

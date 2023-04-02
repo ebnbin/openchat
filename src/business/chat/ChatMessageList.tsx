@@ -1,9 +1,9 @@
-import {Box, Card, IconButton, List, Typography, useTheme} from "@mui/material";
+import {Box, Button, Card, List, Typography, useTheme} from "@mui/material";
 import ChatMessageItem from "./ChatMessageItem";
 import React from "react";
 import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
 import {ChatCompletionRequestMessageRoleEnum} from "openai";
-import {MoreHorizRounded} from "@mui/icons-material";
+import {DeleteRounded} from "@mui/icons-material";
 
 interface MessageListProps {
   conversationEntities: ConversationEntity[];
@@ -78,8 +78,8 @@ export default function ChatMessageList(props: MessageListProps) {
                       width: '100%',
                       display: 'flex',
                       flexDirection: 'row',
-                      paddingLeft: '16px',
-                      paddingRight: '8px',
+                      paddingX: '16px',
+                      paddingBottom: '8px',
                       alignItems: 'center',
                     }}
                   >
@@ -92,11 +92,17 @@ export default function ChatMessageList(props: MessageListProps) {
                     >
                       {`${new Date(conversationEntity.id).toLocaleString()}`}
                     </Typography>
-                    <IconButton
+                    <Button
+                      variant={'text'}
                       size={'small'}
+                      color={'error'}
+                      startIcon={<DeleteRounded/>}
+                      sx={{
+                        textTransform: 'none',
+                      }}
                     >
-                      <MoreHorizRounded/>
-                    </IconButton>
+                      {'Delete conversation'}
+                    </Button>
                   </Box>
                 </Box>
               </Card>
