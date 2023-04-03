@@ -4,13 +4,13 @@ import React from "react";
 import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
 import {DeleteRounded, TipsAndUpdatesRounded} from "@mui/icons-material";
 
-interface MessageListProps {
+interface ChatConversationListProps {
   conversationEntities: ConversationEntity[];
   updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
 }
 
-export default function ChatMessageList(props: MessageListProps) {
+export default function ChatConversationList(props: ChatConversationListProps) {
   const { conversationEntities, updateConversationEntitiesNoStore, deleteConversationEntity } = props;
 
   const theme = useTheme();
