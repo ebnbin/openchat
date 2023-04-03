@@ -42,12 +42,12 @@ function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
           remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex]}
           components={{
-            img: ({ node, ...props }) => {
+            a: ({ ...props }) => {
               return (
-                <img
-                  alt={`${node.properties?.alt}`}
+                <a
                   style={{
-                    maxWidth: '100%',
+                    color: theme.palette.text.primary,
+                    fontWeight: 'bold',
                   }}
                   {...props}
                 />
@@ -116,6 +116,16 @@ function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
                   </SyntaxHighlighter>
                 </Box>
               );
+            },
+            img: ({ ...props }) => {
+              return (
+                <img
+                  style={{
+                    maxWidth: '100%',
+                  }}
+                  {...props}
+                />
+              )
             },
           }}
         >

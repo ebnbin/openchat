@@ -2,8 +2,7 @@ import {Box, Button, Card, List, Typography, useTheme} from "@mui/material";
 import ChatMessageItem from "./ChatMessageItem";
 import React from "react";
 import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
-import {ChatCompletionRequestMessageRoleEnum} from "openai";
-import {DeleteRounded} from "@mui/icons-material";
+import {DeleteRounded, SendRounded} from "@mui/icons-material";
 
 interface MessageListProps {
   conversationEntities: ConversationEntity[];
@@ -15,22 +14,8 @@ export default function ChatMessageList(props: MessageListProps) {
 
   const theme = useTheme()
 
-  const setRaw = (id: number, isUser: boolean, raw: boolean) => {
-    const foundIndex = conversationEntities.findIndex((c) => c.id === id)
-    if (foundIndex === -1) {
-      return
-    }
-    const foundConversationEntity = conversationEntities[foundIndex]
-    const copyConversationEntity = {
-      ...foundConversationEntity,
-      userMessageRaw: isUser ? raw : foundConversationEntity.userMessageRaw,
-      assistantMessageRaw: isUser ? foundConversationEntity.assistantMessageRaw : raw,
-    } as ConversationEntity
-    const copyConversationEntities = [
-      ...conversationEntities,
-    ]
-    copyConversationEntities[foundIndex] = copyConversationEntity
-    setConversationEntities(copyConversationEntities)
+  const updateConversationEntity = (conversationEntity: ConversationEntity) => {
+    setConversationEntities(conversationEntities.map((c) => c.id === conversationEntity.id ? conversationEntity : c))
   }
 
   return (
@@ -49,22 +34,14 @@ export default function ChatMessageList(props: MessageListProps) {
                 }}
               >
                 <ChatMessageItem
-                  id={conversationEntity.id}
-                  role={ChatCompletionRequestMessageRoleEnum.User}
-                  message={conversationEntity.userMessage}
-                  context={conversationEntity.type !== ConversationEntityType.DEFAULT}
-                  isLoading={conversationEntity.type === ConversationEntityType.REQUESTING}
-                  raw={conversationEntity.userMessageRaw}
-                  setRaw={setRaw}
+                  conversationEntity={conversationEntity}
+                  updateConversationEntity={updateConversationEntity}
+                  isUser={true}
                 />
                 <ChatMessageItem
-                  id={conversationEntity.id}
-                  role={ChatCompletionRequestMessageRoleEnum.Assistant}
-                  message={conversationEntity.assistantMessage}
-                  context={conversationEntity.type !== ConversationEntityType.DEFAULT}
-                  isLoading={conversationEntity.type === ConversationEntityType.REQUESTING}
-                  raw={conversationEntity.assistantMessageRaw}
-                  setRaw={setRaw}
+                  conversationEntity={conversationEntity}
+                  updateConversationEntity={updateConversationEntity}
+                  isUser={false}
                 />
                 <Box
                   sx={{
@@ -86,12 +63,23 @@ export default function ChatMessageList(props: MessageListProps) {
                     <Typography
                       variant={'caption'}
                       color={theme.palette.text.disabled}
-                      sx={{
-                        flexGrow: 1,
-                      }}
                     >
                       {`${new Date(conversationEntity.id).toLocaleString()}`}
                     </Typography>
+                    <SendRounded
+                      color={'disabled'}
+                      sx={{
+                        marginLeft: '8px',
+                        width: '16px',
+                        height: '16px',
+                        visibility: conversationEntity.type !== ConversationEntityType.Default ? 'visible' : 'hidden',
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        flexGrow: 1,
+                      }}
+                    />
                     <Button
                       variant={'text'}
                       size={'small'}

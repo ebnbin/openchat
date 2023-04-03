@@ -16,17 +16,17 @@ export const contentWidth = 900
 //*********************************************************************************************************************
 
 export enum ConversationEntityType {
-  DEFAULT,
-  CONTEXT,
-  REQUESTING,
+  Default,
+  Context,
+  Requesting,
 }
 
 export interface ConversationEntity {
   id: number;
   userMessage: string;
   assistantMessage: string;
-  userMessageRaw: boolean,
-  assistantMessageRaw: boolean,
+  userMessageMarkdown: boolean,
+  assistantMessageMarkdown: boolean,
   type: ConversationEntityType;
 }
 
@@ -37,9 +37,9 @@ function initConversationEntities(chatConversations: Conversation[]): Conversati
         id: chatConversation.id,
         userMessage: chatConversation.user_message,
         assistantMessage: chatConversation.assistant_message,
-        userMessageRaw: false,
-        assistantMessageRaw: false,
-        type: ConversationEntityType.DEFAULT,
+        userMessageMarkdown: true,
+        assistantMessageMarkdown: true,
+        type: ConversationEntityType.Default,
       } as ConversationEntity
     })
 }
@@ -66,8 +66,8 @@ function updateContext(chat: Chat, conversationEntities: ConversationEntity[]): 
         context = usedTokens <= maxContextTokens
       }
       let type = conversationEntity.type
-      if (type !== ConversationEntityType.REQUESTING) {
-        type = context ? ConversationEntityType.CONTEXT : ConversationEntityType.DEFAULT
+      if (type !== ConversationEntityType.Requesting) {
+        type = context ? ConversationEntityType.Context : ConversationEntityType.Default
       }
       const newConversationEntity = {
         ...conversationEntity,
@@ -148,9 +148,9 @@ export default function ChatPage(props: ChatProps) {
       id: conversation.id,
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
-      userMessageRaw: false,
-      assistantMessageRaw: false,
-      type: ConversationEntityType.REQUESTING,
+      userMessageMarkdown: true,
+      assistantMessageMarkdown: true,
+      type: ConversationEntityType.Requesting,
     } as ConversationEntity
   }
 
@@ -169,7 +169,7 @@ export default function ChatPage(props: ChatProps) {
       )
     }
     [...conversationEntities, requestingConversationEntity]
-      .filter((conversationEntity) => conversationEntity.type !== ConversationEntityType.DEFAULT)
+      .filter((conversationEntity) => conversationEntity.type !== ConversationEntityType.Default)
       .forEach((conversationEntity) => {
         result.push(
           {
@@ -177,7 +177,7 @@ export default function ChatPage(props: ChatProps) {
             content: conversationEntity.userMessage,
           } as ChatCompletionRequestMessage
         )
-        if (conversationEntity.type !== ConversationEntityType.REQUESTING) {
+        if (conversationEntity.type !== ConversationEntityType.Requesting) {
           result.push(
             {
               role: ChatCompletionRequestMessageRoleEnum.Assistant,
@@ -222,7 +222,7 @@ export default function ChatPage(props: ChatProps) {
     copy[conversationEntities.length - 1] = {
       ...lastConversationEntity,
       assistantMessage: responseMessage.content,
-      type: ConversationEntityType.DEFAULT,
+      type: ConversationEntityType.Default,
     } as ConversationEntity
     return copy
   }
@@ -235,7 +235,7 @@ export default function ChatPage(props: ChatProps) {
     return {
       ...lastConversationEntity,
       assistantMessage: responseMessage.content,
-      type: ConversationEntityType.DEFAULT,
+      type: ConversationEntityType.Default,
     } as ConversationEntity
   }
 
@@ -246,7 +246,7 @@ export default function ChatPage(props: ChatProps) {
     const copy = [...conversationEntities]
     copy[conversationEntities.length - 1] = {
       ...lastConversationEntity,
-      type: ConversationEntityType.DEFAULT,
+      type: ConversationEntityType.Default,
     } as ConversationEntity
     return copy
   }
@@ -256,7 +256,7 @@ export default function ChatPage(props: ChatProps) {
   ) {
     return {
       ...lastConversationEntity,
-      type: ConversationEntityType.DEFAULT,
+      type: ConversationEntityType.Default,
     } as ConversationEntity
   }
 
@@ -378,7 +378,7 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <ChatInputCard
-            isLoading={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.REQUESTING}
+            isLoading={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting}
             handleRequest={handleRequest}
           />
         </Box>
