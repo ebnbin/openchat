@@ -21,7 +21,7 @@ function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
   const isDarkMode = theme.palette.mode === 'dark';
   const style: any = isDarkMode ? oneDark : oneLight;
 
-  const handleCopyCodeClick = async (text: string) => {
+  const handleCopyClick = async (text: string) => {
     await copy(text, null);
   }
 
@@ -97,14 +97,14 @@ function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
                     </Typography>
                     <Button
                       color={'inherit'}
-                      startIcon={<ContentCopyRounded/>}
+                      startIcon={<ContentCopyRounded />}
                       size={'small'}
-                      onClick={() => handleCopyCodeClick(code)}
+                      onClick={() => handleCopyClick(code)}
                       style={{
                         textTransform: 'none',
                       }}
                     >
-                      Copy code
+                      {'Copy'}
                     </Button>
                   </Box>
                   <SyntaxHighlighter

@@ -97,27 +97,27 @@ class Store {
   updateChat(chatId: number, chat: Partial<Chat>): Chat | null {
     let updatedChat: Chat | null = null;
     this.data.update({
-      chats: this.data.get().chats.map((foundChat) => {
-        if (foundChat.id === chatId) {
+      chats: this.data.get().chats.map((c) => {
+        if (c.id === chatId) {
           updatedChat = {
-            ...foundChat,
+            ...c,
             ...chat,
           };
           return updatedChat;
         }
-        return foundChat;
+        return c;
       }),
     });
     return updatedChat;
   }
 
   deleteChat(chatId: number): boolean {
-    const chat = this.data.get().chats.find((foundChat) => foundChat.id === chatId);
+    const chat = this.data.get().chats.find((chat) => chat.id === chatId);
     if (!chat) {
       return false;
     }
     this.data.update({
-      chats: this.data.get().chats.filter((foundChat) => foundChat.id !== chatId),
+      chats: this.data.get().chats.filter((c) => c.id !== chatId),
       conversations: this.data.get().conversations
         .filter((conversation) => !chat.conversations.includes(conversation.id)),
     })
@@ -139,22 +139,24 @@ class Store {
   }
 
   createConversation(chat: Chat, conversation: Conversation): Chat {
-    if (!this.data.get().chats.find((foundChat) => foundChat.id === chat.id)) {
+    if (!this.data.get().chats.find((c) => c.id === chat.id)) {
       return chat;
     }
     const updatedChat = {
       ...chat,
       conversations: [
-        ...chat.conversations,
+        ...chat.conversations.filter((conversationId) => {
+          return this.data.get().conversations.find((c) => c.id === conversationId);
+        }),
         conversation.id,
       ],
     };
     this.data.update({
-      chats: this.data.get().chats.map((foundChat) => {
-        if (foundChat.id === chat.id) {
+      chats: this.data.get().chats.map((c) => {
+        if (c.id === chat.id) {
           return updatedChat;
         }
-        return foundChat;
+        return c;
       }),
       conversations: [
         ...this.data.get().conversations,
@@ -167,18 +169,24 @@ class Store {
   updateConversation(conversationId: number, conversation: Partial<Conversation>): Conversation | null {
     let updatedConversation: Conversation | null = null;
     this.data.update({
-      conversations: this.data.get().conversations.map((foundConversation) => {
-        if (foundConversation.id === conversationId) {
+      conversations: this.data.get().conversations.map((c) => {
+        if (c.id === conversationId) {
           updatedConversation = {
-            ...foundConversation,
+            ...c,
             ...conversation,
           };
           return updatedConversation;
         }
-        return foundConversation;
+        return c;
       }),
     });
     return updatedConversation;
+  }
+
+  deleteConversation(conversationId: number) {
+    this.data.update({
+      conversations: this.data.get().conversations.filter((c) => c.id !== conversationId),
+    });
   }
 
   getUsage(): Usage {

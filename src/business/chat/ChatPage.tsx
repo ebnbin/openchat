@@ -260,6 +260,12 @@ export default function ChatPage(props: ChatProps) {
     } as ConversationEntity
   }
 
+  const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
+    const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
+    setNoContextConversationEntities(nextConversationEntities)
+    store.deleteConversation(conversationEntity.id)
+  }
+
   const handleRequest = (input: string) => {
     if (isNewChat) {
       createChat(chat)
@@ -327,7 +333,8 @@ export default function ChatPage(props: ChatProps) {
       >
         <ChatMessageList
           conversationEntities={conversationEntities}
-          setConversationEntities={setConversationEntities}
+          updateConversationEntitiesNoStore={setConversationEntities}
+          deleteConversationEntity={handleDeleteConversationClick}
         />
       </Box>
       <Box

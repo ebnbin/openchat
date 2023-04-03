@@ -21,7 +21,6 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
 
   const message = isUser ? conversationEntity.userMessage : conversationEntity.assistantMessage;
   const markdown = isUser ? conversationEntity.userMessageMarkdown : conversationEntity.assistantMessageMarkdown;
-  const context = conversationEntity.type !== ConversationEntityType.Default;
   const isLoading = !isUser && conversationEntity.type === ConversationEntityType.Requesting;
 
   const theme = useTheme();
@@ -55,10 +54,11 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
       >
         <Box
           sx={{
+            height: '44px',
             display: 'flex',
             flexDirection: 'row',
             placeItems: 'center',
-            paddingTop: '16px',
+            paddingTop: '12px',
           }}
         >
           <Avatar
@@ -73,7 +73,6 @@ export default function ChatMessageItem(props: ChatMessageItemProps) {
           </Avatar>
           <Typography
             variant={'caption'}
-            color={context ? theme.palette.text.primary : theme.palette.text.disabled}
             sx={{
               fontWeight: 'bold',
             }}

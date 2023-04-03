@@ -2,101 +2,100 @@ import {Box, Button, Card, List, Typography, useTheme} from "@mui/material";
 import ChatMessageItem from "./ChatMessageItem";
 import React from "react";
 import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
-import {DeleteRounded, SendRounded} from "@mui/icons-material";
+import {DeleteRounded, TipsAndUpdatesRounded} from "@mui/icons-material";
 
 interface MessageListProps {
   conversationEntities: ConversationEntity[];
-  setConversationEntities: (conversationEntities: ConversationEntity[]) => void;
+  updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
+  deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
 }
 
 export default function ChatMessageList(props: MessageListProps) {
-  const { conversationEntities, setConversationEntities } = props
+  const { conversationEntities, updateConversationEntitiesNoStore, deleteConversationEntity } = props;
 
-  const theme = useTheme()
+  const theme = useTheme();
 
   const updateConversationEntity = (conversationEntity: ConversationEntity) => {
-    setConversationEntities(conversationEntities.map((c) => c.id === conversationEntity.id ? conversationEntity : c))
+    updateConversationEntitiesNoStore(conversationEntities.map((c) =>
+      c.id === conversationEntity.id ? conversationEntity : c));
   }
 
   return (
     <List>
       {
-        conversationEntities
-          .map((conversationEntity) => (
+        conversationEntities.map((conversationEntity) => (
+          <Card
+            key={conversationEntity.id}
+            elevation={1}
+            sx={{
+              borderRadius: '0px',
+              marginBottom: '1px',
+            }}
+          >
+            <ChatMessageItem
+              conversationEntity={conversationEntity}
+              updateConversationEntity={updateConversationEntity}
+              isUser={true}
+            />
+            <ChatMessageItem
+              conversationEntity={conversationEntity}
+              updateConversationEntity={updateConversationEntity}
+              isUser={false}
+            />
             <Box
-              key={conversationEntity.id}
+              sx={{
+                bgcolor: theme.palette.action.hover,
+              }}
             >
-              <Card
-                elevation={1}
+              <Box
                 sx={{
-                  borderRadius: '0px',
-                  marginBottom: '1px',
+                  height: '44px',
+                  maxWidth: contentWidth,
+                  margin: '0 auto',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  paddingX: '16px',
+                  paddingBottom: '12px',
+                  alignItems: 'center',
                 }}
               >
-                <ChatMessageItem
-                  conversationEntity={conversationEntity}
-                  updateConversationEntity={updateConversationEntity}
-                  isUser={true}
-                />
-                <ChatMessageItem
-                  conversationEntity={conversationEntity}
-                  updateConversationEntity={updateConversationEntity}
-                  isUser={false}
+                <Typography
+                  variant={'caption'}
+                  color={theme.palette.text.disabled}
+                >
+                  {`${new Date(conversationEntity.id).toLocaleString()}`}
+                </Typography>
+                <TipsAndUpdatesRounded
+                  color={'disabled'}
+                  sx={{
+                    marginLeft: '8px',
+                    width: '16px',
+                    height: '16px',
+                    visibility: conversationEntity.type !== ConversationEntityType.Default ? 'visible' : 'hidden',
+                  }}
                 />
                 <Box
                   sx={{
-                    bgcolor: theme.palette.action.hover,
+                    flexGrow: 1,
+                  }}
+                />
+                <Button
+                  variant={'text'}
+                  size={'small'}
+                  color={'error'}
+                  startIcon={<DeleteRounded />}
+                  onClick={() => deleteConversationEntity(conversationEntity)}
+                  sx={{
+                    textTransform: 'none',
                   }}
                 >
-                  <Box
-                    sx={{
-                      maxWidth: contentWidth,
-                      margin: '0 auto',
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      paddingX: '16px',
-                      paddingBottom: '8px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Typography
-                      variant={'caption'}
-                      color={theme.palette.text.disabled}
-                    >
-                      {`${new Date(conversationEntity.id).toLocaleString()}`}
-                    </Typography>
-                    <SendRounded
-                      color={'disabled'}
-                      sx={{
-                        marginLeft: '8px',
-                        width: '16px',
-                        height: '16px',
-                        visibility: conversationEntity.type !== ConversationEntityType.Default ? 'visible' : 'hidden',
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        flexGrow: 1,
-                      }}
-                    />
-                    <Button
-                      variant={'text'}
-                      size={'small'}
-                      color={'error'}
-                      startIcon={<DeleteRounded/>}
-                      sx={{
-                        textTransform: 'none',
-                      }}
-                    >
-                      {'Delete conversation'}
-                    </Button>
-                  </Box>
-                </Box>
-              </Card>
+                  {'Delete'}
+                </Button>
+              </Box>
             </Box>
-          ))
+          </Card>
+        ))
       }
     </List>
-  )
+  );
 }
