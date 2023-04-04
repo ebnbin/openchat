@@ -1,5 +1,5 @@
-import logo_dark from "../../logo_dark.png";
-import logo_light from "../../logo_light.png";
+import logo_dark from "../logo_dark.png";
+import logo_light from "../logo_light.png";
 import React from "react";
 import {Container, Link, Typography, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";

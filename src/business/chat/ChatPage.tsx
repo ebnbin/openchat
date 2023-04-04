@@ -6,7 +6,7 @@ import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
-import Logo from "../logo/Logo";
+import Logo from "../../component/Logo";
 import {EditRounded} from "@mui/icons-material";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
