@@ -1,6 +1,5 @@
 import React, {ChangeEvent, useState} from "react";
-import {Card, IconButton, TextField} from "@mui/material";
-import Box from "@mui/material/Box";
+import {Card, IconButton, InputAdornment, TextField} from "@mui/material";
 import {SendRounded} from "@mui/icons-material";
 
 interface InputCardProps {
@@ -11,20 +10,25 @@ interface InputCardProps {
 export default function ChatInputCard(props: InputCardProps) {
   const { isLoading, handleRequest } = props
 
+  const [composition, setComposition] = useState(false)
+  const [input, setInput] = useState('')
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value)
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && event.metaKey) {
+    if (event.key === 'Enter' && !event.shiftKey && !composition) {
       event.preventDefault()
-      if (input !== '') {
+      if (canRequest()) {
         request()
       }
     }
   }
 
-  const [input, setInput] = useState('')
+  function canRequest(): boolean {
+    return input !== '' && !isLoading
+  }
 
   const request = () => {
     const currInput = input
@@ -34,49 +38,46 @@ export default function ChatInputCard(props: InputCardProps) {
 
   return (
     <Card
-      elevation={8}
+      elevation={4}
       sx={{
-        width: '100%',
         padding: '16px',
-        paddingTop: '8px',
-        borderRadius: 0,
-        borderTopLeftRadius: '16px',
-        borderTopRightRadius: '16px',
+        borderRadius: '0px',
+        borderTopLeftRadius: '8px',
+        borderTopRightRadius: '8px',
       }}
     >
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-end',
+      <TextField
+        variant={'standard'}
+        fullWidth={true}
+        multiline={true}
+        maxRows={8}
+        placeholder={'Send a message...'}
+        value={input}
+        autoFocus={true}
+        onChange={handleInputChange}
+        onKeyDown={handleInputKeyDown}
+        onCompositionStart={() => setComposition(true)}
+        onCompositionEnd={() => setComposition(false)}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment
+              position={'end'}
+              sx={{
+                alignItems: 'end',
+                alignSelf: 'end',
+              }}
+            >
+              <IconButton
+                size={'small'}
+                disabled={!canRequest()}
+                onClick={request}
+              >
+                <SendRounded />
+              </IconButton>
+            </InputAdornment>
+          ),
         }}
-      >
-        <TextField
-          variant={'standard'}
-          fullWidth={true}
-          multiline={true}
-          maxRows={8}
-          label={'Message'}
-          placeholder={'Hello, who are you?'}
-          value={input}
-          autoFocus={true}
-          onChange={handleInputChange}
-          onKeyDown={handleInputKeyDown}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          sx={{
-            flexGrow: 1,
-          }}
-        />
-        <IconButton
-          disabled={input === '' || isLoading}
-          onClick={request}
-        >
-          <SendRounded />
-        </IconButton>
-      </Box>
+      />
     </Card>
-  )
+  );
 }
