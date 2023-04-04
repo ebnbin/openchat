@@ -3,7 +3,6 @@ import React, {ChangeEvent, useState} from "react";
 import {
   Button, Dialog, DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle, Slider,
   TextField
 } from "@mui/material";
@@ -16,6 +15,7 @@ interface ChatSettingsDialogProps {
   chat: Chat,
   updateChat: (chatId: number, chat: Partial<Chat>) => void
   deleteChat: (chatId: number) => void
+  isNew: boolean,
   dialogOpen: boolean
   handleDialogClose: () => void
 }
@@ -66,6 +66,14 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     props.handleDialogClose()
   }
 
+  const chatInfo = (): string => {
+    let info = `Model: ${defaultOpenAIModel.model} (${defaultOpenAIModel.maxTokens} tokens)`;
+    if (!props.isNew) {
+      info += `\nCumulative tokens used: ${chat.tokens}\nConversations count: ${store.getConversations(chat).length}`
+    }
+    return info;
+  }
+
   return (
     <Dialog
       fullWidth={true}
@@ -73,7 +81,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       onClose={props.handleDialogClose}
     >
       <DialogTitle>
-        {'Chat Settings'}
+        {props.isNew ? 'New Chat Settings' : 'Chat Settings'}
       </DialogTitle>
       <DialogContent
         dividers={true}
@@ -133,29 +141,23 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             onChange={handleUserMessageTemplateChange}
           />
         </SettingsItem>
-        <SettingsItem>
-          <DialogContentText
-            variant={'body2'}
-          >
-            Model: {defaultOpenAIModel.model} ({defaultOpenAIModel.maxTokens} tokens)
-            <br />
-            Cumulative tokens used: {chat.tokens}
-            <br />
-            Conversations count: {store.getConversations(chat).length}
-          </DialogContentText>
-        </SettingsItem>
-        <SettingsItem>
-          <Button
-            variant={'outlined'}
-            size={'small'}
-            color={'error'}
-            fullWidth={true}
-            startIcon={<DeleteRounded />}
-            onClick={handleDeleteClick}
-          >
-            Delete chat
-          </Button>
-        </SettingsItem>
+        <SettingsItem
+          description={chatInfo()}
+        />
+        {props.isNew ? undefined : (
+          <SettingsItem>
+            <Button
+              variant={'outlined'}
+              size={'small'}
+              color={'error'}
+              fullWidth={true}
+              startIcon={<DeleteRounded />}
+              onClick={handleDeleteClick}
+            >
+              Delete chat
+            </Button>
+          </SettingsItem>
+        )}
       </DialogContent>
       <DialogActions>
         <Button

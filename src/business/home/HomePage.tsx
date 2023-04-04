@@ -7,7 +7,6 @@ import * as React from "react";
 import {Chat} from "../../util/data";
 import {useState} from "react";
 import store from "../../util/store";
-import {ChatNewSettingsDialog} from "../chat/ChatNewSettingsDialog";
 import ImagePage from "../image/ImagePage";
 
 interface HomePageProps {
@@ -60,15 +59,33 @@ export default function HomePage(props: HomePageProps) {
 
   const [newChat, setNewChat] = useState(store.newChat())
 
+  const updateNewChat = (chatId: number, chat: Partial<Chat>) => {
+    setNewChat({
+      ...newChat,
+      ...chat,
+    })
+  }
+
+  const deleteNewChat = (chatId: number) => {
+  }
+
   const dialogPage = () => {
     if (selectedChatId === 0) {
       return (
-        <ChatNewSettingsDialog
+        <ChatSettingsDialog
+          key={`ChatSettingsDialog${newChat.id}`}
           chat={newChat}
-          updateChat={setNewChat}
-          open={newChatSettingsDialogOpen}
-          handleClose={() => setNewChatSettingsDialogOpen(false)}
-        />
+          updateChat={updateNewChat}
+          deleteChat={deleteNewChat}
+          isNew={true}
+          dialogOpen={newChatSettingsDialogOpen}
+          handleDialogClose={() => setNewChatSettingsDialogOpen(false)}/>
+        // <ChatNewSettingsDialog
+        //   chat={newChat}
+        //   updateChat={setNewChat}
+        //   open={newChatSettingsDialogOpen}
+        //   handleClose={() => setNewChatSettingsDialogOpen(false)}
+        // />
       )
     }
     if (selectedChatId === -1) {
@@ -80,6 +97,7 @@ export default function HomePage(props: HomePageProps) {
         chat={chats.find((chat) => chat.id === selectedChatId)!!}
         updateChat={updateChat}
         deleteChat={deleteChat}
+        isNew={false}
         dialogOpen={chatSettingsDialogOpen}
         handleDialogClose={() => setChatSettingsDialogOpen(false)}
       />

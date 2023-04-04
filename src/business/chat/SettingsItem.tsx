@@ -5,7 +5,7 @@ import React from "react";
 interface SettingsItemProps {
   title?: string;
   description?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function SettingsItem(props: SettingsItemProps) {
