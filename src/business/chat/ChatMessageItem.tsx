@@ -6,7 +6,7 @@ import {
 import Box from "@mui/material/Box";
 import React from "react";
 import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
-import ChatMarkdownMessage from "./ChatMarkdownMessage";
+import ChatMarkdownMessage from "./Markdown";
 import {copy} from "../../util/util";
 import {ReactComponent as ChatGPTLogo} from './../../chatgpt_logo.svg';
 

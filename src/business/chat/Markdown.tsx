@@ -10,13 +10,11 @@ import 'katex/dist/katex.min.css'
 import {ContentCopyRounded} from "@mui/icons-material";
 import remarkGfm from "remark-gfm";
 
-interface ChatMarkdownMessageProps {
+interface MarkdownProps {
   content: string,
 }
 
-function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
-  const { content } = props;
-
+function Markdown(props: MarkdownProps) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const style: any = isDarkMode ? oneDark : oneLight;
@@ -129,11 +127,11 @@ function ChatMarkdownMessage(props: ChatMarkdownMessageProps) {
             },
           }}
         >
-          {content}
+          {props.content}
         </ReactMarkdown>
       </Box>
     </Box>
   );
 }
 
-export default React.memo(ChatMarkdownMessage);
+export default React.memo(Markdown);
