@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation} from "../../util/data";
 import ChatConversationList from "./ChatConversationList";
-import ChatInputCard from "./ChatInputCard";
+import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
 import {Button} from "@mui/material";
@@ -384,7 +384,7 @@ export default function ChatPage(props: ChatProps) {
             margin: '0 auto',
           }}
         >
-          <ChatInputCard
+          <ChatInput
             isLoading={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting}
             handleRequest={handleRequest}
           />

@@ -2,12 +2,12 @@ import React, {ChangeEvent, useState} from "react";
 import {Card, IconButton, InputAdornment, TextField} from "@mui/material";
 import {SendRounded} from "@mui/icons-material";
 
-interface InputCardProps {
+interface ChatInputProps {
   isLoading: boolean,
   handleRequest: (input: string) => void
 }
 
-export default function ChatInputCard(props: InputCardProps) {
+export default function ChatInput(props: ChatInputProps) {
   const { isLoading, handleRequest } = props
 
   const [composition, setComposition] = useState(false)
