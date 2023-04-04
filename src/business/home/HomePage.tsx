@@ -76,11 +76,12 @@ export default function HomePage(props: HomePageProps) {
     }
     return (
       <ChatSettingsDialog
+        key={`ChatSettingsDialog${selectedChatId}`}
         chat={chats.find((chat) => chat.id === selectedChatId)!!}
         updateChat={updateChat}
         deleteChat={deleteChat}
-        open={chatSettingsDialogOpen}
-        handleClose={() => setChatSettingsDialogOpen(false)}
+        dialogOpen={chatSettingsDialogOpen}
+        handleDialogClose={() => setChatSettingsDialogOpen(false)}
       />
     )
   }
