@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import {defaultOpenAIModel} from "../../util/util";
 import store from "../../util/store";
-import SettingsItem from "./SettingsItem";
+import SettingsItem from "../../component/SettingsItem";
 import {DeleteRounded} from "@mui/icons-material";
 
 interface ChatSettingsDialogProps {
