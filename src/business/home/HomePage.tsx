@@ -8,6 +8,9 @@ import {Chat} from "../../util/data";
 import {useEffect, useState} from "react";
 import store from "../../util/store";
 import ImagePage from "../image/ImagePage";
+import Logo from "../../component/Logo";
+import {Button} from "@mui/material";
+import {EditRounded} from "@mui/icons-material";
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -129,8 +132,28 @@ export default function HomePage(props: HomePageProps) {
           isNewChat={true}
           createChat={createChat}
           updateChat={updateChat}
-          openNewChatSettings={() => setNewChatSettingsDialogOpen(true)}
-        />
+        >
+          <Box
+            sx={{
+              margin: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Logo/>
+            <Button
+              variant={'outlined'}
+              startIcon={<EditRounded/>}
+              sx={{
+                marginTop: '32px',
+              }}
+              onClick={() => setNewChatSettingsDialogOpen(true)}
+            >
+              New chat settings
+            </Button>
+          </Box>
+        </ChatPage>
       )
     }
     if (selectedChatId === -1) {
@@ -145,7 +168,6 @@ export default function HomePage(props: HomePageProps) {
         isNewChat={false}
         createChat={createChat}
         updateChat={updateChat}
-        openNewChatSettings={null}
       />
     )
   }

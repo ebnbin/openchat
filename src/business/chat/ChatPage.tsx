@@ -5,9 +5,6 @@ import ChatConversationList from "./ChatConversationList";
 import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
-import {Button} from "@mui/material";
-import Logo from "../../component/Logo";
-import {EditRounded} from "@mui/icons-material";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 
@@ -104,44 +101,40 @@ interface ChatProps {
   isNewChat: boolean,
   createChat: (chat: Chat) => void,
   updateChat: (chatId: number, chat: Partial<Chat>) => void,
-  openNewChatSettings: (() => void) | null,
+  children?: React.ReactNode;
 }
 
 export default function ChatPage(props: ChatProps) {
-  const { chat, isNewChat, createChat, updateChat, openNewChatSettings } = props
-
-  const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState<ConversationEntity[]>([]);
+  const [noContextConversationEntities, setNoContextConversationEntities] = useState<ConversationEntity[]>([]);
 
   useEffect(() => {
-    store.getConversationsAsync(chat.id)
+    store.getConversationsAsync(props.chat.id)
       .then((chatConversations) => {
         setNoContextConversationEntities(initConversationEntities(chatConversations))
         scrollToBottom()
       });
-  }, [chat.id]);
+  }, [props.chat.id]);
 
-  const [conversationEntities, setConversationEntities] =
-    useState<ConversationEntity[]>([])
+  const [conversationEntities, setConversationEntities] = useState<ConversationEntity[]>([])
 
   useEffect(() => {
-    setConversationEntities(updateContext(chat, noContextConversationEntities))
-  }, [chat, noContextConversationEntities])
+    setConversationEntities(updateContext(props.chat, noContextConversationEntities))
+  }, [props.chat, noContextConversationEntities])
 
   const listRef = useRef<HTMLUListElement>(null)
 
   const scrollToBottom = () => {
     const listNode = listRef.current
     if (listNode) {
-      listNode.scrollTop = listNode.scrollHeight
+      listNode.scrollTop = Number.MAX_SAFE_INTEGER
     }
   }
 
   //*******************************************************************************************************************
 
   function newRequestingConversation(input: string): Conversation {
-    const validInput = chat.user_message_template.includes('{{message}}')
-      ? chat.user_message_template.replaceAll('{{message}}', input)
+    const validInput = props.chat.user_message_template.includes('{{message}}')
+      ? props.chat.user_message_template.replaceAll('{{message}}', input)
       : input
     return store.newConversation({
       user_message: validInput,
@@ -268,23 +261,23 @@ export default function ChatPage(props: ChatProps) {
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
     setNoContextConversationEntities(nextConversationEntities)
-    store.deleteConversationAsync(chat.id, conversationEntity.id)
+    store.deleteConversationAsync(props.chat.id, conversationEntity.id)
   }
 
   const handleRequest = (input: string) => {
-    if (isNewChat) {
-      createChat(chat)
+    if (props.isNewChat) {
+      props.createChat(props.chat)
     }
 
     const newConversation = newRequestingConversation(input)
-    const requestingConversationEntity = getRequestingConversationEntity(chat, newConversation)
-    const requestMessages = getRequestMessages(chat, conversationEntities, requestingConversationEntity)
+    const requestingConversationEntity = getRequestingConversationEntity(props.chat, newConversation)
+    const requestMessages = getRequestMessages(props.chat, conversationEntities, requestingConversationEntity)
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     // start
     setNoContextConversationEntities(nextConversationEntities)
     scrollToBottom()
 
-    store.createConversationAsync(chat.id, newConversation)
+    store.createConversationAsync(props.chat.id, newConversation)
 
     openAIApi()
       .createChatCompletion({
@@ -292,8 +285,8 @@ export default function ChatPage(props: ChatProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const nextChat = handleResponse1(chat, requestMessages, response.data)
-        updateChat(chat.id, {
+        const nextChat = handleResponse1(props.chat, requestMessages, response.data)
+        props.updateChat(props.chat.id, {
           tokens_per_char: nextChat.tokens_per_char,
           tokens: nextChat.tokens,
         })
@@ -301,7 +294,7 @@ export default function ChatPage(props: ChatProps) {
         setNoContextConversationEntities(nextConversationEntities2)
 
         const conversationEntity2 = handleResponse2ConversationEntity(requestingConversationEntity, response.data)
-        store.updateConversationAsync(chat.id, newConversation.id, conversationEntityToChatConversation(conversationEntity2))
+        store.updateConversationAsync(props.chat.id, newConversation.id, conversationEntityToChatConversation(conversationEntity2))
       })
       .catch(() => {
         const nextConversationEntities2 = handleResponseError(nextConversationEntities)
@@ -332,7 +325,7 @@ export default function ChatPage(props: ChatProps) {
           padding: '0px',
           paddingBottom: '128px',
           overflow: 'auto',
-          display: isNewChat ? 'none' : 'block',
+          display: props.isNewChat ? 'none' : 'block',
         }}
       >
         <ChatConversationList
@@ -346,34 +339,11 @@ export default function ChatPage(props: ChatProps) {
           width: '100%',
           height: '100%',
           position: 'absolute',
-          display: !isNewChat ? 'none' : 'flex',
+          display: !props.isNewChat ? 'none' : 'flex',
           paddingBottom: '72px',
         }}
       >
-        <Box
-          sx={{
-            margin: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Logo/>
-          <Button
-            variant={'outlined'}
-            startIcon={<EditRounded/>}
-            sx={{
-              marginTop: '32px',
-            }}
-            onClick={() => {
-              if (openNewChatSettings !== null) {
-                openNewChatSettings()
-              }
-            }}
-          >
-            New chat settings
-          </Button>
-        </Box>
+        {props.children}
       </Box>
       <Box
         sx={{
