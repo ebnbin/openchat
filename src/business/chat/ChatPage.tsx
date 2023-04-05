@@ -111,9 +111,17 @@ export default function ChatPage(props: ChatProps) {
   const { chat, isNewChat, createChat, updateChat, openNewChatSettings } = props
 
   const [noContextConversationEntities, setNoContextConversationEntities] =
-    useState(initConversationEntities(store.getConversations(chat)));
+    useState<ConversationEntity[]>([]);
+
+  useEffect(() => {
+    store.getConversationsAsync(chat.id)
+      .then((chatConversations) => {
+        setNoContextConversationEntities(initConversationEntities(chatConversations))
+      });
+  }, [chat.id]);
+
   const [conversationEntities, setConversationEntities] =
-    useState(updateContext(chat, noContextConversationEntities))
+    useState<ConversationEntity[]>([])
 
   useEffect(() => {
     setConversationEntities(updateContext(chat, noContextConversationEntities))
@@ -135,8 +143,8 @@ export default function ChatPage(props: ChatProps) {
   //*******************************************************************************************************************
 
   function newRequestingConversation(input: string): Conversation {
-    const validInput = chat.user_message_template.includes('${message}')
-      ? chat.user_message_template.replaceAll('${message}', input)
+    const validInput = chat.user_message_template.includes('{{message}}')
+      ? chat.user_message_template.replaceAll('{{message}}', input)
       : input
     return store.newConversation({
       user_message: validInput,
@@ -202,7 +210,7 @@ export default function ChatPage(props: ChatProps) {
       .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
     const tokensPerChar = responseTotalTokens / charCount
     const tokens = chat.tokens + responseTotalTokens
-    store.increaseUsage({
+    store.increaseUsageAsync({
       tokens: responseTotalTokens,
     })
     return {
@@ -263,7 +271,7 @@ export default function ChatPage(props: ChatProps) {
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
     setNoContextConversationEntities(nextConversationEntities)
-    store.deleteConversation(conversationEntity.id)
+    store.deleteConversationAsync(chat.id, conversationEntity.id)
   }
 
   const handleRequest = (input: string) => {
@@ -278,7 +286,7 @@ export default function ChatPage(props: ChatProps) {
     // start
     setNoContextConversationEntities(nextConversationEntities)
 
-    const nextChat1 = store.createConversation(chat, newConversation)
+    store.createConversationAsync(chat.id, newConversation)
 
     scrollToBottom()
 
@@ -288,8 +296,8 @@ export default function ChatPage(props: ChatProps) {
         messages: requestMessages,
       })
       .then(response => {
-        const nextChat = handleResponse1(nextChat1, requestMessages, response.data)
-        updateChat(nextChat1.id, {
+        const nextChat = handleResponse1(chat, requestMessages, response.data)
+        updateChat(chat.id, {
           tokens_per_char: nextChat.tokens_per_char,
           tokens: nextChat.tokens,
         })
@@ -297,7 +305,7 @@ export default function ChatPage(props: ChatProps) {
         setNoContextConversationEntities(nextConversationEntities2)
 
         const conversationEntity2 = handleResponse2ConversationEntity(requestingConversationEntity, response.data)
-        store.updateConversation(newConversation.id, conversationEntityToChatConversation(conversationEntity2))
+        store.updateConversationAsync(chat.id, newConversation.id, conversationEntityToChatConversation(conversationEntity2))
       })
       .catch(() => {
         const nextConversationEntities2 = handleResponseError(nextConversationEntities)

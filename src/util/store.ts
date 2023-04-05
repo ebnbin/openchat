@@ -1,5 +1,6 @@
 import {Data, Chat, Conversation, Usage} from "./data";
 import Preference from "./Preference";
+import {del, get, set, update} from "idb-keyval";
 
 class Store {
   private readonly data: Preference<Data>;
@@ -72,6 +73,11 @@ class Store {
     return this.data.get().chats;
   }
 
+  getChatsAsync(): Promise<Chat[]> {
+    return get<Chat[]>('chats')
+      .then((chats) => chats || []);
+  }
+
   newChat(): Chat {
     return {
       id: new Date().getTime(),
@@ -94,6 +100,13 @@ class Store {
     });
   }
 
+  createChatAsync(chat: Chat) {
+    update<Chat[]>('chats', (chats) => {
+      return chats ? [...chats, chat] : [chat];
+    }).catch(() => {
+    });
+  }
+
   updateChat(chatId: number, chat: Partial<Chat>): Chat | null {
     let updatedChat: Chat | null = null;
     this.data.update({
@@ -111,6 +124,24 @@ class Store {
     return updatedChat;
   }
 
+  updateChatAsync(chatId: number, chat: Partial<Chat>) {
+    update<Chat[]>('chats', (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.map((c) => {
+        if (c.id === chatId) {
+          return {
+            ...c,
+            ...chat,
+          };
+        }
+        return c;
+      });
+    }).catch(() => {
+    });
+  }
+
   deleteChat(chatId: number): boolean {
     const chat = this.data.get().chats.find((chat) => chat.id === chatId);
     if (!chat) {
@@ -124,9 +155,26 @@ class Store {
     return true;
   }
 
+  deleteChatAsync(chatId: number) {
+    update<Chat[]>('chats', (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.filter((c) => c.id !== chatId);
+    }).catch(() => {
+    });
+    del(`chat_${chatId}`).catch(() => {
+    });
+  }
+
   getConversations(chat: Chat): Conversation[] {
     return this.data.get().conversations
       .filter((conversation) => chat.conversations.includes(conversation.id));
+  }
+
+  getConversationsAsync(chatId: number): Promise<Conversation[]> {
+    return get<Conversation[]>(`chat_${chatId}`)
+      .then((conversations) => conversations || []);
   }
 
   newConversation(conversation: Partial<Conversation>): Conversation {
@@ -166,6 +214,13 @@ class Store {
     return updatedChat;
   }
 
+  createConversationAsync(chatId: number, conversation: Conversation) {
+    update<Conversation[]>(`chat_${chatId}`, (conversations) => {
+      return conversations ? [...conversations, conversation] : [conversation];
+    }).catch(() => {
+    });
+  }
+
   updateConversation(conversationId: number, conversation: Partial<Conversation>): Conversation | null {
     let updatedConversation: Conversation | null = null;
     this.data.update({
@@ -183,14 +238,47 @@ class Store {
     return updatedConversation;
   }
 
+  updateConversationAsync(chatId: number, conversationId: number, conversation: Partial<Conversation>) {
+    update<Conversation[]>(`chat_${chatId}`, (conversations) => {
+      if (!conversations) {
+        return [];
+      }
+      return conversations.map((c) => {
+        if (c.id === conversationId) {
+          return {
+            ...c,
+            ...conversation,
+          };
+        }
+        return c;
+      });
+    }).catch(() => {
+    });
+  }
+
   deleteConversation(conversationId: number) {
     this.data.update({
       conversations: this.data.get().conversations.filter((c) => c.id !== conversationId),
     });
   }
 
+  deleteConversationAsync(chatId: number, conversationId: number) {
+    update<Conversation[]>(`chat_${chatId}`, (conversations) => {
+      if (!conversations) {
+        return [];
+      }
+      return conversations.filter((c) => c.id !== conversationId);
+    }).catch(() => {
+    });
+  }
+
   getUsage(): Usage {
     return this.data.get().usage;
+  }
+
+  getUsageAsync(): Promise<Usage> {
+    return get<Usage>('usage')
+      .then((usage) => usage || {tokens: 0, image_256: 0, image_512: 0, image_1024: 0});
   }
 
   increaseUsage(usage: Partial<Usage>) {
@@ -202,6 +290,18 @@ class Store {
         image_512: currentUsage.image_512 + (usage.image_512 ?? 0),
         image_1024: currentUsage.image_1024 + (usage.image_1024 ?? 0),
       },
+    });
+  }
+
+  increaseUsageAsync(usage: Partial<Usage>) {
+    update<Usage>('usage', (currentUsage) => {
+      return {
+        tokens: (currentUsage?.tokens ?? 0) + (usage.tokens ?? 0),
+        image_256: (currentUsage?.image_256 ?? 0) + (usage.image_256 ?? 0),
+        image_512: (currentUsage?.image_512 ?? 0) + (usage.image_512 ?? 0),
+        image_1024: (currentUsage?.image_1024 ?? 0) + (usage.image_1024 ?? 0),
+      };
+    }).catch(() => {
     });
   }
 }

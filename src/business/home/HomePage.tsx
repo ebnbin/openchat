@@ -5,7 +5,7 @@ import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
 import {Chat} from "../../util/data";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import store from "../../util/store";
 import ImagePage from "../image/ImagePage";
 
@@ -14,23 +14,38 @@ interface HomePageProps {
 }
 
 export default function HomePage(props: HomePageProps) {
-  const [chats, _setChats] = useState(store.getChats())
+  const [chats, _setChats] = useState<Chat[]>([])
+
+  useEffect(() => {
+    store.getChatsAsync()
+      .then((chats) => {
+        _setChats(chats)
+      });
+  }, []);
 
   const createChat = (chat: Chat) => {
-    store.createChat(chat)
-    _setChats(store.getChats());
+    _setChats((chats) => [...chats, chat]);
+    store.createChatAsync(chat);
     setSelectedChatId(chat.id)
   }
 
   const updateChat = (chatId: number, chat: Partial<Chat>) => {
-    store.updateChat(chatId, chat);
-    _setChats(store.getChats());
+    _setChats((chats) => chats.map((c) => {
+      if (c.id === chatId) {
+        return {
+          ...c,
+          ...chat,
+        }
+      }
+      return c
+    }));
+    store.updateChatAsync(chatId, chat);
   }
 
   const deleteChat = (chatId: number) => {
     toNewChatPage()
-    store.deleteChat(chatId);
-    _setChats(store.getChats());
+    _setChats((chats) => chats.filter((c) => c.id !== chatId));
+    store.deleteChatAsync(chatId);
   }
 
   const { setSettingsOpen } = props
@@ -79,7 +94,8 @@ export default function HomePage(props: HomePageProps) {
           deleteChat={deleteNewChat}
           isNew={true}
           dialogOpen={newChatSettingsDialogOpen}
-          handleDialogClose={() => setNewChatSettingsDialogOpen(false)}/>
+          handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
+        />
         // <ChatNewSettingsDialog
         //   chat={newChat}
         //   updateChat={setNewChat}

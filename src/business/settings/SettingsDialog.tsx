@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
   Button,
   Dialog,
@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import store from "../../util/store";
+import {Usage} from "../../util/data";
 
 interface SettingsDialogProps {
   open: boolean
@@ -32,9 +33,17 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const [githubToken, setGithubToken] = useState(store.getGithubToken())
   const [githubGistId, setGithubGistId] = useState(store.getGithubGistId())
 
-  const usage = store.getUsage()
+  const [usageText, setUsageText] = useState('')
 
-  const price = () => {
+  useEffect(() => {
+    store.getUsageAsync().then(usage => {
+      setUsageText(
+        `tokens: ${usage.tokens}\nimage_256: ${usage.image_256}\nimage_512: ${usage.image_512}\nimage_1024: ${usage.image_1024}\nEstimated price: ${price(usage)}`
+      );
+    });
+  }, [props.open]);
+
+  const price = (usage: Usage) => {
     return (usage.tokens / 1000 * 0.002 + usage.image_256 * 0.016 + usage.image_512 * 0.018 + usage.image_1024 * 0.02).toFixed(2)
   }
 
@@ -213,15 +222,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
             Usage
           </Typography>
           <DialogContentText>
-            tokens: {usage.tokens}
-            <br/>
-            image_256: {usage.image_256}
-            <br/>
-            image_512: {usage.image_512}
-            <br/>
-            image_1024: {usage.image_1024}
-            <br/>
-            Estimated price: ${price()}
+            {usageText}
           </DialogContentText>
         </Box>
         <Box

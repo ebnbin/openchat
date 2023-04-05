@@ -1,5 +1,5 @@
 import {Chat} from "../../util/data";
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useEffect, useState} from "react";
 import {
   Button, Dialog, DialogActions,
   DialogContent,
@@ -12,12 +12,12 @@ import SettingsItem from "../../component/SettingsItem";
 import {DeleteRounded} from "@mui/icons-material";
 
 interface ChatSettingsDialogProps {
-  chat: Chat,
-  updateChat: (chatId: number, chat: Partial<Chat>) => void
-  deleteChat: (chatId: number) => void
-  isNew: boolean,
-  dialogOpen: boolean
-  handleDialogClose: () => void
+  chat: Chat;
+  updateChat: (chatId: number, chat: Partial<Chat>) => void;
+  deleteChat: (chatId: number) => void;
+  isNew: boolean;
+  dialogOpen: boolean;
+  handleDialogClose: () => void;
 }
 
 export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
@@ -66,13 +66,20 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     props.handleDialogClose()
   }
 
-  const chatInfo = (): string => {
+  const [chatInfo, setChatInfo] = useState('')
+
+  useEffect(() => {
     let info = `Model: ${defaultOpenAIModel.model} (${defaultOpenAIModel.maxTokens} tokens)`;
-    if (!props.isNew) {
-      info += `\nCumulative tokens used: ${chat.tokens}\nConversations count: ${store.getConversations(chat).length}`
+    if (props.isNew) {
+      setChatInfo(info);
+      return;
     }
-    return info;
-  }
+    store.getConversationsAsync(props.chat.id)
+      .then((conversations) => {
+        info += `\nCumulative tokens used: ${props.chat.tokens}\nConversations count: ${conversations.length}`
+        setChatInfo(info);
+      })
+  }, [props.chat.id, props.chat.tokens, props.isNew, props.dialogOpen]);
 
   return (
     <Dialog
@@ -142,7 +149,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           />
         </SettingsItem>
         <SettingsItem
-          description={chatInfo()}
+          description={chatInfo}
         />
         {props.isNew ? undefined : (
           <SettingsItem>
