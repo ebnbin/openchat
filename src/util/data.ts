@@ -1,13 +1,3 @@
-export interface Data {
-  'version': number;
-  'openai_api_key': string;
-  'github_token': string;
-  'github_gist_id': string;
-  'chats': Chat[];
-  'conversations': Conversation[];
-  'usage': Usage;
-}
-
 export interface Chat {
   'id': number;
   'title': string;
@@ -16,7 +6,6 @@ export interface Chat {
   'user_message_template': string;
   'tokens_per_char': number;
   'tokens': number;
-  'conversations': number[];
 }
 
 export interface Conversation {

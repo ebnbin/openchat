@@ -117,6 +117,7 @@ export default function ChatPage(props: ChatProps) {
     store.getConversationsAsync(chat.id)
       .then((chatConversations) => {
         setNoContextConversationEntities(initConversationEntities(chatConversations))
+        scrollToBottom()
       });
   }, [chat.id]);
 
@@ -135,10 +136,6 @@ export default function ChatPage(props: ChatProps) {
       listNode.scrollTop = listNode.scrollHeight
     }
   }
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [])
 
   //*******************************************************************************************************************
 
@@ -285,10 +282,9 @@ export default function ChatPage(props: ChatProps) {
     const nextConversationEntities = [...conversationEntities, requestingConversationEntity]
     // start
     setNoContextConversationEntities(nextConversationEntities)
+    scrollToBottom()
 
     store.createConversationAsync(chat.id, newConversation)
-
-    scrollToBottom()
 
     openAIApi()
       .createChatCompletion({
