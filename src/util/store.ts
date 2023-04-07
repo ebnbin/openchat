@@ -119,6 +119,14 @@ class Store {
     });
   }
 
+  createConversationAsync2(chatId: number, userMessage: string): Conversation {
+    const conversation = this.newConversation({
+      user_message: userMessage,
+    });
+    this.createConversationAsync(chatId, conversation);
+    return conversation;
+  }
+
   updateConversationAsync(chatId: number, conversationId: number, conversation: Partial<Conversation>) {
     update<Conversation[]>(`chat_${chatId}`, (conversations) => {
       if (!conversations) {

@@ -129,9 +129,8 @@ export default function HomePage(props: HomePageProps) {
         <ChatPage
           key={`ChatPage${newChat.id}`}
           chat={newChat}
-          isNewChat={true}
-          createChat={createChat}
           updateChat={updateChat}
+          createChat={createChat}
         >
           <Box
             sx={{
@@ -165,8 +164,6 @@ export default function HomePage(props: HomePageProps) {
       <ChatPage
         key={`ChatPage${selectedChatId}`}
         chat={chats.find((chat) => chat.id === selectedChatId)!!}
-        isNewChat={false}
-        createChat={createChat}
         updateChat={updateChat}
       />
     )
