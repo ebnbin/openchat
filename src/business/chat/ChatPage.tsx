@@ -206,7 +206,7 @@ export default function ChatPage(props: ChatProps) {
       .then((conversations) => {
         const conversationEntitiesNoContext = conversationsToConversationEntities(conversations)
         setConversationEntitiesNoContext(conversationEntitiesNoContext)
-        scrollToBottom()
+        scrollToBottom(false);
       });
   }, [props.chat.id]);
 
@@ -217,11 +217,11 @@ export default function ChatPage(props: ChatProps) {
     setConversationEntities(conversationEntities);
   }, [props.chat, conversationEntitiesNoContext]);
 
-  //*******************************************************************************************************************
-
-
-
-
+  useEffect(() => {
+    if (conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting) {
+      scrollToBottom(true);
+    }
+  }, [conversationEntities]);
 
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
@@ -239,8 +239,6 @@ export default function ChatPage(props: ChatProps) {
     const requestingConversationEntity = getRequestingConversationEntity(requestingConversation);
     let requestingConversationEntities = [...conversationEntities, requestingConversationEntity];
     setConversationEntitiesNoContext(requestingConversationEntities);
-
-    scrollToBottom();
 
     const requestingMessages = getRequestingMessages(props.chat, requestingConversationEntities);
     openAIApi()
@@ -263,16 +261,16 @@ export default function ChatPage(props: ChatProps) {
       })
   }
 
-  const listRef = useRef<HTMLUListElement>(null)
+  const conversationListBottomRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    const listNode = listRef.current
-    if (listNode) {
-      listNode.scrollTop = Number.MAX_SAFE_INTEGER
+  const scrollToBottom = (smooth: boolean) => {
+    if (conversationListBottomRef.current) {
+      conversationListBottomRef.current.scrollIntoView({
+        behavior: smooth ? 'smooth' : undefined,
+        block: 'end',
+      });
     }
   }
-
-  //*******************************************************************************************************************
 
   return (
     <Box
@@ -285,12 +283,10 @@ export default function ChatPage(props: ChatProps) {
       }}
     >
       <Box
-        ref={listRef}
         sx={{
           width: '100%',
           flexGrow: 1,
           padding: '0px',
-          paddingBottom: '128px',
           overflow: 'auto',
           display: props.children !== undefined ? 'none' : 'block',
         }}
@@ -299,6 +295,7 @@ export default function ChatPage(props: ChatProps) {
           conversationEntities={conversationEntities}
           updateConversationEntitiesNoStore={setConversationEntities}
           deleteConversationEntity={handleDeleteConversationClick}
+          bottomRef={conversationListBottomRef}
         />
       </Box>
       <Box

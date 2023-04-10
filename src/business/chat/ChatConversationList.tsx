@@ -1,6 +1,6 @@
 import {Box, Button, Card, List, Typography, useTheme} from "@mui/material";
 import ChatMessageItem from "./ChatMessageItem";
-import React from "react";
+import React, {RefObject} from "react";
 import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
 import {DeleteRounded, TipsAndUpdatesRounded} from "@mui/icons-material";
 
@@ -8,6 +8,7 @@ interface ChatConversationListProps {
   conversationEntities: ConversationEntity[];
   updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
+  bottomRef: RefObject<HTMLDivElement>;
 }
 
 export default function ChatConversationList(props: ChatConversationListProps) {
@@ -96,6 +97,14 @@ export default function ChatConversationList(props: ChatConversationListProps) {
           </Card>
         ))
       }
+      <Box
+        sx={{
+          height: '164px',
+        }}
+      />
+      <div
+        ref={props.bottomRef}
+      />
     </List>
   );
 }
