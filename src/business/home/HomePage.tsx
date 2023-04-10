@@ -24,7 +24,7 @@ export default function HomePage(props: HomePageProps) {
       .then((chats) => {
         _setChats(chats)
       });
-  }, []);
+  });
 
   const createChat = (chat: Chat) => {
     _setChats((chats) => [...chats, chat]);
@@ -99,12 +99,6 @@ export default function HomePage(props: HomePageProps) {
           dialogOpen={newChatSettingsDialogOpen}
           handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
         />
-        // <ChatNewSettingsDialog
-        //   chat={newChat}
-        //   updateChat={setNewChat}
-        //   open={newChatSettingsDialogOpen}
-        //   handleClose={() => setNewChatSettingsDialogOpen(false)}
-        // />
       )
     }
     if (selectedChatId === -1) {
@@ -216,5 +210,5 @@ export default function HomePage(props: HomePageProps) {
       </Box>
       {dialogPage()}
     </>
-  )
+  );
 }

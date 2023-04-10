@@ -3,6 +3,7 @@ import HomeDrawerContent from "./HomeDrawerContent";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
+import {widePageWidth} from "../../util/util";
 
 const drawerWidth = 300;
 
@@ -22,7 +23,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
   const { chats, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
     mobileOpen, setMobileOpen, handleNewChatClick, handleImageClick } = props
 
-  const isPageWide = useMediaQuery('(min-width:900px)')
+  const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   const handleClickSettingsOpen = () => {
     setSettingsOpen(true);
@@ -40,7 +41,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
   return (
     <>
       {
-        !isPageWide && (
+        !isWidePage && (
           <Drawer
             variant={'temporary'}
             open={mobileOpen}
@@ -65,7 +66,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
         )
       }
       {
-        isPageWide && (
+        isWidePage && (
           <Drawer
             variant={'permanent'}
             open={true}

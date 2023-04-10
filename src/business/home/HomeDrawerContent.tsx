@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import * as React from "react";
+import {widePageWidth} from "../../util/util";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
@@ -24,7 +25,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
   const { chats, selectedChatId, handleChatSettingsDialogOpen, handleItemClick,
     handleClickSettingsOpen, handleNewChatClick, handleImageClick } = props
 
-  const isPageWide = useMediaQuery('(min-width:900px)')
+  const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   return (
     <Box
@@ -78,7 +79,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
               <IconButton
                 edge="end"
                 onClick={handleChatSettingsDialogOpen} // TODO
-                sx={{display: isPageWide && selectedChatId === chatItem.id ? 'flex' : 'none', alignItems: 'center'}} // TODO
+                sx={{display: isWidePage && selectedChatId === chatItem.id ? 'flex' : 'none', alignItems: 'center'}} // TODO
               >
                 <EditRounded />
               </IconButton>

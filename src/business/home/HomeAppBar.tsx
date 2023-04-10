@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
+import {widePageWidth} from "../../util/util";
 
 interface HomeAppBarProps {
   chats: Chat[],
@@ -18,7 +19,7 @@ interface HomeAppBarProps {
 export default function HomeAppBar(props: HomeAppBarProps) {
   const { chats, selectedChatId, handleChatSettingsDialogOpen, setMobileOpen } = props
 
-  const isPageWide = useMediaQuery('(min-width:900px)')
+  const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   const handleDrawerOpen = () => {
     setMobileOpen(true);
@@ -41,7 +42,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   return (
     <>
       {
-        !isPageWide && (
+        !isWidePage && (
           <Box
             sx={{
               height: '56px',

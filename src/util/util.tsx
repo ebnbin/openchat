@@ -44,6 +44,8 @@ export function useDarkMode(): boolean {
   return isDarkMode;
 }
 
+export const widePageWidth = 1200;
+
 interface OpenAIModel {
   model: string,
   maxTokens: number,
