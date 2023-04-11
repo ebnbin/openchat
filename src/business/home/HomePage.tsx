@@ -24,7 +24,7 @@ export default function HomePage(props: HomePageProps) {
       .then((chats) => {
         _setChats(chats)
       });
-  });
+  }, []);
 
   const createChat = (chat: Chat) => {
     _setChats((chats) => [...chats, chat]);
