@@ -28,27 +28,28 @@ export default function HomePage(props: HomePageProps) {
 
   const createChat = (chat: Chat) => {
     _setChats((chats) => [...chats, chat]);
-    store.createChatAsync(chat);
+    store.updateChatsCreateChatAsync(chat);
     setSelectedChatId(chat.id)
   }
 
   const updateChat = (chatId: number, chat: Partial<Chat>) => {
-    _setChats((chats) => chats.map((c) => {
-      if (c.id === chatId) {
+    _setChats((chats) => chats.map((foundChat) => {
+      if (foundChat.id === chatId) {
         return {
-          ...c,
+          ...foundChat,
           ...chat,
         }
       }
-      return c
+      return foundChat
     }));
-    store.updateChatAsync(chatId, chat);
+    store.updateChatsUpdateChatAsync(chatId, chat);
   }
 
-  const deleteChat = (chatId: number) => {
+  const deleteChat = (chat: Chat) => {
     toNewChatPage()
-    _setChats((chats) => chats.filter((c) => c.id !== chatId));
-    store.deleteChatAsync(chatId);
+    _setChats((chats) => chats.filter((foundChat) => foundChat.id !== chat.id));
+    store.updateChatsDeleteChatAsync(chat.id);
+    store.updateConversationsDeleteConversationsAsync(chat.conversations);
   }
 
   const { setSettingsOpen } = props

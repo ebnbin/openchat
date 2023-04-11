@@ -6,6 +6,7 @@ export interface Chat {
   'user_message_template': string;
   'tokens_per_char': number;
   'tokens': number;
+  'conversations': number[];
 }
 
 export interface Conversation {

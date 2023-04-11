@@ -75,13 +75,6 @@ function updateConversationEntitiesContext(
     .reverse();
 }
 
-function storeRequestingConversation(chat: Chat, input: string): Conversation {
-  const formattedInput = chat.user_message_template.includes('{{message}}')
-    ? chat.user_message_template.replaceAll('{{message}}', input)
-    : input;
-  return store.createConversationAsync2(chat.id, formattedInput);
-}
-
 function getRequestingConversationEntity(conversation: Conversation): ConversationEntity {
   return {
     id: conversation.id,
@@ -156,9 +149,9 @@ function handleResponseUpdateConversation(
   response: CreateChatCompletionResponse,
 ) {
   const responseMessageContent = response.choices[0].message!!.content;
-  store.updateConversationAsync(chat.id, requestingConversation.id, {
+  store.updateConversationsUpdateConversationAsync(requestingConversation.id, {
     assistant_message: responseMessageContent,
-  });
+  })
 }
 
 function getResponseConversationEntitiesNoContext(
@@ -202,7 +195,7 @@ export default function ChatPage(props: ChatProps) {
   const [conversationEntitiesNoContext, setConversationEntitiesNoContext] = useState<ConversationEntity[]>([]);
 
   useEffect(() => {
-    store.getConversationsAsync(props.chat.id)
+    store.getConversationsAsync(props.chat.conversations)
       .then((conversations) => {
         const conversationEntitiesNoContext = conversationsToConversationEntities(conversations)
         setConversationEntitiesNoContext(conversationEntitiesNoContext)
@@ -226,7 +219,7 @@ export default function ChatPage(props: ChatProps) {
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
     setConversationEntitiesNoContext(nextConversationEntities)
-    store.deleteConversationAsync(props.chat.id, conversationEntity.id)
+    store.updateConversationsDeleteConversationAsync(conversationEntity.id);
   }
 
   const handleRequest = (input: string) => {
@@ -234,7 +227,18 @@ export default function ChatPage(props: ChatProps) {
       props.createChat(props.chat);
     }
 
-    const requestingConversation = storeRequestingConversation(props.chat, input);
+
+    const formattedInput = props.chat.user_message_template.includes('{{message}}')
+      ? props.chat.user_message_template.replaceAll('{{message}}', input)
+      : input;
+    const requestingConversation = store.newConversation({
+      user_message: formattedInput,
+    })
+    store.updateConversationsCreateConversationAsync(requestingConversation);
+    props.updateChat(props.chat.id, {
+      conversations: [...props.chat.conversations, requestingConversation.id],
+    });
+
 
     const requestingConversationEntity = getRequestingConversationEntity(requestingConversation);
     let requestingConversationEntities = [...conversationEntities, requestingConversationEntity];

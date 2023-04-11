@@ -7,7 +7,6 @@ import {
   TextField
 } from "@mui/material";
 import {defaultOpenAIModel} from "../../util/util";
-import store from "../../util/store";
 import SettingsItem from "../../component/SettingsItem";
 import {DeleteRounded} from "@mui/icons-material";
 
@@ -15,7 +14,7 @@ interface ChatSettingsDialogProps {
   chat: Chat;
   isNew: boolean;
   updateChat?: (chatId: number, chat: Partial<Chat>) => void;
-  deleteChat?: (chatId: number) => void;
+  deleteChat?: (chat: Chat) => void;
   createChat?: (chat: Chat) => void;
   dialogOpen: boolean;
   handleDialogClose: () => void;
@@ -56,7 +55,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     if (props.isNew) {
       return;
     }
-    props.deleteChat!!(chat.id)
+    props.deleteChat!!(chat)
     props.handleDialogClose()
   }
 
@@ -87,12 +86,9 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       setChatInfo(info);
       return;
     }
-    store.getConversationsAsync(props.chat.id)
-      .then((conversations) => {
-        info += `\nCumulative tokens used: ${props.chat.tokens}\nConversations count: ${conversations.length}`
-        setChatInfo(info);
-      })
-  }, [props.chat.id, props.chat.tokens, props.isNew, props.dialogOpen]);
+    info += `\nCumulative tokens used: ${props.chat.tokens}\nConversations count: ${props.chat.conversations.length}`
+    setChatInfo(info);
+  }, [props.chat.id, props.chat.tokens, props.isNew, props.dialogOpen, props.chat.conversations.length]);
 
   return (
     <Dialog

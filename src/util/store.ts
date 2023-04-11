@@ -1,5 +1,5 @@
 import {Chat, Conversation, Usage} from "./data";
-import {del, get, update} from "idb-keyval";
+import {get, update} from "idb-keyval";
 
 class Store {
   constructor() {
@@ -44,10 +44,7 @@ class Store {
     localStorage.setItem('github_gist_id', githubGistId);
   }
 
-  getChatsAsync(): Promise<Chat[]> {
-    return get<Chat[]>('chats')
-      .then((chats) => chats || []);
-  }
+  //*******************************************************************************************************************
 
   newChat(): Chat {
     return {
@@ -58,49 +55,8 @@ class Store {
       user_message_template: '',
       tokens_per_char: 0,
       tokens: 0,
+      conversations: [],
     };
-  }
-
-  createChatAsync(chat: Chat) {
-    update<Chat[]>('chats', (chats) => {
-      return chats ? [...chats, chat] : [chat];
-    }).catch(() => {
-    });
-  }
-
-  updateChatAsync(chatId: number, chat: Partial<Chat>) {
-    update<Chat[]>('chats', (chats) => {
-      if (!chats) {
-        return [];
-      }
-      return chats.map((c) => {
-        if (c.id === chatId) {
-          return {
-            ...c,
-            ...chat,
-          };
-        }
-        return c;
-      });
-    }).catch(() => {
-    });
-  }
-
-  deleteChatAsync(chatId: number) {
-    update<Chat[]>('chats', (chats) => {
-      if (!chats) {
-        return [];
-      }
-      return chats.filter((c) => c.id !== chatId);
-    }).catch(() => {
-    });
-    del(`chat_${chatId}`).catch(() => {
-    });
-  }
-
-  getConversationsAsync(chatId: number): Promise<Conversation[]> {
-    return get<Conversation[]>(`chat_${chatId}`)
-      .then((conversations) => conversations || []);
   }
 
   newConversation(conversation: Partial<Conversation>): Conversation {
@@ -112,48 +68,94 @@ class Store {
     };
   }
 
-  createConversationAsync(chatId: number, conversation: Conversation) {
-    update<Conversation[]>(`chat_${chatId}`, (conversations) => {
+  //*******************************************************************************************************************
+
+  getChatsAsync(): Promise<Chat[]> {
+    return get<Chat[]>('chats').then((chats) => chats || []);
+  }
+
+  updateChatsCreateChatAsync(chat: Chat) {
+    update<Chat[]>('chats', (chats) => {
+      return chats ? [...chats, chat] : [chat];
+    }).finally();
+  }
+
+  updateChatsUpdateChatAsync(chatId: number, chat: Partial<Chat>) {
+    update<Chat[]>('chats', (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.map((foundChat) => {
+        if (foundChat.id === chatId) {
+          return {
+            ...foundChat,
+            ...chat,
+          };
+        }
+        return foundChat;
+      });
+    }).finally();
+  }
+
+  updateChatsDeleteChatAsync(chatId: number) {
+    update<Chat[]>('chats', (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.filter((foundChat) => foundChat.id !== chatId);
+    }).finally();
+  }
+
+  //*******************************************************************************************************************
+
+  getConversationsAsync(conversationIds: number[]): Promise<Conversation[]> {
+    return get<Conversation[]>('conversations')
+      .then((conversations) => conversations || [])
+      .then((conversations) => conversations.filter((foundConversation) => conversationIds.includes(foundConversation.id)));
+  }
+
+  updateConversationsCreateConversationAsync(conversation: Conversation) {
+    update<Conversation[]>('conversations', (conversations) => {
       return conversations ? [...conversations, conversation] : [conversation];
-    }).catch(() => {
-    });
+    }).finally();
   }
 
-  createConversationAsync2(chatId: number, userMessage: string): Conversation {
-    const conversation = this.newConversation({
-      user_message: userMessage,
-    });
-    this.createConversationAsync(chatId, conversation);
-    return conversation;
-  }
-
-  updateConversationAsync(chatId: number, conversationId: number, conversation: Partial<Conversation>) {
-    update<Conversation[]>(`chat_${chatId}`, (conversations) => {
+  updateConversationsUpdateConversationAsync(conversationId: number, conversation: Partial<Conversation>) {
+    update<Conversation[]>('conversations', (conversations) => {
       if (!conversations) {
         return [];
       }
-      return conversations.map((c) => {
-        if (c.id === conversationId) {
+      return conversations.map((foundConversation) => {
+        if (foundConversation.id === conversationId) {
           return {
-            ...c,
+            ...foundConversation,
             ...conversation,
           };
         }
-        return c;
+        return foundConversation;
       });
-    }).catch(() => {
-    });
+    }).finally();
   }
 
-  deleteConversationAsync(chatId: number, conversationId: number) {
-    update<Conversation[]>(`chat_${chatId}`, (conversations) => {
+  updateConversationsDeleteConversationAsync(conversationId: number) {
+    update<Conversation[]>('conversations', (conversations) => {
       if (!conversations) {
         return [];
       }
-      return conversations.filter((c) => c.id !== conversationId);
-    }).catch(() => {
-    });
+      return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
+    }).finally();
   }
+
+  updateConversationsDeleteConversationsAsync(conversationIds: number[]) {
+    update<Conversation[]>('conversations', (conversations) => {
+      if (!conversations) {
+        return [];
+      }
+      return conversations.filter((foundConversation) => !conversationIds.includes(foundConversation.id));
+    }).finally();
+  }
+
+  //*******************************************************************************************************************
 
   getUsageAsync(): Promise<Usage> {
     return get<Usage>('usage')
