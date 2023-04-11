@@ -12,6 +12,9 @@ import Logo from "../../component/Logo";
 import {Button} from "@mui/material";
 import {EditRounded} from "@mui/icons-material";
 
+export const idNewChat = '';
+export const idImage = 'image';
+
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
 }
@@ -32,7 +35,7 @@ export default function HomePage(props: HomePageProps) {
     setSelectedChatId(chat.id)
   }
 
-  const updateChat = (chatId: number, chat: Partial<Chat>) => {
+  const updateChat = (chatId: string, chat: Partial<Chat>) => {
     _setChats((chats) => chats.map((foundChat) => {
       if (foundChat.id === chatId) {
         return {
@@ -56,7 +59,7 @@ export default function HomePage(props: HomePageProps) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const [selectedChatId, setSelectedChatId] = useState<number>(0);
+  const [selectedChatId, setSelectedChatId] = useState('');
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
   const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = React.useState(false);
@@ -66,20 +69,20 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const handleImageClick = () => {
-    setSelectedChatId(-1)
+    setSelectedChatId(idImage)
     setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
-    setSelectedChatId(0);
+    setSelectedChatId(idNewChat);
     setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
 
   const dialogPage = () => {
-    if (selectedChatId === 0) {
+    if (selectedChatId === idNewChat) {
       return (
         <ChatSettingsDialog
           key={`ChatSettingsDialog${newChat.id}`}
@@ -91,7 +94,7 @@ export default function HomePage(props: HomePageProps) {
         />
       )
     }
-    if (selectedChatId === -1) {
+    if (selectedChatId === idImage) {
       return undefined
     }
     return (
@@ -108,7 +111,7 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const contentPage = () => {
-    if (selectedChatId === 0) {
+    if (selectedChatId === idNewChat) {
       return (
         <ChatPage
           key={`ChatPage${newChat.id}`}
@@ -139,7 +142,7 @@ export default function HomePage(props: HomePageProps) {
         </ChatPage>
       )
     }
-    if (selectedChatId === -1) {
+    if (selectedChatId === idImage) {
       return <ImagePage
         key={'image'}
       />

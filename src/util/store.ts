@@ -48,7 +48,7 @@ class Store {
 
   newChat(): Chat {
     return {
-      id: new Date().getTime(),
+      id: `${new Date().getTime()}`,
       title: '',
       context_threshold: 0.7,
       system_message: '',
@@ -61,7 +61,7 @@ class Store {
 
   newConversation(conversation: Partial<Conversation>): Conversation {
     return {
-      id: new Date().getTime(),
+      id: `${new Date().getTime()}`,
       user_message: '',
       assistant_message: '',
       ...conversation,
@@ -80,7 +80,7 @@ class Store {
     }).finally();
   }
 
-  updateChatsUpdateChatAsync(chatId: number, chat: Partial<Chat>) {
+  updateChatsUpdateChatAsync(chatId: string, chat: Partial<Chat>) {
     update<Chat[]>('chats', (chats) => {
       if (!chats) {
         return [];
@@ -97,7 +97,7 @@ class Store {
     }).finally();
   }
 
-  updateChatsDeleteChatAsync(chatId: number) {
+  updateChatsDeleteChatAsync(chatId: string) {
     update<Chat[]>('chats', (chats) => {
       if (!chats) {
         return [];
@@ -108,7 +108,7 @@ class Store {
 
   //*******************************************************************************************************************
 
-  getConversationsAsync(conversationIds: number[]): Promise<Conversation[]> {
+  getConversationsAsync(conversationIds: string[]): Promise<Conversation[]> {
     return get<Conversation[]>('conversations')
       .then((conversations) => conversations || [])
       .then((conversations) => conversations.filter((foundConversation) => conversationIds.includes(foundConversation.id)));
@@ -120,7 +120,7 @@ class Store {
     }).finally();
   }
 
-  updateConversationsUpdateConversationAsync(conversationId: number, conversation: Partial<Conversation>) {
+  updateConversationsUpdateConversationAsync(conversationId: string, conversation: Partial<Conversation>) {
     update<Conversation[]>('conversations', (conversations) => {
       if (!conversations) {
         return [];
@@ -137,7 +137,7 @@ class Store {
     }).finally();
   }
 
-  updateConversationsDeleteConversationAsync(conversationId: number) {
+  updateConversationsDeleteConversationAsync(conversationId: string) {
     update<Conversation[]>('conversations', (conversations) => {
       if (!conversations) {
         return [];
@@ -146,7 +146,7 @@ class Store {
     }).finally();
   }
 
-  updateConversationsDeleteConversationsAsync(conversationIds: number[]) {
+  updateConversationsDeleteConversationsAsync(conversationIds: string[]) {
     update<Conversation[]>('conversations', (conversations) => {
       if (!conversations) {
         return [];

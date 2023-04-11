@@ -19,7 +19,7 @@ export enum ConversationEntityType {
 }
 
 export interface ConversationEntity {
-  id: number;
+  id: string;
   userMessage: string;
   assistantMessage: string;
   userMessageMarkdown: boolean,
@@ -122,7 +122,7 @@ function getRequestingMessages(
 
 function handleResponseUpdateChat(
   chat: Chat,
-  updateChat: (chatId: number, chat: Partial<Chat>) => void,
+  updateChat: (chatId: string, chat: Partial<Chat>) => void,
   requestingMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
@@ -186,7 +186,7 @@ function getErrorConversationEntitiesNoContext(
 
 interface ChatProps {
   chat: Chat,
-  updateChat: (chatId: number, chat: Partial<Chat>) => void,
+  updateChat: (chatId: string, chat: Partial<Chat>) => void,
   createChat?: (chat: Chat) => void, // For new chat
   children?: React.ReactNode; // For new chat
 }

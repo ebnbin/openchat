@@ -1,16 +1,16 @@
 export interface Chat {
-  'id': number;
+  'id': string;
   'title': string;
   'context_threshold': number;
   'system_message': string;
   'user_message_template': string;
   'tokens_per_char': number;
   'tokens': number;
-  'conversations': number[];
+  'conversations': string[];
 }
 
 export interface Conversation {
-  'id': number;
+  'id': string;
   'user_message': string;
   'assistant_message': string;
 }

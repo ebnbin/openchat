@@ -8,10 +8,11 @@ import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
 import {widePageWidth} from "../../util/util";
+import {idImage, idNewChat} from "./HomePage";
 
 interface HomeAppBarProps {
   chats: Chat[],
-  selectedChatId: number,
+  selectedChatId: string,
   handleChatSettingsDialogOpen: () => void,
   setMobileOpen: (mobileOpen: boolean) => void,
 }
@@ -26,10 +27,10 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   };
 
   const title = () => {
-    if (selectedChatId === 0) {
+    if (selectedChatId === idNewChat) {
       return 'OpenChat'
     }
-    if (selectedChatId === -1) {
+    if (selectedChatId === idImage) {
       return 'Image'
     }
     const chat = chats.find((chat) => chat.id === selectedChatId)!!
@@ -76,9 +77,9 @@ export default function HomeAppBar(props: HomeAppBarProps) {
                 />
                 <IconButton
                   edge="end"
-                  onClick={(selectedChatId !== 0 && selectedChatId !== -1) ? handleChatSettingsDialogOpen : undefined}
+                  onClick={(selectedChatId !== idNewChat && selectedChatId !== idImage) ? handleChatSettingsDialogOpen : undefined}
                   sx={{
-                    display: (selectedChatId !== 0 && selectedChatId !== -1) ? 'inherit' : 'none',
+                    display: (selectedChatId !== idNewChat && selectedChatId !== idImage) ? 'inherit' : 'none',
                   }}
                 >
                   <EditRounded />

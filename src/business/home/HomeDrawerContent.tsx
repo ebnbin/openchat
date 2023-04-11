@@ -13,9 +13,9 @@ import {widePageWidth} from "../../util/util";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
-  selectedChatId: number,
+  selectedChatId: string,
   handleChatSettingsDialogOpen: () => void,
-  handleItemClick: (chatId: number) => void,
+  handleItemClick: (chatId: string) => void,
   handleClickSettingsOpen: () => void,
   handleNewChatClick: () => void,
   handleImageClick: () => void,

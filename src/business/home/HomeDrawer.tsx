@@ -9,8 +9,8 @@ const drawerWidth = 300;
 
 interface HomeDrawerProps {
   chats: Chat[],
-  selectedChatId: number,
-  setSelectedChatId: (selectedChatId: number) => void,
+  selectedChatId: string,
+  setSelectedChatId: (selectedChatId: string) => void,
   handleChatSettingsDialogOpen: () => void,
   setSettingsOpen: (settingsOpen: boolean) => void,
   mobileOpen: boolean,
@@ -33,7 +33,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
     setMobileOpen(false);
   };
 
-  const handleItemClick = (chatId: number) => {
+  const handleItemClick = (chatId: string) => {
     setSelectedChatId(chatId)
     setMobileOpen(false)
   }
