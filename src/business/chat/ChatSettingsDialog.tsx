@@ -13,9 +13,10 @@ import {DeleteRounded} from "@mui/icons-material";
 
 interface ChatSettingsDialogProps {
   chat: Chat;
-  updateChat: (chatId: number, chat: Partial<Chat>) => void;
-  deleteChat: (chatId: number) => void;
   isNew: boolean;
+  updateChat?: (chatId: number, chat: Partial<Chat>) => void;
+  deleteChat?: (chatId: number) => void;
+  createChat?: (chat: Chat) => void;
   dialogOpen: boolean;
   handleDialogClose: () => void;
 }
@@ -52,18 +53,30 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
   }
 
   const handleDeleteClick = () => {
-    props.deleteChat(chat.id)
+    if (props.isNew) {
+      return;
+    }
+    props.deleteChat!!(chat.id)
     props.handleDialogClose()
   }
 
+  const handleCancelClick = () => {
+    setChat(props.chat);
+    props.handleDialogClose();
+  }
+
   const handleSaveClick = () => {
-    props.updateChat(chat.id, {
-      title: chat.title,
-      context_threshold: chat.context_threshold,
-      system_message: chat.system_message,
-      user_message_template: chat.user_message_template,
-    })
-    props.handleDialogClose()
+    if (props.isNew) {
+      props.createChat!!(chat);
+    } else {
+      props.updateChat!!(chat.id, {
+        title: chat.title,
+        context_threshold: chat.context_threshold,
+        system_message: chat.system_message,
+        user_message_template: chat.user_message_template,
+      });
+    }
+    props.handleDialogClose();
   }
 
   const [chatInfo, setChatInfo] = useState('')
@@ -85,7 +98,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     <Dialog
       fullWidth={true}
       open={props.dialogOpen}
-      onClose={props.handleDialogClose}
+      onClose={handleCancelClick}
     >
       <DialogTitle>
         {props.isNew ? 'New Chat Settings' : 'Chat Settings'}
@@ -168,7 +181,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={props.handleDialogClose}
+          onClick={handleCancelClick}
         >
           {'Cancel'}
         </Button>

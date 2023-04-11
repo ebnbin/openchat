@@ -77,25 +77,14 @@ export default function HomePage(props: HomePageProps) {
 
   const [newChat, setNewChat] = useState(store.newChat())
 
-  const updateNewChat = (chatId: number, chat: Partial<Chat>) => {
-    setNewChat({
-      ...newChat,
-      ...chat,
-    })
-  }
-
-  const deleteNewChat = (chatId: number) => {
-  }
-
   const dialogPage = () => {
     if (selectedChatId === 0) {
       return (
         <ChatSettingsDialog
           key={`ChatSettingsDialog${newChat.id}`}
           chat={newChat}
-          updateChat={updateNewChat}
-          deleteChat={deleteNewChat}
           isNew={true}
+          createChat={createChat}
           dialogOpen={newChatSettingsDialogOpen}
           handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
         />
@@ -108,9 +97,9 @@ export default function HomePage(props: HomePageProps) {
       <ChatSettingsDialog
         key={`ChatSettingsDialog${selectedChatId}`}
         chat={chats.find((chat) => chat.id === selectedChatId)!!}
+        isNew={false}
         updateChat={updateChat}
         deleteChat={deleteChat}
-        isNew={false}
         dialogOpen={chatSettingsDialogOpen}
         handleDialogClose={() => setChatSettingsDialogOpen(false)}
       />
