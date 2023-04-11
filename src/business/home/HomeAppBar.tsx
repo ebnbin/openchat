@@ -8,87 +8,93 @@ import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
 import {widePageWidth} from "../../util/util";
-import {idImage, idNewChat} from "./HomePage";
+import {contentImage, contentNewChat} from "./HomePage";
 
 interface HomeAppBarProps {
   chats: Chat[],
-  selectedChatId: string,
+  contentId: string,
   handleChatSettingsDialogOpen: () => void,
-  setMobileOpen: (mobileOpen: boolean) => void,
+  setDrawerOpen: (drawerOpen: boolean) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
-  const { chats, selectedChatId, handleChatSettingsDialogOpen, setMobileOpen } = props
-
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
-  const handleDrawerOpen = () => {
-    setMobileOpen(true);
-  };
-
   const title = () => {
-    if (selectedChatId === idNewChat) {
-      return 'OpenChat'
+    if (props.contentId === contentNewChat) {
+      return 'OpenChat';
     }
-    if (selectedChatId === idImage) {
-      return 'Image'
+    if (props.contentId === contentImage) {
+      return 'Image generation';
     }
-    const chat = chats.find((chat) => chat.id === selectedChatId)!!
+    const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
     if (chat.title === '') {
-      return 'New chat'
+      return 'New chat';
     }
-    return chat.title
+    return chat.title;
   }
 
-  return (
-    <>
-      {
-        !isWidePage && (
+  const chatSettingsVisibility = () => {
+    if (props.contentId === contentNewChat || props.contentId === contentImage) {
+      return 'hidden';
+    }
+    return undefined;
+  }
+
+  const handleChatSettingsOnClick = () => {
+    if (props.contentId === contentNewChat || props.contentId === contentImage) {
+      return undefined;
+    }
+    return props.handleChatSettingsDialogOpen();
+  }
+
+  return isWidePage ? null : (
+    <Box
+      sx={{
+        height: '56px',
+        flexShrink: 0,
+      }}
+    >
+      <AppBar
+        color={'default'}
+      >
+        <Toolbar
+          variant={'dense'}
+        >
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            onClick={() => props.setDrawerOpen(true)}
+            sx={{
+              marginRight: '8px',
+            }}
+          >
+            <MenuRounded/>
+          </IconButton>
+          <Typography
+            variant={'h6'}
+            noWrap={true}
+          >
+            {title()}
+          </Typography>
           <Box
             sx={{
               height: '56px',
-              flexShrink: 0,
+              flexGrow: 1,
+            }}
+          />
+          <IconButton
+            edge={'end'}
+            color={'inherit'}
+            onClick={handleChatSettingsOnClick}
+            sx={{
+              visibility: chatSettingsVisibility(),
             }}
           >
-            <AppBar
-              color={'default'}
-            >
-              <Toolbar
-                variant={'dense'}
-                sx={{
-                  alignItems: 'center'
-                }}
-              >
-                <IconButton
-                  edge="start"
-                  onClick={handleDrawerOpen}
-                  sx={{ mr: 2 }}
-                >
-                  <MenuRounded/>
-                </IconButton>
-                <Typography variant="h6" noWrap component="div">
-                  {title()}
-                </Typography>
-                <Box
-                  sx={{
-                    height: '56px',
-                    flexGrow: 1,
-                  }}
-                />
-                <IconButton
-                  edge="end"
-                  onClick={(selectedChatId !== idNewChat && selectedChatId !== idImage) ? handleChatSettingsDialogOpen : undefined}
-                  sx={{
-                    display: (selectedChatId !== idNewChat && selectedChatId !== idImage) ? 'inherit' : 'none',
-                  }}
-                >
-                  <EditRounded />
-                </IconButton>
-              </Toolbar>
-            </AppBar>
-          </Box>
-        )
-      }
-    </>
-  )
+            <EditRounded/>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+    </Box>
+  );
 }

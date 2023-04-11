@@ -12,8 +12,8 @@ import Logo from "../../component/Logo";
 import {Button} from "@mui/material";
 import {EditRounded} from "@mui/icons-material";
 
-export const idNewChat = '';
-export const idImage = 'image';
+export const contentNewChat = '';
+export const contentImage = 'image';
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -69,20 +69,20 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const handleImageClick = () => {
-    setSelectedChatId(idImage)
+    setSelectedChatId(contentImage)
     setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
-    setSelectedChatId(idNewChat);
+    setSelectedChatId(contentNewChat);
     setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
 
   const dialogPage = () => {
-    if (selectedChatId === idNewChat) {
+    if (selectedChatId === contentNewChat) {
       return (
         <ChatSettingsDialog
           key={`ChatSettingsDialog${newChat.id}`}
@@ -94,7 +94,7 @@ export default function HomePage(props: HomePageProps) {
         />
       )
     }
-    if (selectedChatId === idImage) {
+    if (selectedChatId === contentImage) {
       return undefined
     }
     return (
@@ -111,7 +111,7 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const contentPage = () => {
-    if (selectedChatId === idNewChat) {
+    if (selectedChatId === contentNewChat) {
       return (
         <ChatPage
           key={`ChatPage${newChat.id}`}
@@ -142,7 +142,7 @@ export default function HomePage(props: HomePageProps) {
         </ChatPage>
       )
     }
-    if (selectedChatId === idImage) {
+    if (selectedChatId === contentImage) {
       return <ImagePage
         key={'image'}
       />
@@ -186,9 +186,9 @@ export default function HomePage(props: HomePageProps) {
         >
           <HomeAppBar
             chats={chats}
-            selectedChatId={selectedChatId}
+            contentId={selectedChatId}
             handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-            setMobileOpen={setMobileOpen}
+            setDrawerOpen={setMobileOpen}
           />
           <Box
             style={{
