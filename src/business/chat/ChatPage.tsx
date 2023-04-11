@@ -220,6 +220,9 @@ export default function ChatPage(props: ChatProps) {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
     setConversationEntitiesNoContext(nextConversationEntities)
     store.updateConversationsDeleteConversationAsync(conversationEntity.id);
+    props.updateChat(props.chat.id, {
+      conversations: props.chat.conversations.filter((conversationId) => conversationId !== conversationEntity.id),
+    });
   }
 
   const handleRequest = (input: string) => {
