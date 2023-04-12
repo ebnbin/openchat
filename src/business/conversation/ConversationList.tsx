@@ -1,6 +1,7 @@
-import {Box, List} from "@mui/material";
+import {Box} from "@mui/material";
 import React, {RefObject} from "react";
 import ConversationItem from "./ConversationItem";
+import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
 
 export enum ConversationEntityType {
   Default,
@@ -23,7 +24,7 @@ interface ConversationListProps {
   conversationEntities: ConversationEntity[];
   updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
-  bottomRef: RefObject<HTMLDivElement>;
+  virtuosoRef: RefObject<VirtuosoHandle>;
 }
 
 export default function ConversationList(props: ConversationListProps) {
@@ -35,24 +36,30 @@ export default function ConversationList(props: ConversationListProps) {
   }
 
   return (
-    <List>
-      {
-        conversationEntities.map((conversationEntity) => (
-          <ConversationItem
-            conversationEntity={conversationEntity}
-            updateConversationEntity={updateConversationEntity}
-            deleteConversationEntity={deleteConversationEntity}
-          />
-        ))
-      }
-      <Box
-        sx={{
-          height: '164px',
-        }}
-      />
-      <div
-        ref={props.bottomRef}
-      />
-    </List>
+    <Virtuoso
+      ref={props.virtuosoRef}
+      data={[...conversationEntities, 0]}
+      totalCount={conversationEntities.length + 1}
+      itemContent={(index, item) => {
+        if (item === 0) {
+          return (
+            <Box
+              sx={{
+                height: '164px',
+              }}
+            />
+          )
+        } else {
+          const conversationEntity = item as ConversationEntity;
+          return (
+            <ConversationItem
+              conversationEntity={conversationEntity}
+              updateConversationEntity={updateConversationEntity}
+              deleteConversationEntity={deleteConversationEntity}
+            />
+          );
+        }
+      }}
+    />
   );
 }

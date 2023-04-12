@@ -7,6 +7,7 @@ import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
+import {VirtuosoHandle} from "react-virtuoso";
 
 export const contentWidth = 900
 
@@ -246,15 +247,13 @@ export default function ChatPage(props: ChatProps) {
       })
   }
 
-  const conversationListBottomRef = useRef<HTMLDivElement>(null);
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   const scrollToBottom = (smooth: boolean) => {
-    if (conversationListBottomRef.current) {
-      conversationListBottomRef.current.scrollIntoView({
-        behavior: smooth ? 'smooth' : undefined,
-        block: 'end',
-      });
-    }
+    virtuosoRef.current?.scrollToIndex({
+      index: Number.MAX_SAFE_INTEGER,
+      behavior: smooth ? 'smooth' : undefined,
+    })
   }
 
   return (
@@ -280,7 +279,7 @@ export default function ChatPage(props: ChatProps) {
           conversationEntities={conversationEntities}
           updateConversationEntitiesNoStore={setConversationEntities}
           deleteConversationEntity={handleDeleteConversationClick}
-          bottomRef={conversationListBottomRef}
+          virtuosoRef={virtuosoRef}
         />
       </Box>
       <Box
