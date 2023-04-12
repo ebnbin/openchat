@@ -28,8 +28,8 @@ export default function AppPage() {
         setSettingsOpen={setSettingsOpen}
       />
       <SettingsDialog
-        open={settingsOpen}
-        handleClose={handleSettingsClose}
+        dialogOpen={settingsOpen}
+        handleDialogClose={handleSettingsClose}
       />
     </ThemeProvider>
   );
