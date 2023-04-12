@@ -1,8 +1,18 @@
 import {Chat, Conversation, Data, Usage} from "./data";
 import {get, set, update} from "idb-keyval";
+import Preference from "./Preference";
 
 class Store {
+  private readonly usage: Preference<Usage>;
+
   constructor() {
+    this.usage = new Preference<Usage>('usage', {
+      tokens: 0,
+      image_256: 0,
+      image_512: 0,
+      image_1024: 0,
+    } as Usage);
+
     this.migrate();
   }
 
@@ -17,12 +27,11 @@ class Store {
   }
 
   getDataAsync(): Promise<Data> {
-    return Promise.all([this.getChatsAsync(), this.getAllConversationsAsync(), this.getUsageAsync()])
-      .then(([chats, conversations, usage]) => {
+    return Promise.all([this.getChatsAsync(), this.getAllConversationsAsync()])
+      .then(([chats, conversations]) => {
         return {
           chats,
           conversations,
-          usage,
         } as Data;
       });
   }
@@ -31,7 +40,6 @@ class Store {
     return Promise.all([
       set('chats', data.chats),
       set('conversations', data.conversations),
-      set('usage', data.usage),
     ]).then(() => {
     });
   }
@@ -180,21 +188,18 @@ class Store {
 
   //*******************************************************************************************************************
 
-  getUsageAsync(): Promise<Usage> {
-    return get<Usage>('usage')
-      .then((usage) => usage || {tokens: 0, image_256: 0, image_512: 0, image_1024: 0});
+  getUsage(): Usage {
+    return this.usage.get();
   }
 
-  increaseUsageAsync(usage: Partial<Usage>) {
-    update<Usage>('usage', (currentUsage) => {
-      return {
-        tokens: (currentUsage?.tokens ?? 0) + (usage.tokens ?? 0),
-        image_256: (currentUsage?.image_256 ?? 0) + (usage.image_256 ?? 0),
-        image_512: (currentUsage?.image_512 ?? 0) + (usage.image_512 ?? 0),
-        image_1024: (currentUsage?.image_1024 ?? 0) + (usage.image_1024 ?? 0),
-      };
-    }).catch(() => {
-    });
+  increaseUsage(usage: Partial<Usage>) {
+    const prev = this.usage.get();
+    this.usage.set({
+      tokens: prev.tokens + (usage.tokens ?? 0),
+      image_256: prev.image_256 + (usage.image_256 ?? 0),
+      image_512: prev.image_512 + (usage.image_512 ?? 0),
+      image_1024: prev.image_1024 + (usage.image_1024 ?? 0),
+    } as Usage);
   }
 }
 

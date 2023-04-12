@@ -1,7 +1,6 @@
 export interface Data {
   'chats': Chat[];
   'conversations': Conversation[];
-  'usage': Usage;
 }
 
 export interface Chat {

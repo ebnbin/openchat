@@ -24,11 +24,10 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const [openAIApiUsageText, setOpenAIApiUsageText] = useState('')
 
   useEffect(() => {
-    store.getUsageAsync().then(usage => {
-      setOpenAIApiUsageText(
-        `tokens: ${usage.tokens}\nimage_256: ${usage.image_256}\nimage_512: ${usage.image_512}\nimage_1024: ${usage.image_1024}\nEstimated price: ${price(usage)}`
-      );
-    });
+    const usage = store.getUsage()
+    setOpenAIApiUsageText(
+      `tokens: ${usage.tokens}\nimage_256: ${usage.image_256}\nimage_512: ${usage.image_512}\nimage_1024: ${usage.image_1024}\nEstimated price: ${price(usage)}`
+    );
   }, [props.dialogOpen]);
 
   const price = (usage: Usage) => {

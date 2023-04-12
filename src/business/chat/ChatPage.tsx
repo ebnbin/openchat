@@ -117,7 +117,7 @@ function handleResponseUpdateChat(
     .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
   const tokensPerChar = responseTotalTokens / charCount
   const tokens = chat.tokens + responseTotalTokens
-  store.increaseUsageAsync({
+  store.increaseUsage({
     tokens: responseTotalTokens,
   })
   updateChat(chat.id, {
