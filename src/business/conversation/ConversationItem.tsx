@@ -1,7 +1,7 @@
 import ConversationMessageItem from "./ConversationMessageItem";
 import {Box, Button, Card, Typography, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
-import {DeleteRounded, TipsAndUpdatesRounded} from "@mui/icons-material";
+import {DeleteRounded} from "@mui/icons-material";
 import React from "react";
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
