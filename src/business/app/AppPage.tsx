@@ -5,8 +5,17 @@ import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
 import {blueGrey} from "@mui/material/colors";
+import {createContext, useContext, useState} from "react";
+
+const DataTimestampContext = createContext<any>(null);
+
+export const useDataTimestamp = () => {
+  return useContext(DataTimestampContext)
+}
 
 export default function AppPage() {
+  const [dataTimestamp, setDataTimestamp] = useState({ data: new Date().getTime() })
+
   const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   const handleSettingsClose = () => {
@@ -22,15 +31,20 @@ export default function AppPage() {
   })
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <HomePage
-        setSettingsOpen={setSettingsOpen}
-      />
-      <SettingsDialog
-        dialogOpen={settingsOpen}
-        handleDialogClose={handleSettingsClose}
-      />
-    </ThemeProvider>
+    <DataTimestampContext.Provider
+      key={dataTimestamp.data}
+      value={{dataTimestamp, setDataTimestamp}}
+    >
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <HomePage
+          setSettingsOpen={setSettingsOpen}
+        />
+        <SettingsDialog
+          dialogOpen={settingsOpen}
+          handleDialogClose={handleSettingsClose}
+        />
+      </ThemeProvider>
+    </DataTimestampContext.Provider>
   );
 }

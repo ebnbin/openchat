@@ -1,3 +1,9 @@
+export interface Data {
+  'chats': Chat[];
+  'conversations': Conversation[];
+  'usage': Usage;
+}
+
 export interface Chat {
   'id': string;
   'title': string;

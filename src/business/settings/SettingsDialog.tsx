@@ -9,6 +9,7 @@ import {
 import store from "../../util/store";
 import {Usage} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
+import {useDataTimestamp} from "../app/AppPage";
 
 interface SettingsDialogProps {
   dialogOpen: boolean
@@ -34,47 +35,48 @@ export function SettingsDialog(props: SettingsDialogProps) {
     return (usage.tokens / 1000 * 0.002 + usage.image_256 * 0.016 + usage.image_512 * 0.018 + usage.image_1024 * 0.02).toFixed(2)
   }
 
-  const gistOnClick = () => {
-    // fetch('https://api.github.com/gists', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${githubToken}`,
-    //     'Accept': 'application/vnd.github.v3+json',
-    //   },
-    //   body: JSON.stringify(
-    //     {
-    //       'public': false,
-    //       'files': {
-    //         'openchat_data.json': {
-    //           'content': JSON.stringify(store.getAppData()),
-    //         }
-    //       },
-    //     }
-    //   )
-    // })
-    //   .then(response => alert(`success`))
-    //   .catch(error => alert('error'));
+  const { dataTimestamp, setDataTimestamp } = useDataTimestamp();
 
+  const gistBackup = () => {
+    store.getDataAsync()
+      .then(data => {
+        fetch(`https://api.github.com/gists/${githubGistId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+          },
+          body: JSON.stringify({
+            'files': {
+              'openchat_data.json': {
+                'content': JSON.stringify(data),
+              },
+            },
+          }),
+        })
+          .then(() => alert(`Upload success`))
+          .catch(() => alert('Upload error'));
+      })
+  }
+
+  const gistRestore = () => {
     fetch(`https://api.github.com/gists/${githubGistId}`, {
-      method: 'PATCH',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${githubToken}`,
         'Accept': 'application/vnd.github.v3+json',
       },
-      body: JSON.stringify(
-        {
-          'files': {
-            'openchat_data.json': {
-              'content': store.getDataJson(),
-            }
-          },
-        }
-      )
     })
-      .then(response => alert(`success`))
-      .catch(error => alert('error'));
+      .then((response) => response.json())
+      .then((data) => data.files['openchat_data.json'].content)
+      .then((content) => store.setData(JSON.parse(content)))
+      .then(() => {
+        setDataTimestamp({ data: new Date().getTime() })
+        alert('Download success');
+      })
+      .catch(() => alert('Download error'));
   }
 
   const handleCancelClick = () => {
@@ -145,9 +147,14 @@ export function SettingsDialog(props: SettingsDialogProps) {
             }}
           />
           <Button
-            onClick={gistOnClick}
+            onClick={gistBackup}
           >
-            Test gist upload
+            {'Backup'}
+          </Button>
+          <Button
+            onClick={gistRestore}
+          >
+            {'Restore'}
           </Button>
         </SettingsItem>
         <SettingsItem

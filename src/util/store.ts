@@ -1,5 +1,5 @@
-import {Chat, Conversation, Usage} from "./data";
-import {get, update} from "idb-keyval";
+import {Chat, Conversation, Data, Usage} from "./data";
+import {get, set, update} from "idb-keyval";
 
 class Store {
   constructor() {
@@ -16,8 +16,24 @@ class Store {
     }
   }
 
-  getDataJson(): string {
-    return '';
+  getDataAsync(): Promise<Data> {
+    return Promise.all([this.getChatsAsync(), this.getAllConversationsAsync(), this.getUsageAsync()])
+      .then(([chats, conversations, usage]) => {
+        return {
+          chats,
+          conversations,
+          usage,
+        } as Data;
+      });
+  }
+
+  setData(data: Data): Promise<void> {
+    return Promise.all([
+      set('chats', data.chats),
+      set('conversations', data.conversations),
+      set('usage', data.usage),
+    ]).then(() => {
+    });
   }
 
   getOpenAIApiKey(): string {
@@ -109,6 +125,11 @@ class Store {
   }
 
   //*******************************************************************************************************************
+
+  getAllConversationsAsync(): Promise<Conversation[]> {
+    return get<Conversation[]>('conversations')
+      .then((conversations) => conversations || []);
+  }
 
   getConversationsAsync(conversationIds: string[]): Promise<Conversation[]> {
     return get<Conversation[]>('conversations')
