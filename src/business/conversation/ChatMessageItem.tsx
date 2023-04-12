@@ -5,10 +5,11 @@ import {
 } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React from "react";
-import {contentWidth, ConversationEntity, ConversationEntityType} from "./ChatPage";
+import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../component/Markdown";
 import {copy} from "../../util/util";
-import {ReactComponent as ChatGPTLogo} from './../../chatgpt_logo.svg';
+import {ReactComponent as ChatGPTLogo} from '../../chatgpt_logo.svg';
+import {ConversationEntity, ConversationEntityType} from "./ChatConversationList";
 
 interface ChatMessageItemProps {
   conversationEntity: ConversationEntity,

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation} from "../../util/data";
-import ChatConversationList from "./ChatConversationList";
+import ChatConversationList, {ConversationEntity, ConversationEntityType} from "../conversation/ChatConversationList";
 import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
@@ -9,23 +9,6 @@ import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from
 import {CreateChatCompletionResponse} from "openai/api";
 
 export const contentWidth = 900
-
-//*********************************************************************************************************************
-
-export enum ConversationEntityType {
-  Default,
-  Context,
-  Requesting,
-}
-
-export interface ConversationEntity {
-  id: string;
-  userMessage: string;
-  assistantMessage: string;
-  userMessageMarkdown: boolean,
-  assistantMessageMarkdown: boolean,
-  type: ConversationEntityType;
-}
 
 //*********************************************************************************************************************
 

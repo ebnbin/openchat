@@ -1,7 +1,23 @@
 import {Box, List} from "@mui/material";
 import React, {RefObject} from "react";
-import {ConversationEntity} from "./ChatPage";
 import ChatConversationItem from "./ChatConversationItem";
+
+export enum ConversationEntityType {
+  Default,
+  Context,
+  Requesting,
+}
+
+export interface ConversationEntity {
+  id: string;
+  userMessage: string;
+  assistantMessage: string;
+  userMessageMarkdown: boolean,
+  assistantMessageMarkdown: boolean,
+  type: ConversationEntityType;
+}
+
+//*********************************************************************************************************************
 
 interface ChatConversationListProps {
   conversationEntities: ConversationEntity[];
