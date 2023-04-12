@@ -8,7 +8,7 @@ import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
 import {widePageWidth} from "../../util/util";
-import {contentImage, contentNewChat} from "./HomePage";
+import {contentNewChat} from "./HomePage";
 
 interface HomeAppBarProps {
   chats: Chat[],
@@ -24,9 +24,6 @@ export default function HomeAppBar(props: HomeAppBarProps) {
     if (props.contentId === contentNewChat) {
       return 'OpenChat';
     }
-    if (props.contentId === contentImage) {
-      return 'Image generation';
-    }
     const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
     if (chat.title === '') {
       return 'New chat';
@@ -35,14 +32,14 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   }
 
   const chatSettingsVisibility = () => {
-    if (props.contentId === contentNewChat || props.contentId === contentImage) {
+    if (props.contentId === contentNewChat) {
       return 'hidden';
     }
     return undefined;
   }
 
   const handleChatSettingsOnClick = () => {
-    if (props.contentId === contentNewChat || props.contentId === contentImage) {
+    if (props.contentId === contentNewChat) {
       return undefined;
     }
     return props.handleChatSettingsDialogOpen();

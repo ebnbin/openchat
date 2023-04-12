@@ -6,7 +6,6 @@ import IconButton from "@mui/material/IconButton";
 import {
   AddRounded,
   EditRounded,
-  ImageRounded,
   SettingsRounded
 } from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -15,6 +14,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import * as React from "react";
 import {widePageWidth} from "../../util/util";
+import {contentNewChat} from "./HomePage";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
@@ -23,8 +23,7 @@ interface HomeDrawerContentProps {
   handleChatItemClick: (chatId: string) => void,
   handleSettingsDialogOpen: () => void,
   handleNewChatClick: () => void,
-  handleLikesClick: () => void,
-  handleImageClick: () => void,
+  handleNewChatSettingsDialogOpen: () => void,
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
@@ -62,14 +61,15 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
         </Button>
         <Button
           variant={'outlined'}
-          onClick={props.handleImageClick}
+          onClick={props.handleNewChatSettingsDialogOpen}
           sx={{
+            display: props.selectedContentId === contentNewChat ? undefined : 'none',
             margin: '8px',
             marginLeft: '0px',
             flexShrink: 0,
           }}
         >
-          <ImageRounded/>
+          <EditRounded/>
         </Button>
       </Box>
       <Divider/>

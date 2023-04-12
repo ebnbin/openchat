@@ -7,13 +7,9 @@ import * as React from "react";
 import {Chat} from "../../util/data";
 import {useEffect, useState} from "react";
 import store from "../../util/store";
-import ImagePage from "../image/ImagePage";
 import Logo from "../../component/Logo";
-import {Button} from "@mui/material";
-import {EditRounded} from "@mui/icons-material";
 
 export const contentNewChat = '';
-export const contentImage = 'image';
 
 interface HomePageProps {
   setSettingsOpen: (settingsOpen: boolean) => void
@@ -68,14 +64,6 @@ export default function HomePage(props: HomePageProps) {
     toNewChatPage()
   }
 
-  const handleLikesClick = () => {
-  }
-
-  const handleImageClick = () => {
-    setSelectedChatId(contentImage)
-    setMobileOpen(false)
-  }
-
   const toNewChatPage = () => {
     setNewChat(store.newChat())
     setSelectedChatId(contentNewChat);
@@ -96,9 +84,6 @@ export default function HomePage(props: HomePageProps) {
           handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
         />
       )
-    }
-    if (selectedChatId === contentImage) {
-      return undefined
     }
     return (
       <ChatSettingsDialog
@@ -131,24 +116,9 @@ export default function HomePage(props: HomePageProps) {
             }}
           >
             <Logo/>
-            <Button
-              variant={'outlined'}
-              startIcon={<EditRounded/>}
-              sx={{
-                marginTop: '32px',
-              }}
-              onClick={() => setNewChatSettingsDialogOpen(true)}
-            >
-              New chat settings
-            </Button>
           </Box>
         </ChatPage>
       )
-    }
-    if (selectedChatId === contentImage) {
-      return <ImagePage
-        key={'image'}
-      />
     }
     return (
       <ChatPage
@@ -178,8 +148,7 @@ export default function HomePage(props: HomePageProps) {
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
           handleNewChatClick={handleNewChatClick}
-          handleImageClick={handleImageClick}
-          handleLikesClick={handleLikesClick}
+          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
         />
         <Box
           sx={{

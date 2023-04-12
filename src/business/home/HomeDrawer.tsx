@@ -16,13 +16,13 @@ interface HomeDrawerProps {
   mobileOpen: boolean,
   setMobileOpen: (mobileOpen: boolean) => void,
   handleNewChatClick: () => void,
-  handleLikesClick: () => void,
-  handleImageClick: () => void,
+  handleNewChatSettingsDialogOpen: () => void,
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
   const { chats, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
-    mobileOpen, setMobileOpen, handleNewChatClick, handleImageClick } = props
+    mobileOpen, setMobileOpen, handleNewChatClick
+  } = props
 
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
@@ -61,8 +61,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               handleChatItemClick={handleItemClick}
               handleSettingsDialogOpen={handleClickSettingsOpen}
               handleNewChatClick={handleNewChatClick}
-              handleImageClick={handleImageClick}
-              handleLikesClick={props.handleLikesClick}
+              handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
             />
           </Drawer>
         )
@@ -85,8 +84,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               handleChatItemClick={handleItemClick}
               handleSettingsDialogOpen={handleClickSettingsOpen}
               handleNewChatClick={handleNewChatClick}
-              handleImageClick={handleImageClick}
-              handleLikesClick={props.handleLikesClick}
+              handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
             />
           </Drawer>
         )
