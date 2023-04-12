@@ -10,9 +10,6 @@ class Store {
     this.usage = new Preference<Usage>('usage', {
       tokens: 0,
       charCount: 0,
-      image_256: 0,
-      image_512: 0,
-      image_1024: 0,
     } as Usage);
     this.settings = new Preference<Settings>('settings', {
       dark_mode: 'system',
@@ -206,9 +203,6 @@ class Store {
     this.usage.set({
       tokens: prev.tokens + (usage.tokens ?? 0),
       charCount: prev.charCount + (usage.charCount ?? 0),
-      image_256: prev.image_256 + (usage.image_256 ?? 0),
-      image_512: prev.image_512 + (usage.image_512 ?? 0),
-      image_1024: prev.image_1024 + (usage.image_1024 ?? 0),
     } as Usage);
   }
 

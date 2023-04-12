@@ -28,12 +28,12 @@ export function SettingsDialog(props: SettingsDialogProps) {
   useEffect(() => {
     const usage = store.getUsage()
     setOpenAIApiUsageText(
-      `tokens: ${usage.tokens}\nimage_256: ${usage.image_256}\nimage_512: ${usage.image_512}\nimage_1024: ${usage.image_1024}\nEstimated price: ${price(usage)}`
+      `tokens: ${usage.tokens}\nEstimated price: ${price(usage)}`
     );
   }, [props.dialogOpen]);
 
   const price = (usage: Usage) => {
-    return (usage.tokens / 1000 * 0.002 + usage.image_256 * 0.016 + usage.image_512 * 0.018 + usage.image_1024 * 0.02).toFixed(2)
+    return (usage.tokens / 1000 * 0.002).toFixed(2)
   }
 
   const { dataTimestamp, setDataTimestamp } = useDataTimestamp();

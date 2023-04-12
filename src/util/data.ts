@@ -21,9 +21,6 @@ export interface Conversation {
 export interface Usage {
   'tokens': number;
   'charCount': number;
-  'image_256': number;
-  'image_512': number;
-  'image_1024': number;
 }
 
 export interface Settings {
