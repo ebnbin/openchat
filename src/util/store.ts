@@ -91,8 +91,6 @@ class Store {
       id: `${new Date().getTime()}`,
       user_message: '',
       assistant_message: '',
-      deleted: false,
-      liked: false,
       ...conversation,
     };
   }
