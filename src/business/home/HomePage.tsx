@@ -13,6 +13,7 @@ import {Button} from "@mui/material";
 import {EditRounded} from "@mui/icons-material";
 
 export const contentNewChat = '';
+export const contentLikes = 'likes';
 export const contentImage = 'image';
 
 interface HomePageProps {
@@ -66,6 +67,9 @@ export default function HomePage(props: HomePageProps) {
 
   const handleNewChatClick = () => {
     toNewChatPage()
+  }
+
+  const handleLikesClick = () => {
   }
 
   const handleImageClick = () => {
@@ -176,6 +180,7 @@ export default function HomePage(props: HomePageProps) {
           setMobileOpen={setMobileOpen}
           handleNewChatClick={handleNewChatClick}
           handleImageClick={handleImageClick}
+          handleLikesClick={handleLikesClick}
         />
         <Box
           sx={{

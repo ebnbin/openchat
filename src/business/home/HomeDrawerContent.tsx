@@ -3,28 +3,33 @@ import List from "@mui/material/List";
 import {Chat} from "../../util/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
-import {EditRounded, ImageRounded, SettingsRounded} from "@mui/icons-material";
+import {
+  AddRounded,
+  EditRounded,
+  FavoriteRounded,
+  ImageRounded,
+  SettingsRounded
+} from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import * as React from "react";
 import {widePageWidth} from "../../util/util";
+import {contentLikes} from "./HomePage";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
-  selectedChatId: string,
+  selectedContentId: string,
   handleChatSettingsDialogOpen: () => void,
-  handleItemClick: (chatId: string) => void,
-  handleClickSettingsOpen: () => void,
+  handleChatItemClick: (chatId: string) => void,
+  handleSettingsDialogOpen: () => void,
   handleNewChatClick: () => void,
+  handleLikesClick: () => void,
   handleImageClick: () => void,
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
-  const { chats, selectedChatId, handleChatSettingsDialogOpen, handleItemClick,
-    handleClickSettingsOpen, handleNewChatClick, handleImageClick } = props
-
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   return (
@@ -44,17 +49,22 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
       >
         <Button
           variant={'outlined'}
-          onClick={handleNewChatClick}
+          onClick={props.handleNewChatClick}
           sx={{
             margin: '8px',
             flexGrow: 1,
           }}
         >
-          New chat
+          <AddRounded
+            sx={{
+              marginRight: '8px',
+            }}
+          />
+          {'New chat'}
         </Button>
         <Button
           variant={'outlined'}
-          onClick={handleImageClick}
+          onClick={props.handleImageClick}
           sx={{
             margin: '8px',
             marginLeft: '0px',
@@ -64,37 +74,65 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           <ImageRounded/>
         </Button>
       </Box>
-      <Divider />
+      <Divider/>
       <List
         sx={{
           flexGrow: 1,
           overflow: 'auto',
         }}
       >
-        {chats.slice().reverse().map((chatItem: Chat, index) => (
+        <ListItem
+          key={contentLikes}
+          disablePadding={true}
+        >
+          <ListItemButton
+            onClick={props.handleLikesClick}
+            selected={props.selectedContentId === contentLikes}
+          >
+            <ListItemIcon>
+              <FavoriteRounded/>
+            </ListItemIcon>
+            <ListItemText
+              primary={'Likes'}
+              primaryTypographyProps={{
+                noWrap: props.selectedContentId !== contentLikes,
+                fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
+        {[...props.chats].reverse().map((chat: Chat) => (
           <ListItem
-            key={chatItem.id}
+            key={chat.id}
             disablePadding={true}
             secondaryAction={
               <IconButton
-                edge="end"
-                onClick={handleChatSettingsDialogOpen} // TODO
-                sx={{display: isWidePage && selectedChatId === chatItem.id ? 'flex' : 'none', alignItems: 'center'}} // TODO
+                edge={'end'}
+                onClick={props.handleChatSettingsDialogOpen}
+                sx={{
+                  visibility: isWidePage && props.selectedContentId === chat.id ? undefined : 'hidden',
+                }}
               >
-                <EditRounded />
+                <EditRounded/>
               </IconButton>
             }
           >
             <ListItemButton
-              onClick={() => handleItemClick(chatItem.id)}
-              selected={selectedChatId === chatItem.id}
+              onClick={() => props.handleChatItemClick(chat.id)}
+              selected={props.selectedContentId === chat.id}
             >
-              <ListItemText primary={chatItem.title === '' ? 'New chat' : chatItem.title} />
+              <ListItemText
+                primary={chat.title === '' ? 'New chat' : chat.title}
+                primaryTypographyProps={{
+                  noWrap: props.selectedContentId !== chat.id,
+                  fontWeight: props.selectedContentId === chat.id ? 'bold' : undefined,
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      <Divider />
+      <Divider/>
       <ListItem
         disablePadding={true}
         sx={{
@@ -102,7 +140,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
         }}
       >
         <ListItemButton
-          onClick={handleClickSettingsOpen}
+          onClick={props.handleSettingsDialogOpen}
         >
           <ListItemIcon>
             <SettingsRounded/>

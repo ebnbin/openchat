@@ -16,6 +16,7 @@ interface HomeDrawerProps {
   mobileOpen: boolean,
   setMobileOpen: (mobileOpen: boolean) => void,
   handleNewChatClick: () => void,
+  handleLikesClick: () => void,
   handleImageClick: () => void,
 }
 
@@ -55,12 +56,13 @@ export default function HomeDrawer(props: HomeDrawerProps) {
           >
             <HomeDrawerContent
               chats={chats}
-              selectedChatId={selectedChatId}
+              selectedContentId={selectedChatId}
               handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}
-              handleItemClick={handleItemClick}
-              handleClickSettingsOpen={handleClickSettingsOpen}
+              handleChatItemClick={handleItemClick}
+              handleSettingsDialogOpen={handleClickSettingsOpen}
               handleNewChatClick={handleNewChatClick}
               handleImageClick={handleImageClick}
+              handleLikesClick={props.handleLikesClick}
             />
           </Drawer>
         )
@@ -78,12 +80,13 @@ export default function HomeDrawer(props: HomeDrawerProps) {
           >
             <HomeDrawerContent
               chats={chats}
-              selectedChatId={selectedChatId}
+              selectedContentId={selectedChatId}
               handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}
-              handleItemClick={handleItemClick}
-              handleClickSettingsOpen={handleClickSettingsOpen}
+              handleChatItemClick={handleItemClick}
+              handleSettingsDialogOpen={handleClickSettingsOpen}
               handleNewChatClick={handleNewChatClick}
               handleImageClick={handleImageClick}
+              handleLikesClick={props.handleLikesClick}
             />
           </Drawer>
         )
