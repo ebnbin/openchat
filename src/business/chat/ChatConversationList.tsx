@@ -64,7 +64,7 @@ export default function ChatConversationList(props: ChatConversationListProps) {
                   variant={'caption'}
                   color={theme.palette.text.disabled}
                 >
-                  {`${new Date(conversationEntity.id).toLocaleString()}`}
+                  {`${new Date(parseInt(conversationEntity.id, 10)).toLocaleString()}`}
                 </Typography>
                 <TipsAndUpdatesRounded
                   color={'disabled'}
