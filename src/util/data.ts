@@ -13,6 +13,8 @@ export interface Conversation {
   'id': string;
   'user_message': string;
   'assistant_message': string;
+  'deleted': boolean;
+  'liked': boolean;
 }
 
 export interface Usage {
