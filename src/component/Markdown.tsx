@@ -95,7 +95,7 @@ function Markdown(props: MarkdownProps) {
                     </Typography>
                     <Button
                       color={'inherit'}
-                      startIcon={<ContentCopyRounded />}
+                      startIcon={<ContentCopyRounded/>}
                       size={'small'}
                       onClick={() => handleCopyClick(code)}
                       style={{

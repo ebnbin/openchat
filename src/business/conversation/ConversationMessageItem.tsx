@@ -1,14 +1,15 @@
 import {Avatar, Button, CircularProgress, Typography, useTheme} from "@mui/material";
 import {
   ContentCopyRounded,
-  FaceRounded, NotesRounded
+  FaceRounded
 } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../component/Markdown";
 import {copy} from "../../util/util";
-import {ReactComponent as ChatGPTLogo} from '../../chatgpt_logo.svg';
+import {ReactComponent as ChatGPTLogoLight} from '../../chatgpt_logo_light.svg';
+import {ReactComponent as ChatGPTLogoDark} from '../../chatgpt_logo_dark.svg';
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationMessageItemProps {
@@ -22,9 +23,12 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
 
   const message = isUser ? conversationEntity.userMessage : conversationEntity.assistantMessage;
   const markdown = isUser ? conversationEntity.userMessageMarkdown : conversationEntity.assistantMessageMarkdown;
+  const context = props.conversationEntity.type !== ConversationEntityType.Default
   const isLoading = !isUser && conversationEntity.type === ConversationEntityType.Requesting;
 
   const theme = useTheme();
+
+  const ChatGPTLogo = theme.palette.mode === 'dark' ? ChatGPTLogoDark : ChatGPTLogoLight;
 
   const handleMarkdownClick = () => {
     updateConversationEntity({
@@ -63,17 +67,19 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
           }}
         >
           <Avatar
+            onClick={isLoading ? undefined : handleMarkdownClick}
             sx={{
               width: '24px',
               height: '24px',
               marginRight: '8px',
-              bgcolor: theme.palette.primary.main,
+              bgcolor: context ? (isUser ? theme.palette.primary.main : '#74aa9c') : theme.palette.action.disabled,
             }}
           >
-            {isUser ? <FaceRounded /> : <ChatGPTLogo />}
+            {isUser ? <FaceRounded/> : <ChatGPTLogo/>}
           </Avatar>
           <Typography
             variant={'caption'}
+            color={context ? theme.palette.text.primary : theme.palette.text.disabled}
             sx={{
               fontWeight: 'bold',
             }}
@@ -85,20 +91,6 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               flexGrow: 1,
             }}
           />
-          {isLoading ? undefined : (
-            <Button
-              variant={'text'}
-              size={'small'}
-              color={'info'}
-              startIcon={<NotesRounded />}
-              onClick={handleMarkdownClick}
-              sx={{
-                textTransform: 'none',
-              }}
-            >
-              {markdown ? 'Markdown' : 'Raw text'}
-            </Button>
-          )}
           {isLoading ? undefined : (
             <Button
               variant={'text'}

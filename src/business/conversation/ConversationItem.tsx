@@ -56,15 +56,6 @@ export default function ConversationItem(props: ConversationItemProps) {
           >
             {`${new Date(parseInt(props.conversationEntity.id, 10)).toLocaleString()}`}
           </Typography>
-          <TipsAndUpdatesRounded
-            color={'disabled'}
-            sx={{
-              marginLeft: '8px',
-              width: '16px',
-              height: '16px',
-              visibility: props.conversationEntity.type !== ConversationEntityType.Default ? 'visible' : 'hidden',
-            }}
-          />
           <Box
             sx={{
               flexGrow: 1,

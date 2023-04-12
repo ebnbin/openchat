@@ -6,7 +6,6 @@ import IconButton from "@mui/material/IconButton";
 import {
   AddRounded,
   EditRounded,
-  FavoriteRounded,
   ImageRounded,
   SettingsRounded
 } from "@mui/icons-material";
@@ -16,7 +15,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import * as React from "react";
 import {widePageWidth} from "../../util/util";
-import {contentLikes} from "./HomePage";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
@@ -81,26 +79,6 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           overflow: 'auto',
         }}
       >
-        <ListItem
-          key={contentLikes}
-          disablePadding={true}
-        >
-          <ListItemButton
-            onClick={props.handleLikesClick}
-            selected={props.selectedContentId === contentLikes}
-          >
-            <ListItemIcon>
-              <FavoriteRounded/>
-            </ListItemIcon>
-            <ListItemText
-              primary={'Likes'}
-              primaryTypographyProps={{
-                noWrap: props.selectedContentId !== contentLikes,
-                fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
         {[...props.chats].reverse().map((chat: Chat) => (
           <ListItem
             key={chat.id}

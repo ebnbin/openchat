@@ -13,7 +13,6 @@ import {Button} from "@mui/material";
 import {EditRounded} from "@mui/icons-material";
 
 export const contentNewChat = '';
-export const contentLikes = 'likes';
 export const contentImage = 'image';
 
 interface HomePageProps {
