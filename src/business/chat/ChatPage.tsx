@@ -32,7 +32,7 @@ function updateConversationEntitiesContext(
   const maxTokens = defaultOpenAIModel.maxTokens * chat.context_threshold;
   let usedTokens = 0;
   if (chat.system_message !== '') {
-    usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * chat.tokens_per_char;
+    usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * store.getTokensPerChar();
   }
   return conversationEntitiesNoContext
     .filter(() => true)
@@ -43,7 +43,7 @@ function updateConversationEntitiesContext(
         context = false;
       } else {
         const tokens = (conversationEntity.userMessage.length + conversationEntity.assistantMessage.length
-          + 2 * defaultOpenAIModel.extraCharsPerMessage) * chat.tokens_per_char;
+          + 2 * defaultOpenAIModel.extraCharsPerMessage) * store.getTokensPerChar();
         usedTokens += tokens;
         context = usedTokens <= maxTokens;
       }
@@ -115,15 +115,10 @@ function handleResponseUpdateChat(
     .map((message) => message.content)
     .concat(responseMessageContent)
     .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
-  const tokensPerChar = responseTotalTokens / charCount
-  const tokens = chat.tokens + responseTotalTokens
   store.increaseUsage({
     tokens: responseTotalTokens,
+    charCount: charCount,
   })
-  updateChat(chat.id, {
-    tokens_per_char: tokensPerChar,
-    tokens: tokens,
-  });
 }
 
 function handleResponseUpdateConversation(

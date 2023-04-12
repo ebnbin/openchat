@@ -86,9 +86,9 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       setChatInfo(info);
       return;
     }
-    info += `\nCumulative tokens used: ${props.chat.tokens}\nConversations count: ${props.chat.conversations.length}`
+    info += `\nConversations count: ${props.chat.conversations.length}`
     setChatInfo(info);
-  }, [props.chat.id, props.chat.tokens, props.isNew, props.dialogOpen, props.chat.conversations.length]);
+  }, [props.chat.id, props.isNew, props.dialogOpen, props.chat.conversations.length]);
 
   return (
     <Dialog
