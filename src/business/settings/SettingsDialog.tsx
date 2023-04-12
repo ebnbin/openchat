@@ -3,7 +3,7 @@ import {
   Button,
   Dialog,
   DialogActions,
-  DialogContent, DialogTitle,
+  DialogContent, DialogTitle, MenuItem, Select,
   TextField
 } from "@mui/material";
 import store from "../../util/store";
@@ -12,6 +12,8 @@ import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 
 interface SettingsDialogProps {
+  darkMode: string;
+  setDarkMode: (darkMode: string) => void;
   dialogOpen: boolean
   handleDialogClose: () => void
 }
@@ -105,6 +107,19 @@ export function SettingsDialog(props: SettingsDialogProps) {
         dividers={true}
       >
         <SettingsItem
+          title={'Dark mode'}
+        >
+          <Select
+            size={'small'}
+            value={props.darkMode}
+            onChange={(event) => props.setDarkMode(event.target.value as string)}
+          >
+            <MenuItem value={'system'}>System</MenuItem>
+            <MenuItem value={'light'}>Light</MenuItem>
+            <MenuItem value={'dark'}>Dark</MenuItem>
+          </Select>
+        </SettingsItem>
+        <SettingsItem
           title={'OPENAI_API_KEY'}
         >
           <TextField
@@ -119,7 +134,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
           />
         </SettingsItem>
         <SettingsItem
-          title={'GitHub token'}
+          title={'Backup and restore'}
         >
           <TextField
             variant={'outlined'}
@@ -131,10 +146,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
               setGithubToken(event.target.value)
             }}
           />
-        </SettingsItem>
-        <SettingsItem
-          title={'GitHub gist id'}
-        >
           <TextField
             variant={'outlined'}
             size={'small'}
@@ -144,14 +155,23 @@ export function SettingsDialog(props: SettingsDialogProps) {
             onChange={(event) => {
               setGithubGistId(event.target.value)
             }}
+            sx={{
+              marginTop: '8px',
+            }}
           />
           <Button
             onClick={gistBackup}
+            sx={{
+              marginTop: '8px',
+            }}
           >
             {'Backup'}
           </Button>
           <Button
             onClick={gistRestore}
+            sx={{
+              marginTop: '8px',
+            }}
           >
             {'Restore'}
           </Button>

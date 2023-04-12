@@ -16,7 +16,6 @@ export default function ConversationItem(props: ConversationItemProps) {
 
   return (
     <Card
-      key={props.conversationEntity.id}
       elevation={1}
       sx={{
         borderRadius: '0px',

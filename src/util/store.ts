@@ -1,9 +1,10 @@
-import {Chat, Conversation, Data, Usage} from "./data";
+import {Chat, Conversation, Data, Settings, Usage} from "./data";
 import {get, set, update} from "idb-keyval";
 import Preference from "./Preference";
 
 class Store {
   private readonly usage: Preference<Usage>;
+  private readonly settings: Preference<Settings>;
 
   constructor() {
     this.usage = new Preference<Usage>('usage', {
@@ -13,6 +14,9 @@ class Store {
       image_512: 0,
       image_1024: 0,
     } as Usage);
+    this.settings = new Preference<Settings>('settings', {
+      dark_mode: 'system',
+    } as Settings);
 
     this.migrate();
   }
@@ -208,6 +212,16 @@ class Store {
       image_512: prev.image_512 + (usage.image_512 ?? 0),
       image_1024: prev.image_1024 + (usage.image_1024 ?? 0),
     } as Usage);
+  }
+
+  //*******************************************************************************************************************
+
+  getSettings(): Settings {
+    return this.settings.get();
+  }
+
+  updateSettings(settings: Partial<Settings>) {
+    this.settings.update(settings);
   }
 }
 

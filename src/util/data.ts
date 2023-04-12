@@ -27,3 +27,7 @@ export interface Usage {
   'image_512': number;
   'image_1024': number;
 }
+
+export interface Settings {
+  'dark_mode': string;
+}
