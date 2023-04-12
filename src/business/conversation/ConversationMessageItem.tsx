@@ -9,15 +9,15 @@ import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../component/Markdown";
 import {copy} from "../../util/util";
 import {ReactComponent as ChatGPTLogo} from '../../chatgpt_logo.svg';
-import {ConversationEntity, ConversationEntityType} from "./ChatConversationList";
+import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
-interface ChatMessageItemProps {
+interface ConversationMessageItemProps {
   conversationEntity: ConversationEntity,
   updateConversationEntity: (conversationEntity: ConversationEntity) => void,
   isUser: boolean,
 }
 
-export default function ChatMessageItem(props: ChatMessageItemProps) {
+export default function ConversationMessageItem(props: ConversationMessageItemProps) {
   const { conversationEntity, updateConversationEntity, isUser } = props;
 
   const message = isUser ? conversationEntity.userMessage : conversationEntity.assistantMessage;

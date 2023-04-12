@@ -1,17 +1,17 @@
-import ChatMessageItem from "./ChatMessageItem";
+import ConversationMessageItem from "./ConversationMessageItem";
 import {Box, Button, Card, Typography, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
 import {DeleteRounded, TipsAndUpdatesRounded} from "@mui/icons-material";
 import React from "react";
-import {ConversationEntity, ConversationEntityType} from "./ChatConversationList";
+import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
-interface ChatConversationItemProps {
+interface ConversationItemProps {
   conversationEntity: ConversationEntity;
   updateConversationEntity: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
 }
 
-export default function ChatConversationItem(props: ChatConversationItemProps) {
+export default function ConversationItem(props: ConversationItemProps) {
   const theme = useTheme();
 
   return (
@@ -23,12 +23,12 @@ export default function ChatConversationItem(props: ChatConversationItemProps) {
         marginBottom: '1px',
       }}
     >
-      <ChatMessageItem
+      <ConversationMessageItem
         conversationEntity={props.conversationEntity}
         updateConversationEntity={props.updateConversationEntity}
         isUser={true}
       />
-      <ChatMessageItem
+      <ConversationMessageItem
         conversationEntity={props.conversationEntity}
         updateConversationEntity={props.updateConversationEntity}
         isUser={false}

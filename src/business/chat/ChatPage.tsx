@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation} from "../../util/data";
-import ChatConversationList, {ConversationEntity, ConversationEntityType} from "../conversation/ChatConversationList";
+import ConversationList, {ConversationEntity, ConversationEntityType} from "../conversation/ConversationList";
 import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../util/util";
 import store from "../../util/store";
@@ -281,7 +281,7 @@ export default function ChatPage(props: ChatProps) {
           display: props.children !== undefined ? 'none' : 'block',
         }}
       >
-        <ChatConversationList
+        <ConversationList
           conversationEntities={conversationEntities}
           updateConversationEntitiesNoStore={setConversationEntities}
           deleteConversationEntity={handleDeleteConversationClick}

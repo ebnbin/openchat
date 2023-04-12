@@ -1,6 +1,6 @@
 import {Box, List} from "@mui/material";
 import React, {RefObject} from "react";
-import ChatConversationItem from "./ChatConversationItem";
+import ConversationItem from "./ConversationItem";
 
 export enum ConversationEntityType {
   Default,
@@ -19,14 +19,14 @@ export interface ConversationEntity {
 
 //*********************************************************************************************************************
 
-interface ChatConversationListProps {
+interface ConversationListProps {
   conversationEntities: ConversationEntity[];
   updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   bottomRef: RefObject<HTMLDivElement>;
 }
 
-export default function ChatConversationList(props: ChatConversationListProps) {
+export default function ConversationList(props: ConversationListProps) {
   const { conversationEntities, updateConversationEntitiesNoStore, deleteConversationEntity } = props;
 
   const updateConversationEntity = (conversationEntity: ConversationEntity) => {
@@ -38,7 +38,7 @@ export default function ChatConversationList(props: ChatConversationListProps) {
     <List>
       {
         conversationEntities.map((conversationEntity) => (
-          <ChatConversationItem
+          <ConversationItem
             conversationEntity={conversationEntity}
             updateConversationEntity={updateConversationEntity}
             deleteConversationEntity={deleteConversationEntity}
