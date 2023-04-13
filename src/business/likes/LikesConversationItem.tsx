@@ -24,12 +24,12 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
     >
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntity={props.updateConversationEntity}
+        updateConversationEntityNoStore={props.updateConversationEntity}
         isUser={true}
       />
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntity={props.updateConversationEntity}
+        updateConversationEntityNoStore={props.updateConversationEntity}
         isUser={false}
       />
       <Box

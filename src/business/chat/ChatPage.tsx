@@ -17,8 +17,10 @@ function conversationsToConversationEntities(conversations: Conversation[]): Con
   return conversations.map((conversation) => {
     return {
       id: conversation.id,
+      chatId: conversation.chat_id,
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
+      likeTimestamp: conversation.like_timestamp,
       userMessageMarkdown: true,
       assistantMessageMarkdown: true,
       type: ConversationEntityType.Default,
@@ -62,8 +64,10 @@ function updateConversationEntitiesContext(
 function getRequestingConversationEntity(conversation: Conversation): ConversationEntity {
   return {
     id: conversation.id,
+    chatId: conversation.chat_id,
     userMessage: conversation.user_message,
     assistantMessage: conversation.assistant_message,
+    likeTimestamp: conversation.like_timestamp,
     userMessageMarkdown: true,
     assistantMessageMarkdown: true,
     type: ConversationEntityType.Requesting,
@@ -183,6 +187,23 @@ export default function ChatPage(props: ChatProps) {
 
   const [conversationEntities, setConversationEntities] = useState<ConversationEntity[]>([]);
 
+  const updateConversationEntityLike = (conversationEntity: ConversationEntity) => {
+    setConversationEntities((conversationEntities) => {
+      return conversationEntities.map((c) => {
+        if (c.id === conversationEntity.id) {
+          return {
+            ...c,
+            likeTimestamp: conversationEntity.likeTimestamp,
+          };
+        }
+        return c;
+      });
+    });
+    store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
+      like_timestamp: conversationEntity.likeTimestamp,
+    })
+  }
+
   useEffect(() => {
     const conversationEntities = updateConversationEntitiesContext(props.chat, conversationEntitiesNoContext);
     setConversationEntities(conversationEntities);
@@ -197,7 +218,13 @@ export default function ChatPage(props: ChatProps) {
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
     setConversationEntitiesNoContext(nextConversationEntities)
-    store.updateConversationsDeleteConversationAsync(conversationEntity.id);
+    if (conversationEntity.likeTimestamp === 0) {
+      store.updateConversationsDeleteConversationAsync(conversationEntity.id);
+    } else {
+      store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
+        chat_id: '',
+      });
+    }
   }
 
   const handleRequest = (input: string) => {
@@ -275,6 +302,7 @@ export default function ChatPage(props: ChatProps) {
         <ConversationList
           conversationEntities={conversationEntities}
           updateConversationEntitiesNoStore={setConversationEntities}
+          updateConversationEntityLike={updateConversationEntityLike}
           deleteConversationEntity={handleDeleteConversationClick}
           virtuosoRef={virtuosoRef}
         />

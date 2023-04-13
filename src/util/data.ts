@@ -20,6 +20,7 @@ export interface Conversation {
   'chat_id': string;
   'user_message': string;
   'assistant_message': string;
+  'like_timestamp': number;
 }
 
 export interface Usage {

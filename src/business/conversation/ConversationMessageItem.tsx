@@ -14,12 +14,12 @@ import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationMessageItemProps {
   conversationEntity: ConversationEntity,
-  updateConversationEntity: (conversationEntity: ConversationEntity) => void,
+  updateConversationEntityNoStore: (conversationEntity: ConversationEntity) => void,
   isUser: boolean,
 }
 
 export default function ConversationMessageItem(props: ConversationMessageItemProps) {
-  const { conversationEntity, updateConversationEntity, isUser } = props;
+  const { conversationEntity, updateConversationEntityNoStore, isUser } = props;
 
   const message = isUser ? conversationEntity.userMessage : conversationEntity.assistantMessage;
   const markdown = isUser ? conversationEntity.userMessageMarkdown : conversationEntity.assistantMessageMarkdown;
@@ -31,7 +31,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
   const ChatGPTLogo = theme.palette.mode === 'dark' ? ChatGPTLogoDark : ChatGPTLogoLight;
 
   const handleMarkdownClick = () => {
-    updateConversationEntity({
+    updateConversationEntityNoStore({
       ...conversationEntity,
       userMessageMarkdown: isUser ? !markdown : conversationEntity.userMessageMarkdown,
       assistantMessageMarkdown: isUser ? conversationEntity.assistantMessageMarkdown : !markdown,

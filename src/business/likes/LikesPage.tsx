@@ -1,17 +1,18 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import store from "../../util/store";
 import {Conversation} from "../../util/data";
 import {ConversationEntity, ConversationEntityType} from "../conversation/ConversationList";
 import LikesConversationList from "./LikesConversationList";
-import {VirtuosoHandle} from "react-virtuoso";
 
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
   return conversations.map((conversation) => {
     return {
       id: conversation.id,
+      chatId: conversation.chat_id,
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
+      likeTimestamp: conversation.like_timestamp,
       userMessageMarkdown: true,
       assistantMessageMarkdown: true,
       type: ConversationEntityType.Context, // TODO
@@ -23,7 +24,7 @@ export default function LikesPage() {
   const [conversationEntities, _setConversationEntities] = useState<ConversationEntity[]>([]);
 
   useEffect(() => {
-    store.getAllConversationsAsync()
+    store.getLikesConversationIdsAsync()
       .then((conversations) => {
         const conversationEntities = conversationsToConversationEntities(conversations)
         _setConversationEntities(conversationEntities)
@@ -35,16 +36,16 @@ export default function LikesPage() {
   }
 
   const unlikeConversationEntity = (conversationEntity: ConversationEntity) => {
-    // TODO
-  }
-
-  const virtuosoRef = useRef<VirtuosoHandle>(null);
-
-  const scrollToBottom = (smooth: boolean) => {
-    virtuosoRef.current?.scrollToIndex({
-      index: Number.MAX_SAFE_INTEGER,
-      behavior: smooth ? 'smooth' : undefined,
-    })
+    _setConversationEntities((conversationEntities) => {
+      return conversationEntities.filter((c) => c.id !== conversationEntity.id);
+    });
+    if (conversationEntity.chatId === '') {
+      store.updateConversationsDeleteConversationAsync(conversationEntity.id);
+    } else {
+      store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
+        like_timestamp: 0,
+      });
+    }
   }
 
   return (
@@ -69,7 +70,6 @@ export default function LikesPage() {
           conversationEntities={conversationEntities}
           updateConversationEntitiesNoStore={updateConversationEntitiesNoStore}
           unlikeConversationEntity={unlikeConversationEntity}
-          virtuosoRef={virtuosoRef}
         />
       </Box>
     </Box>

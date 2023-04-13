@@ -94,6 +94,7 @@ class Store {
       chat_id: '',
       user_message: '',
       assistant_message: '',
+      like_timestamp: 0,
       ...conversation,
     };
   }
@@ -141,6 +142,13 @@ class Store {
   getAllConversationsAsync(): Promise<Conversation[]> {
     return get<Conversation[]>('conversations')
       .then((conversations) => conversations || []);
+  }
+
+  getLikesConversationIdsAsync(): Promise<Conversation[]> {
+    return get<Conversation[]>('conversations')
+      .then((conversations) => conversations || [])
+      .then((conversations) => conversations.filter((conversation) => conversation.like_timestamp !== 0))
+      .then((conversations) => conversations.sort((a, b) => b.like_timestamp - a.like_timestamp));
   }
 
   getConversationsAsync(chatId: string): Promise<Conversation[]> {

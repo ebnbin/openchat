@@ -1,6 +1,6 @@
 import {Box} from "@mui/material";
-import React, {RefObject} from "react";
-import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
+import React from "react";
+import {Virtuoso} from "react-virtuoso";
 import LikesConversationItem from "./LikesConversationItem";
 import {ConversationEntity} from "../conversation/ConversationList";
 
@@ -8,7 +8,6 @@ interface LikesConversationListProps {
   conversationEntities: ConversationEntity[];
   updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   unlikeConversationEntity: (conversationEntity: ConversationEntity) => void;
-  virtuosoRef: RefObject<VirtuosoHandle>;
 }
 
 export default function LikesConversationList(props: LikesConversationListProps) {
@@ -19,7 +18,6 @@ export default function LikesConversationList(props: LikesConversationListProps)
 
   return (
     <Virtuoso
-      ref={props.virtuosoRef}
       data={[...props.conversationEntities, 0]}
       totalCount={props.conversationEntities.length + 1}
       itemContent={(index, item) => {
@@ -27,7 +25,7 @@ export default function LikesConversationList(props: LikesConversationListProps)
           return (
             <Box
               sx={{
-                height: '225px',
+                height: '100px',
               }}
             />
           )

@@ -11,8 +11,10 @@ export enum ConversationEntityType {
 
 export interface ConversationEntity {
   id: string;
+  chatId: string;
   userMessage: string;
   assistantMessage: string;
+  likeTimestamp: number;
   userMessageMarkdown: boolean,
   assistantMessageMarkdown: boolean,
   type: ConversationEntityType;
@@ -23,6 +25,7 @@ export interface ConversationEntity {
 interface ConversationListProps {
   conversationEntities: ConversationEntity[];
   updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
+  updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
 }
@@ -30,7 +33,7 @@ interface ConversationListProps {
 export default function ConversationList(props: ConversationListProps) {
   const { conversationEntities, updateConversationEntitiesNoStore, deleteConversationEntity } = props;
 
-  const updateConversationEntity = (conversationEntity: ConversationEntity) => {
+  const updateConversationEntityNoStore = (conversationEntity: ConversationEntity) => {
     updateConversationEntitiesNoStore(conversationEntities.map((c) =>
       c.id === conversationEntity.id ? conversationEntity : c));
   }
@@ -54,7 +57,8 @@ export default function ConversationList(props: ConversationListProps) {
           return (
             <ConversationItem
               conversationEntity={conversationEntity}
-              updateConversationEntity={updateConversationEntity}
+              updateConversationEntityNoStore={updateConversationEntityNoStore}
+              updateConversationEntityLike={props.updateConversationEntityLike}
               deleteConversationEntity={deleteConversationEntity}
             />
           );

@@ -1,18 +1,26 @@
 import ConversationMessageItem from "./ConversationMessageItem";
 import {Box, Button, Card, Typography, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
-import {DeleteRounded} from "@mui/icons-material";
+import {DeleteRounded, FavoriteBorderRounded, FavoriteRounded} from "@mui/icons-material";
 import React from "react";
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationItemProps {
   conversationEntity: ConversationEntity;
-  updateConversationEntity: (conversationEntity: ConversationEntity) => void;
+  updateConversationEntityNoStore: (conversationEntity: ConversationEntity) => void;
+  updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
 }
 
 export default function ConversationItem(props: ConversationItemProps) {
   const theme = useTheme();
+
+  const handleLikeClick = () => {
+    props.updateConversationEntityLike({
+      ...props.conversationEntity,
+      likeTimestamp: props.conversationEntity.likeTimestamp === 0 ? Date.now() : 0,
+    });
+  }
 
   return (
     <Card
@@ -24,12 +32,12 @@ export default function ConversationItem(props: ConversationItemProps) {
     >
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntity={props.updateConversationEntity}
+        updateConversationEntityNoStore={props.updateConversationEntityNoStore}
         isUser={true}
       />
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntity={props.updateConversationEntity}
+        updateConversationEntityNoStore={props.updateConversationEntityNoStore}
         isUser={false}
       />
       <Box
@@ -60,6 +68,19 @@ export default function ConversationItem(props: ConversationItemProps) {
               flexGrow: 1,
             }}
           />
+          <Button
+            variant={'text'}
+            size={'small'}
+            color={'info'}
+            startIcon={props.conversationEntity.likeTimestamp === 0 ? <FavoriteBorderRounded /> : <FavoriteRounded />}
+            onClick={handleLikeClick}
+            sx={{
+              textTransform: 'none',
+              visibility: props.conversationEntity.type !== ConversationEntityType.Requesting ? 'visible' : 'hidden',
+            }}
+          >
+            {props.conversationEntity.likeTimestamp === 0 ? 'Like' : 'Liked'}
+          </Button>
           <Button
             variant={'text'}
             size={'small'}
