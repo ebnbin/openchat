@@ -21,6 +21,8 @@ export const colorValue = (theme: Theme, color: string) => {
   const isDarkMode = theme.palette.mode === 'dark';
   const index = isDarkMode ? 'A100' : '700';
   switch (color) {
+    case '':
+      return 'transparent';
     case 'red':
       return red[index];
     case 'pink':
@@ -91,7 +93,7 @@ export default function ColorPicker(props: ColorPickerProps) {
 
   const colors = [
     [
-      'transparent',
+      '',
       'red',
       'pink',
       'purple',
