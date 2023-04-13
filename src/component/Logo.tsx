@@ -1,13 +1,10 @@
-import logo_dark from "../logo_dark.png";
-import logo_light from "../logo_light.png";
+import logo from "../logo.png";
 import React from "react";
-import {Container, Link, Typography, useTheme} from "@mui/material";
+import {Container, Link, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 
 export default function Logo() {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === 'dark';
-  const color = isDarkMode ? '#3f3f3f' : '#bfbfbf';
+  const color = '#7f7f7f7f';
   return (
     <Container>
       <Box
@@ -16,7 +13,7 @@ export default function Logo() {
         }}
       >
         <img
-          src={isDarkMode ? logo_dark : logo_light}
+          src={logo}
           alt={'logo'}
           style={{
             width: '192px',

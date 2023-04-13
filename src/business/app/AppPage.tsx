@@ -4,7 +4,7 @@ import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
-import {blueGrey} from "@mui/material/colors";
+import {blue, blueGrey, grey, red} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";
 import store from "../../util/store";
 import {Settings} from "../../util/data";
@@ -46,10 +46,40 @@ export default function AppPage() {
   }
 
   const isSystemDarkMode = useDarkMode()
-  const theme = createTheme({
+  const isDarkMode = themeMode(settings.theme, isSystemDarkMode) === 'dark'
+  const theme = isDarkMode ? createTheme({
     palette: {
-      mode: themeMode(settings.theme, isSystemDarkMode),
-      info: blueGrey,
+      mode: 'dark',
+      primary: {
+        main: blue['A100'],
+      },
+      info: {
+        main: blueGrey['A100'],
+      },
+      error: {
+        main: red['A100'],
+      },
+      background: {
+        default: blueGrey[900],
+        paper: blueGrey[900],
+      },
+    },
+  }) : createTheme({
+    palette: {
+      mode: 'light',
+      primary: {
+        main: blue[700],
+      },
+      info: {
+        main: blueGrey[700],
+      },
+      error: {
+        main: red[700],
+      },
+      background: {
+        default: grey[50],
+        paper: grey[50],
+      },
     },
   })
 

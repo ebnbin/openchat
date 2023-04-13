@@ -19,7 +19,7 @@ import {PaletteRounded} from "@mui/icons-material";
 
 export const colorValue = (theme: Theme, color: string) => {
   const isDarkMode = theme.palette.mode === 'dark';
-  const index = isDarkMode ? 200 : 500;
+  const index = isDarkMode ? 'A100' : '700';
   switch (color) {
     case 'red':
       return red[index];
