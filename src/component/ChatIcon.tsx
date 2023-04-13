@@ -17,13 +17,11 @@ export default function ChatIcon(props: ChatIconProps) {
       case 'small':
         return '10px';
       case 'medium':
-        return '16px';
+        return '20px';
       case 'large':
-        return '22px';
-      case 'x-large':
-        return '28px';
+        return '30px';
       default:
-        return '16px';
+        return '20px';
     }
   }
   const bgColor = colorValue(theme, props.iconColor);
@@ -34,7 +32,6 @@ export default function ChatIcon(props: ChatIconProps) {
       variant={'rounded'}
       sx={{
         fontSize: fontSize(),
-        fontWeight: 'bold',
         textAlign: 'center',
         color: props.iconText === '' ? 'inherit' : textColor,
         bgcolor: bgColor,

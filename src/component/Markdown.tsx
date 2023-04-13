@@ -43,6 +43,7 @@ function Markdown(props: MarkdownProps) {
             a: ({ ...props }) => {
               return (
                 <a
+                  target={'_blank'}
                   style={{
                     color: theme.palette.text.primary,
                     fontWeight: 'bold',

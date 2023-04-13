@@ -44,9 +44,6 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
         nextSize = 'large';
         break;
       case 'large':
-        nextSize = 'x-large';
-        break;
-      case 'x-large':
         nextSize = 'small';
         break;
       default:
@@ -67,8 +64,6 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
         return '24px';
       case 'large':
         return '32px';
-      case 'x-large':
-        return '40px';
       default:
         return '24px';
     }
