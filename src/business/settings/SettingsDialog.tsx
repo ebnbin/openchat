@@ -68,6 +68,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
       .then((content) => store.setData(JSON.parse(content)))
       .then(() => {
         setDataTimestamp({ data: Date.now() })
+        props.handleDialogClose();
         alert('Download success');
       })
       .catch(() => alert('Download error'));
@@ -76,29 +77,16 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const handleDeleteAllDataClick = () => {
     if (window.confirm('Are you sure you want to delete all your data?')) {
       store.deleteAllData();
+      props.handleDialogClose();
       setDataTimestamp({ data: Date.now() })
     }
-  }
-
-  const handleCancelClick = () => {
-    setOpenAIApiKey(store.getOpenAIApiKey());
-    setGithubToken(store.getGithubToken());
-    setGithubGistId(store.getGithubGistId());
-    props.handleDialogClose();
-  }
-
-  const handleSaveClick = () => {
-    store.setOpenAIApiKey(openAIApiKey);
-    store.setGithubToken(githubToken);
-    store.setGithubGistId(githubGistId);
-    props.handleDialogClose();
   }
 
   return (
     <Dialog
       fullWidth={true}
       open={props.dialogOpen}
-      onClose={handleCancelClick}
+      onClose={props.handleDialogClose}
     >
       <DialogTitle>
         {'Settings'}
@@ -157,7 +145,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
             placeholder={'OPENAI_API_KEY'}
             value={openAIApiKey}
             onChange={(event) => {
-              setOpenAIApiKey(event.target.value)
+              setOpenAIApiKey(event.target.value);
+              store.setOpenAIApiKey(event.target.value);
             }}
           />
         </SettingsItem>
@@ -171,7 +160,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
             placeholder={'GitHub token'}
             value={githubToken}
             onChange={(event) => {
-              setGithubToken(event.target.value)
+              setGithubToken(event.target.value);
+              store.setGithubToken(event.target.value);
             }}
           />
           <TextField
@@ -181,7 +171,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
             placeholder={'GitHub gist id'}
             value={githubGistId}
             onChange={(event) => {
-              setGithubGistId(event.target.value)
+              setGithubGistId(event.target.value);
+              store.setGithubGistId(event.target.value);
             }}
             sx={{
               marginTop: '8px',
@@ -223,14 +214,9 @@ export function SettingsDialog(props: SettingsDialogProps) {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={handleCancelClick}
+          onClick={props.handleDialogClose}
         >
-          {'Cancel'}
-        </Button>
-        <Button
-          onClick={handleSaveClick}
-        >
-          {'Save'}
+          {'OK'}
         </Button>
       </DialogActions>
     </Dialog>
