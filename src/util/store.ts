@@ -76,6 +76,9 @@ class Store {
     return {
       id: `${new Date().getTime()}`,
       title: '',
+      icon_text: '',
+      icon_text_size: 'medium',
+      icon_color: '',
       context_threshold: 0.7,
       system_message: '',
       user_message_template: '',

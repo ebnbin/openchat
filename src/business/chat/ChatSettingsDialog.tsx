@@ -3,12 +3,15 @@ import React, {ChangeEvent, useEffect, useState} from "react";
 import {
   Button, Dialog, DialogActions,
   DialogContent,
-  DialogTitle, Slider,
+  DialogTitle, IconButton, Slider,
   TextField
 } from "@mui/material";
 import {defaultOpenAIModel} from "../../util/util";
 import SettingsItem from "../../component/SettingsItem";
-import {DeleteRounded} from "@mui/icons-material";
+import {DeleteRounded, FormatSizeRounded} from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import ColorPicker from "../../component/ColorPicker";
+import ChatIcon from "../../component/ChatIcon";
 
 interface ChatSettingsDialogProps {
   chat: Chat;
@@ -22,6 +25,61 @@ interface ChatSettingsDialogProps {
 
 export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
   const [chat, setChat] = useState(props.chat)
+
+  const handleIconTextChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setChat({
+      ...chat,
+      icon_text: event.target.value,
+    })
+  }
+
+  const handleIconTextSizeClick = () => {
+    const currentSize = chat.icon_text_size;
+    let nextSize;
+    switch (currentSize) {
+      case 'small':
+        nextSize = 'medium';
+        break;
+      case 'medium':
+        nextSize = 'large';
+        break;
+      case 'large':
+        nextSize = 'x-large';
+        break;
+      case 'x-large':
+        nextSize = 'small';
+        break;
+      default:
+        nextSize = 'medium';
+        break;
+    }
+    setChat({
+      ...chat,
+      icon_text_size: nextSize,
+    })
+  }
+
+  const iconTextSizeValue = (iconTextSize: string): string => {
+    switch (iconTextSize) {
+      case 'small':
+        return '16px';
+      case 'medium':
+        return '24px';
+      case 'large':
+        return '32px';
+      case 'x-large':
+        return '40px';
+      default:
+        return '24px';
+    }
+  }
+
+  const handleIconColorChange = (color: string) => {
+    setChat({
+      ...chat,
+      icon_color: color,
+    })
+  }
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChat({
@@ -70,6 +128,9 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     } else {
       props.updateChat!!(chat.id, {
         title: chat.title,
+        icon_text: chat.icon_text,
+        icon_text_size: chat.icon_text_size,
+        icon_color: chat.icon_color,
         context_threshold: chat.context_threshold,
         system_message: chat.system_message,
         user_message_template: chat.user_message_template,
@@ -113,6 +174,53 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
             value={chat.title}
             onChange={handleTitleChange}
           />
+        </SettingsItem>
+        <SettingsItem
+          title={'Icon'}
+        >
+          <Box
+            display={'flex'}
+            flexDirection={'row'}
+            sx={{
+              marginBottom: '8px',
+            }}
+          >
+            <ChatIcon
+              iconText={chat.icon_text}
+              iconTextSize={chat.icon_text_size}
+              iconColor={chat.icon_color}
+            />
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth={true}
+              placeholder={'Icon text'}
+              value={chat.icon_text}
+              onChange={handleIconTextChange}
+              sx={{
+                flexGrow: 1,
+                marginX: '8px'
+              }}
+            />
+            <IconButton
+              onClick={handleIconTextSizeClick}
+              sx={{
+                width: '40px',
+                height: '40px',
+              }}
+            >
+              <FormatSizeRounded
+                sx={{
+                  width: iconTextSizeValue(chat.icon_text_size),
+                  height: iconTextSizeValue(chat.icon_text_size),
+                }}
+              />
+            </IconButton>
+            <ColorPicker
+              color={chat.icon_color}
+              setColor={handleIconColorChange}
+            />
+          </Box>
         </SettingsItem>
         <SettingsItem
           title={'Context threshold'}

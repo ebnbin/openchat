@@ -6,6 +6,9 @@ export interface Data {
 export interface Chat {
   'id': string;
   'title': string;
+  'icon_text': string;
+  'icon_text_size': string;
+  'icon_color': string;
   'context_threshold': number;
   'system_message': string;
   'user_message_template': string;

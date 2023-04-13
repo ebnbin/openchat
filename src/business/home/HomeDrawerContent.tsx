@@ -15,6 +15,7 @@ import Box from "@mui/material/Box";
 import * as React from "react";
 import {widePageWidth} from "../../util/util";
 import {contentNewChat} from "./HomePage";
+import ChatIcon from "../../component/ChatIcon";
 
 interface HomeDrawerContentProps {
   chats: Chat[],
@@ -99,6 +100,13 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
               onClick={() => props.handleChatItemClick(chat.id)}
               selected={props.selectedContentId === chat.id}
             >
+              <ListItemIcon>
+                <ChatIcon
+                  iconText={chat.icon_text}
+                  iconTextSize={chat.icon_text_size}
+                  iconColor={chat.icon_color}
+                />
+              </ListItemIcon>
               <ListItemText
                 primary={chat.title === '' ? 'New chat' : chat.title}
                 primaryTypographyProps={{

@@ -9,6 +9,8 @@ import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
 import {widePageWidth} from "../../util/util";
 import {contentNewChat} from "./HomePage";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ChatIcon from "../../component/ChatIcon";
 
 interface HomeAppBarProps {
   chats: Chat[],
@@ -19,6 +21,22 @@ interface HomeAppBarProps {
 
 export default function HomeAppBar(props: HomeAppBarProps) {
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
+
+  const icon = () => {
+    if (props.contentId === contentNewChat) {
+      return undefined;
+    }
+    const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
+    return (
+      <ListItemIcon>
+        <ChatIcon
+          iconText={chat.icon_text}
+          iconTextSize={chat.icon_text_size}
+          iconColor={chat.icon_color}
+        />
+      </ListItemIcon>
+    )
+  }
 
   const title = () => {
     if (props.contentId === contentNewChat) {
@@ -58,16 +76,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
         <Toolbar
           variant={'dense'}
         >
-          <IconButton
-            edge={'start'}
-            color={'inherit'}
-            onClick={() => props.setDrawerOpen(true)}
-            sx={{
-              marginRight: '8px',
-            }}
-          >
-            <MenuRounded/>
-          </IconButton>
+          {icon()}
           <Typography
             variant={'h6'}
             noWrap={true}
@@ -81,7 +90,6 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             }}
           />
           <IconButton
-            edge={'end'}
             color={'inherit'}
             onClick={handleChatSettingsOnClick}
             sx={{
@@ -89,6 +97,13 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             }}
           >
             <EditRounded/>
+          </IconButton>
+          <IconButton
+            edge={'end'}
+            color={'inherit'}
+            onClick={() => props.setDrawerOpen(true)}
+          >
+            <MenuRounded/>
           </IconButton>
         </Toolbar>
       </AppBar>

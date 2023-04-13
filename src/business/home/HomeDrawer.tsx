@@ -47,6 +47,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             variant={'temporary'}
             open={mobileOpen}
             onClose={handleDrawerClose}
+            anchor={'right'}
             ModalProps={{
               keepMounted: true, // Better open performance on mobile.
             }}
