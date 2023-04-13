@@ -1,5 +1,5 @@
 import {Chat, Conversation, Data, Settings, Usage} from "./data";
-import {get, set, update} from "idb-keyval";
+import {del, get, set, update} from "idb-keyval";
 import Preference from "./Preference";
 
 class Store {
@@ -73,7 +73,7 @@ class Store {
   //*******************************************************************************************************************
 
   newChat(): Chat {
-    const timestamp = new Date().getTime();
+    const timestamp = Date.now();
     return {
       id: `${timestamp}`,
       title: '',
@@ -89,7 +89,7 @@ class Store {
 
   newConversation(conversation: Partial<Conversation>): Conversation {
     return {
-      id: `${new Date().getTime()}`,
+      id: `${Date.now()}`,
       chat_id: '',
       user_message: '',
       assistant_message: '',
@@ -227,6 +227,13 @@ class Store {
 
   updateSettings(settings: Partial<Settings>) {
     this.settings.update(settings);
+  }
+
+  //*******************************************************************************************************************
+
+  deleteAllData() {
+    del('chats').finally();
+    del('conversations').finally();
   }
 }
 

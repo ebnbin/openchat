@@ -16,7 +16,7 @@ export const useDataTimestamp = () => {
 }
 
 export default function AppPage() {
-  const [dataTimestamp, setDataTimestamp] = useState({ data: new Date().getTime() })
+  const [dataTimestamp, setDataTimestamp] = useState({ data: Date.now() })
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
 

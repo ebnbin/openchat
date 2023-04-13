@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import {EditRounded, MenuRounded} from "@mui/icons-material";
+import {EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
@@ -23,8 +23,19 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   const icon = () => {
-    if (props.contentId === contentNewChat || props.contentId === contentLikes) {
+    if (props.contentId === contentNewChat) {
       return undefined;
+    }
+    if (props.contentId === contentLikes) {
+      return (
+        <ListItemIcon>
+          <FavoriteRounded
+            sx={{
+              marginLeft: '8px',
+            }}
+          />
+        </ListItemIcon>
+      );
     }
     const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
     return (

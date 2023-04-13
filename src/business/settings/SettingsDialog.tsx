@@ -10,6 +10,7 @@ import store from "../../util/store";
 import {Settings, Usage} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
+import {DeleteRounded} from "@mui/icons-material";
 
 interface SettingsDialogProps {
   settings: Settings;
@@ -74,10 +75,17 @@ export function SettingsDialog(props: SettingsDialogProps) {
       .then((data) => data.files['openchat_data.json'].content)
       .then((content) => store.setData(JSON.parse(content)))
       .then(() => {
-        setDataTimestamp({ data: new Date().getTime() })
+        setDataTimestamp({ data: Date.now() })
         alert('Download success');
       })
       .catch(() => alert('Download error'));
+  }
+
+  const handleDeleteAllDataClick = () => {
+    if (window.confirm('Are you sure you want to delete all your data?')) {
+      store.deleteAllData();
+      setDataTimestamp({ data: Date.now() })
+    }
   }
 
   const handleCancelClick = () => {
@@ -182,6 +190,18 @@ export function SettingsDialog(props: SettingsDialogProps) {
           title={'OpenAI API Usage'}
           description={openAIApiUsageText}
         />
+        <SettingsItem>
+          <Button
+            variant={'outlined'}
+            size={'small'}
+            color={'error'}
+            fullWidth={true}
+            startIcon={<DeleteRounded />}
+            onClick={handleDeleteAllDataClick}
+          >
+            Delete all data
+          </Button>
+        </SettingsItem>
       </DialogContent>
       <DialogActions>
         <Button
