@@ -4,7 +4,7 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
-import {Chat} from "../../util/data";
+import {Chat, Settings} from "../../util/data";
 import {useEffect, useState} from "react";
 import store from "../../util/store";
 import Logo from "../../component/Logo";
@@ -12,6 +12,7 @@ import Logo from "../../component/Logo";
 export const contentNewChat = '';
 
 interface HomePageProps {
+  settings: Settings;
   setSettingsOpen: (settingsOpen: boolean) => void
 }
 
@@ -140,6 +141,7 @@ export default function HomePage(props: HomePageProps) {
         }}
       >
         <HomeDrawer
+          settings={props.settings}
           chats={chats}
           selectedChatId={selectedChatId}
           setSelectedChatId={setSelectedChatId}

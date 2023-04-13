@@ -7,6 +7,7 @@ import HomePage from "../home/HomePage";
 import {blueGrey} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";
 import store from "../../util/store";
+import {Settings} from "../../util/data";
 
 const DataTimestampContext = createContext<any>(null);
 
@@ -23,13 +24,14 @@ export default function AppPage() {
     setSettingsOpen(false);
   };
 
-  const [darkMode, _setDarkMode] = useState(store.getSettings().dark_mode)
+  const [settings, _setSettings] = useState(store.getSettings())
 
-  const setDarkMode = (darkMode: string) => {
-    _setDarkMode(darkMode)
-    store.updateSettings({
-      dark_mode: darkMode
+  const updateSettings = (settingsPartial: Partial<Settings>) => {
+    _setSettings({
+      ...settings,
+      ...settingsPartial,
     })
+    store.updateSettings(settingsPartial)
   }
 
   const themeMode = (darkMode: string, isSystemDarkMode: boolean) => {
@@ -46,7 +48,7 @@ export default function AppPage() {
   const isSystemDarkMode = useDarkMode()
   const theme = createTheme({
     palette: {
-      mode: themeMode(darkMode, isSystemDarkMode),
+      mode: themeMode(settings.dark_mode, isSystemDarkMode),
       info: blueGrey,
     },
   })
@@ -61,11 +63,12 @@ export default function AppPage() {
       >
         <CssBaseline />
         <HomePage
+          settings={settings}
           setSettingsOpen={setSettingsOpen}
         />
         <SettingsDialog
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
+          settings={settings}
+          updateSettings={updateSettings}
           dialogOpen={settingsOpen}
           handleDialogClose={handleSettingsClose}
         />

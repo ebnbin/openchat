@@ -7,13 +7,13 @@ import {
   TextField
 } from "@mui/material";
 import store from "../../util/store";
-import {Usage} from "../../util/data";
+import {Settings, Usage} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 
 interface SettingsDialogProps {
-  darkMode: string;
-  setDarkMode: (darkMode: string) => void;
+  settings: Settings;
+  updateSettings: (settingsPartial: Partial<Settings>) => void;
   dialogOpen: boolean
   handleDialogClose: () => void
 }
@@ -111,12 +111,28 @@ export function SettingsDialog(props: SettingsDialogProps) {
         >
           <Select
             size={'small'}
-            value={props.darkMode}
-            onChange={(event) => props.setDarkMode(event.target.value as string)}
+            value={props.settings.dark_mode}
+            onChange={(event) => props.updateSettings({
+              dark_mode: event.target.value as string,
+            })}
           >
             <MenuItem value={'system'}>System</MenuItem>
             <MenuItem value={'light'}>Light</MenuItem>
             <MenuItem value={'dark'}>Dark</MenuItem>
+          </Select>
+        </SettingsItem>
+        <SettingsItem
+          title={'Chat order'}
+        >
+          <Select
+            size={'small'}
+            value={props.settings.chat_order}
+            onChange={(event) => props.updateSettings({
+              chat_order: event.target.value as string,
+            })}
+          >
+            <MenuItem value={'created'}>By created time</MenuItem>
+            <MenuItem value={'updated'}>By updated time</MenuItem>
           </Select>
         </SettingsItem>
         <SettingsItem

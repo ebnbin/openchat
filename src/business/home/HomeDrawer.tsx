@@ -2,12 +2,13 @@ import Drawer from "@mui/material/Drawer";
 import HomeDrawerContent from "./HomeDrawerContent";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
-import {Chat} from "../../util/data";
+import {Chat, Settings} from "../../util/data";
 import {widePageWidth} from "../../util/util";
 
 const drawerWidth = 300;
 
 interface HomeDrawerProps {
+  settings: Settings,
   chats: Chat[],
   selectedChatId: string,
   setSelectedChatId: (selectedChatId: string) => void,
@@ -56,6 +57,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             }}
           >
             <HomeDrawerContent
+              settings={props.settings}
               chats={chats}
               selectedContentId={selectedChatId}
               handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}
@@ -79,6 +81,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             }}
           >
             <HomeDrawerContent
+              settings={props.settings}
               chats={chats}
               selectedContentId={selectedChatId}
               handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}

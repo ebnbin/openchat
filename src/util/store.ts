@@ -13,6 +13,7 @@ class Store {
     } as Usage);
     this.settings = new Preference<Settings>('settings', {
       dark_mode: 'system',
+      chat_order: 'created',
     } as Settings);
 
     this.migrate();

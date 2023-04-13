@@ -1,6 +1,6 @@
 import {Button, Divider, useMediaQuery} from "@mui/material";
 import List from "@mui/material/List";
-import {Chat} from "../../util/data";
+import {Chat, Settings} from "../../util/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import {
@@ -18,6 +18,7 @@ import {contentNewChat} from "./HomePage";
 import ChatIcon from "../../component/ChatIcon";
 
 interface HomeDrawerContentProps {
+  settings: Settings,
   chats: Chat[],
   selectedContentId: string,
   handleChatSettingsDialogOpen: () => void,
@@ -29,6 +30,16 @@ interface HomeDrawerContentProps {
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
+
+  const getChats = () => {
+    return props.settings.chat_order === 'created'
+      ? [...props.chats].reverse()
+      : [...props.chats].sort((a, b) => {
+        const aTimestamp = a.conversations.length === 0 ? parseInt(a.id) : parseInt(a.conversations[a.conversations.length - 1]);
+        const bTimestamp = b.conversations.length === 0 ? parseInt(b.id) : parseInt(b.conversations[b.conversations.length - 1]);
+        return bTimestamp - aTimestamp;
+      });
+  }
 
   return (
     <Box
@@ -80,7 +91,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           overflow: 'auto',
         }}
       >
-        {[...props.chats].reverse().map((chat: Chat) => (
+        {getChats().map((chat: Chat) => (
           <ListItem
             key={chat.id}
             disablePadding={true}

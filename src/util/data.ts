@@ -28,4 +28,5 @@ export interface Usage {
 
 export interface Settings {
   'dark_mode': string;
+  'chat_order': string;
 }
