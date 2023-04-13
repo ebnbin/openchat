@@ -147,9 +147,8 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       setChatInfo(info);
       return;
     }
-    info += `\nConversations count: ${props.chat.conversations.length}`
     setChatInfo(info);
-  }, [props.chat.id, props.isNew, props.dialogOpen, props.chat.conversations.length]);
+  }, [props.chat.id, props.isNew, props.dialogOpen]);
 
   return (
     <Dialog

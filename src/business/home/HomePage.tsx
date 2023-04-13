@@ -49,7 +49,7 @@ export default function HomePage(props: HomePageProps) {
     toNewChatPage()
     _setChats((chats) => chats.filter((foundChat) => foundChat.id !== chat.id));
     store.updateChatsDeleteChatAsync(chat.id);
-    store.updateConversationsDeleteConversationsAsync(chat.conversations);
+    store.updateConversationsDeleteConversationsAsync(chat.id);
   }
 
   const { setSettingsOpen } = props

@@ -106,7 +106,6 @@ function getRequestingMessages(
 
 function handleResponseUpdateChat(
   chat: Chat,
-  updateChat: (chatId: string, chat: Partial<Chat>) => void,
   requestingMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
@@ -174,7 +173,7 @@ export default function ChatPage(props: ChatProps) {
   const [conversationEntitiesNoContext, setConversationEntitiesNoContext] = useState<ConversationEntity[]>([]);
 
   useEffect(() => {
-    store.getConversationsAsync(props.chat.conversations)
+    store.getConversationsAsync(props.chat.id)
       .then((conversations) => {
         const conversationEntitiesNoContext = conversationsToConversationEntities(conversations)
         setConversationEntitiesNoContext(conversationEntitiesNoContext)
@@ -199,9 +198,6 @@ export default function ChatPage(props: ChatProps) {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
     setConversationEntitiesNoContext(nextConversationEntities)
     store.updateConversationsDeleteConversationAsync(conversationEntity.id);
-    props.updateChat(props.chat.id, {
-      conversations: props.chat.conversations.filter((conversationId) => conversationId !== conversationEntity.id),
-    });
   }
 
   const handleRequest = (input: string) => {
@@ -214,11 +210,12 @@ export default function ChatPage(props: ChatProps) {
       ? props.chat.user_message_template.replaceAll('{{message}}', input)
       : input;
     const requestingConversation = store.newConversation({
+      chat_id: props.chat.id,
       user_message: formattedInput,
     })
     store.updateConversationsCreateConversationAsync(requestingConversation);
     props.updateChat(props.chat.id, {
-      conversations: [...props.chat.conversations, requestingConversation.id],
+      update_timestamp: parseInt(requestingConversation.id, 10),
     });
 
 
@@ -233,7 +230,7 @@ export default function ChatPage(props: ChatProps) {
         messages: requestingMessages,
       })
       .then((response) => {
-        handleResponseUpdateChat(props.chat, props.updateChat, requestingMessages, response.data);
+        handleResponseUpdateChat(props.chat, requestingMessages, response.data);
         handleResponseUpdateConversation(props.chat, requestingConversation, response.data);
 
         const responseConversationEntitiesNoContext =

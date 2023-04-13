@@ -74,8 +74,9 @@ class Store {
   //*******************************************************************************************************************
 
   newChat(): Chat {
+    const timestamp = new Date().getTime();
     return {
-      id: `${new Date().getTime()}`,
+      id: `${timestamp}`,
       title: '',
       icon_text: '',
       icon_text_size: 'medium',
@@ -83,13 +84,14 @@ class Store {
       context_threshold: 0.7,
       system_message: '',
       user_message_template: '',
-      conversations: [],
+      update_timestamp: timestamp,
     };
   }
 
   newConversation(conversation: Partial<Conversation>): Conversation {
     return {
       id: `${new Date().getTime()}`,
+      chat_id: '',
       user_message: '',
       assistant_message: '',
       ...conversation,
@@ -141,10 +143,10 @@ class Store {
       .then((conversations) => conversations || []);
   }
 
-  getConversationsAsync(conversationIds: string[]): Promise<Conversation[]> {
+  getConversationsAsync(chatId: string): Promise<Conversation[]> {
     return get<Conversation[]>('conversations')
       .then((conversations) => conversations || [])
-      .then((conversations) => conversations.filter((foundConversation) => conversationIds.includes(foundConversation.id)));
+      .then((conversations) => conversations.filter((conversation) => conversation.chat_id === chatId));
   }
 
   updateConversationsCreateConversationAsync(conversation: Conversation) {
@@ -179,12 +181,12 @@ class Store {
     }).finally();
   }
 
-  updateConversationsDeleteConversationsAsync(conversationIds: string[]) {
+  updateConversationsDeleteConversationsAsync(chatId: string) {
     update<Conversation[]>('conversations', (conversations) => {
       if (!conversations) {
         return [];
       }
-      return conversations.filter((foundConversation) => !conversationIds.includes(foundConversation.id));
+      return conversations.filter((foundConversation) => foundConversation.chat_id !== chatId);
     }).finally();
   }
 

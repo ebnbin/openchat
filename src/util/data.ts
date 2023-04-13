@@ -12,11 +12,12 @@ export interface Chat {
   'context_threshold': number;
   'system_message': string;
   'user_message_template': string;
-  'conversations': string[];
+  'update_timestamp': number;
 }
 
 export interface Conversation {
   'id': string;
+  'chat_id': string;
   'user_message': string;
   'assistant_message': string;
 }

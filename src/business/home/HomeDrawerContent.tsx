@@ -35,9 +35,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
     return props.settings.chat_order === 'created'
       ? [...props.chats].reverse()
       : [...props.chats].sort((a, b) => {
-        const aTimestamp = a.conversations.length === 0 ? parseInt(a.id) : parseInt(a.conversations[a.conversations.length - 1]);
-        const bTimestamp = b.conversations.length === 0 ? parseInt(b.id) : parseInt(b.conversations[b.conversations.length - 1]);
-        return bTimestamp - aTimestamp;
+        return b.update_timestamp - a.update_timestamp;
       });
   }
 
