@@ -8,8 +8,10 @@ import {Chat, Settings} from "../../util/data";
 import {useEffect, useState} from "react";
 import store from "../../util/store";
 import Logo from "../../component/Logo";
+import LikesPage from "../likes/LikesPage";
 
 export const contentNewChat = '';
+export const contentLikes = 'likes';
 
 interface HomePageProps {
   settings: Settings;
@@ -65,6 +67,11 @@ export default function HomePage(props: HomePageProps) {
     toNewChatPage()
   }
 
+  const handleLikesClick = () => {
+    setSelectedChatId(contentLikes)
+    setMobileOpen(false)
+  }
+
   const toNewChatPage = () => {
     setNewChat(store.newChat())
     setSelectedChatId(contentNewChat);
@@ -85,6 +92,9 @@ export default function HomePage(props: HomePageProps) {
           handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
         />
       )
+    }
+    if (selectedChatId === contentLikes) {
+      return undefined;
     }
     return (
       <ChatSettingsDialog
@@ -121,6 +131,11 @@ export default function HomePage(props: HomePageProps) {
         </ChatPage>
       )
     }
+    if (selectedChatId === contentLikes) {
+      return (
+        <LikesPage/>
+      );
+    }
     return (
       <ChatPage
         key={`ChatPage${selectedChatId}`}
@@ -150,6 +165,7 @@ export default function HomePage(props: HomePageProps) {
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
           handleNewChatClick={handleNewChatClick}
+          handleLikesClick={handleLikesClick}
           handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
         />
         <Box

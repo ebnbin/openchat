@@ -5,7 +5,7 @@ import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import {
   AddRounded,
-  EditRounded,
+  EditRounded, FavoriteRounded,
   SettingsRounded
 } from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -14,7 +14,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import * as React from "react";
 import {widePageWidth} from "../../util/util";
-import {contentNewChat} from "./HomePage";
+import {contentLikes, contentNewChat} from "./HomePage";
 import ChatIcon from "../../component/ChatIcon";
 
 interface HomeDrawerContentProps {
@@ -25,6 +25,7 @@ interface HomeDrawerContentProps {
   handleChatItemClick: (chatId: string) => void,
   handleSettingsDialogOpen: () => void,
   handleNewChatClick: () => void,
+  handleLikesClick: () => void,
   handleNewChatSettingsDialogOpen: () => void,
 }
 
@@ -89,6 +90,30 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           overflow: 'auto',
         }}
       >
+        <ListItem
+          key={contentLikes}
+          disablePadding={true}
+        >
+          <ListItemButton
+            onClick={props.handleLikesClick}
+            selected={props.selectedContentId === contentLikes}
+          >
+            <ListItemIcon>
+              <FavoriteRounded
+                sx={{
+                  marginLeft: '8px',
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary={'Likes'}
+              primaryTypographyProps={{
+                noWrap: props.selectedContentId !== contentLikes,
+                fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
         {getChats().map((chat: Chat) => (
           <ListItem
             key={chat.id}
@@ -138,7 +163,11 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           onClick={props.handleSettingsDialogOpen}
         >
           <ListItemIcon>
-            <SettingsRounded/>
+            <SettingsRounded
+              sx={{
+                marginLeft: '8px',
+              }}
+            />
           </ListItemIcon>
           <ListItemText
             primary={'Settings'}
