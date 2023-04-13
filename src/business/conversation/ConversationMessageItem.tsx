@@ -8,8 +8,7 @@ import React from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../component/Markdown";
 import {copy} from "../../util/util";
-import {ReactComponent as ChatGPTLogoLight} from '../../chatgpt_logo_light.svg';
-import {ReactComponent as ChatGPTLogoDark} from '../../chatgpt_logo_dark.svg';
+import {ReactComponent as ChatGPTLogo} from '../../chatgpt_logo.svg';
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationMessageItemProps {
@@ -27,8 +26,6 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
   const isLoading = !isUser && conversationEntity.type === ConversationEntityType.Requesting;
 
   const theme = useTheme();
-
-  const ChatGPTLogo = theme.palette.mode === 'dark' ? ChatGPTLogoDark : ChatGPTLogoLight;
 
   const handleMarkdownClick = () => {
     updateConversationEntityNoStore({
