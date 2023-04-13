@@ -48,7 +48,7 @@ export default function AppPage() {
   const isSystemDarkMode = useDarkMode()
   const theme = createTheme({
     palette: {
-      mode: themeMode(settings.dark_mode, isSystemDarkMode),
+      mode: themeMode(settings.theme, isSystemDarkMode),
       info: blueGrey,
     },
   })

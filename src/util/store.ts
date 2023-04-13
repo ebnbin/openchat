@@ -9,10 +9,11 @@ class Store {
   constructor() {
     this.usage = new Preference<Usage>('usage', {
       tokens: 0,
-      charCount: 0,
+      conversation_count: 0,
+      char_count: 0,
     } as Usage);
     this.settings = new Preference<Settings>('settings', {
-      dark_mode: 'system',
+      theme: 'system',
     } as Settings);
 
     this.migrate();
@@ -205,17 +206,18 @@ class Store {
 
   getTokensPerChar(): number {
     const usage = this.usage.get();
-    if (usage.charCount === 0) {
+    if (usage.char_count === 0) {
       return 0.25;
     }
-    return usage.tokens / usage.charCount;
+    return usage.tokens / usage.char_count;
   }
 
   increaseUsage(usage: Partial<Usage>) {
     const prev = this.usage.get();
     this.usage.set({
       tokens: prev.tokens + (usage.tokens ?? 0),
-      charCount: prev.charCount + (usage.charCount ?? 0),
+      conversation_count: prev.conversation_count + (usage.conversation_count ?? 0),
+      char_count: prev.char_count + (usage.char_count ?? 0),
     } as Usage);
   }
 

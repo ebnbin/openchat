@@ -121,7 +121,8 @@ function handleResponseUpdateChat(
     .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
   store.increaseUsage({
     tokens: responseTotalTokens,
-    charCount: charCount,
+    conversation_count: 1,
+    char_count: charCount,
   })
 }
 

@@ -25,9 +25,10 @@ export interface Conversation {
 
 export interface Usage {
   'tokens': number;
-  'charCount': number;
+  'conversation_count': number;
+  'char_count': number;
 }
 
 export interface Settings {
-  'dark_mode': string;
+  'theme': string;
 }

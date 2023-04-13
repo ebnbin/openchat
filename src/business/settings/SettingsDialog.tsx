@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {
-  Button,
+  Button, ButtonGroup,
   Dialog,
   DialogActions,
   DialogContent, DialogTitle, MenuItem, Select,
   TextField
 } from "@mui/material";
 import store from "../../util/store";
-import {Settings, Usage} from "../../util/data";
+import {Settings} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 import {DeleteRounded} from "@mui/icons-material";
@@ -24,17 +24,9 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const [githubToken, setGithubToken] = useState(store.getGithubToken())
   const [githubGistId, setGithubGistId] = useState(store.getGithubGistId())
 
-  const [openAIApiUsageText, setOpenAIApiUsageText] = useState('')
-
-  useEffect(() => {
+  const usageText = () => {
     const usage = store.getUsage()
-    setOpenAIApiUsageText(
-      `tokens: ${usage.tokens}\nEstimated price: ${price(usage)}`
-    );
-  }, [props.dialogOpen]);
-
-  const price = (usage: Usage) => {
-    return (usage.tokens / 1000 * 0.002).toFixed(2)
+    return `Tokens: ${usage.tokens}\nConversation count: ${usage.conversation_count}\nEstimated price: ${(usage.tokens / 1000 * 0.002).toFixed(2)}`
   }
 
   const { dataTimestamp, setDataTimestamp } = useDataTimestamp();
@@ -115,19 +107,45 @@ export function SettingsDialog(props: SettingsDialogProps) {
         dividers={true}
       >
         <SettingsItem
-          title={'Dark mode'}
+          title={'Theme'}
         >
-          <Select
+          <ButtonGroup
             size={'small'}
-            value={props.settings.dark_mode}
-            onChange={(event) => props.updateSettings({
-              dark_mode: event.target.value as string,
-            })}
           >
-            <MenuItem value={'system'}>System</MenuItem>
-            <MenuItem value={'light'}>Light</MenuItem>
-            <MenuItem value={'dark'}>Dark</MenuItem>
-          </Select>
+            <Button
+              variant={props.settings.theme === 'system' ? 'contained' : 'outlined'}
+              onClick={() => props.updateSettings({
+                theme: 'system',
+              })}
+              sx={{
+                textTransform: 'none',
+              }}
+            >
+              {'System'}
+            </Button>
+            <Button
+              variant={props.settings.theme === 'light' ? 'contained' : 'outlined'}
+              onClick={() => props.updateSettings({
+                theme: 'light',
+              })}
+              sx={{
+                textTransform: 'none',
+              }}
+            >
+              {'Light'}
+            </Button>
+            <Button
+              variant={props.settings.theme === 'dark' ? 'contained' : 'outlined'}
+              onClick={() => props.updateSettings({
+                theme: 'dark',
+              })}
+              sx={{
+                textTransform: 'none',
+              }}
+            >
+              {'Dark'}
+            </Button>
+          </ButtonGroup>
         </SettingsItem>
         <SettingsItem
           title={'OPENAI_API_KEY'}
@@ -188,7 +206,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
         </SettingsItem>
         <SettingsItem
           title={'OpenAI API Usage'}
-          description={openAIApiUsageText}
+          description={usageText()}
         />
         <SettingsItem>
           <Button
