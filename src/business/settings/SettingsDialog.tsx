@@ -122,20 +122,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
           </Select>
         </SettingsItem>
         <SettingsItem
-          title={'Chat order'}
-        >
-          <Select
-            size={'small'}
-            value={props.settings.chat_order}
-            onChange={(event) => props.updateSettings({
-              chat_order: event.target.value as string,
-            })}
-          >
-            <MenuItem value={'created'}>By created time</MenuItem>
-            <MenuItem value={'updated'}>By updated time</MenuItem>
-          </Select>
-        </SettingsItem>
-        <SettingsItem
           title={'OPENAI_API_KEY'}
         >
           <TextField

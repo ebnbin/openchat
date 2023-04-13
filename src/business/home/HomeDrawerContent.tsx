@@ -33,11 +33,9 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   const getChats = () => {
-    return props.settings.chat_order === 'created'
-      ? [...props.chats].reverse()
-      : [...props.chats].sort((a, b) => {
-        return b.update_timestamp - a.update_timestamp;
-      });
+    return [...props.chats].sort((a, b) => {
+      return b.update_timestamp - a.update_timestamp;
+    });
   }
 
   return (
