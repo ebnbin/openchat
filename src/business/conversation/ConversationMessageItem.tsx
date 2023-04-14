@@ -1,4 +1,4 @@
-import {Avatar, Button, CircularProgress, Typography, useTheme} from "@mui/material";
+import {Avatar, Button, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {
   ContentCopyRounded,
   FaceRounded
@@ -39,6 +39,8 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
     await copy(text, null);
   }
 
+  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
+
   return (
     <Box
       sx={{
@@ -51,7 +53,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
-          paddingX: '16px',
+          paddingX: isNotSmallPage ? '32px' : '16px',
         }}
       >
         <Box

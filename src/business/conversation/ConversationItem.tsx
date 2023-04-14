@@ -1,5 +1,5 @@
 import ConversationMessageItem from "./ConversationMessageItem";
-import {Box, Button, Card, Typography, useTheme} from "@mui/material";
+import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
 import {DeleteRounded, FavoriteBorderRounded, FavoriteRounded} from "@mui/icons-material";
 import React from "react";
@@ -21,6 +21,8 @@ export default function ConversationItem(props: ConversationItemProps) {
       likeTimestamp: props.conversationEntity.likeTimestamp === 0 ? Date.now() : 0,
     });
   }
+
+  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
 
   return (
     <Card
@@ -52,7 +54,7 @@ export default function ConversationItem(props: ConversationItemProps) {
             margin: '0 auto',
             display: 'flex',
             flexDirection: 'row',
-            paddingX: '16px',
+            paddingX: isNotSmallPage ? '32px' : '16px',
             paddingBottom: '12px',
             alignItems: 'center',
           }}

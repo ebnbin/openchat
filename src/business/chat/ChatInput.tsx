@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from "react";
-import {Card, IconButton, InputAdornment, TextField} from "@mui/material";
+import {Card, IconButton, InputAdornment, TextField, useMediaQuery} from "@mui/material";
 import {SendRounded} from "@mui/icons-material";
 
 interface ChatInputProps {
@@ -36,10 +36,13 @@ export default function ChatInput(props: ChatInputProps) {
     handleRequest(currInput)
   }
 
+  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
+
   return (
     <Card
       elevation={4}
       sx={{
+        marginX: isNotSmallPage ? '16px' : '0px',
         padding: '16px',
         borderRadius: '0px',
         borderTopLeftRadius: '8px',

@@ -1,4 +1,4 @@
-import {Box, Button, Card, Typography, useTheme} from "@mui/material";
+import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
 import {HeartBrokenRounded} from "@mui/icons-material";
 import React from "react";
@@ -13,6 +13,8 @@ interface LikesConversationItemProps {
 
 export default function LikesConversationItem(props: LikesConversationItemProps) {
   const theme = useTheme();
+
+  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
 
   return (
     <Card
@@ -44,7 +46,7 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
             margin: '0 auto',
             display: 'flex',
             flexDirection: 'row',
-            paddingX: '16px',
+            paddingX: isNotSmallPage ? '32px' : '16px',
             paddingBottom: '12px',
             alignItems: 'center',
           }}
