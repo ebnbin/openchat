@@ -20,11 +20,13 @@ class Store {
   }
 
   private migrate() {
-    const currentVersion = 400; // 0.4.0
+    const currentVersion = 401; // 0.4.1
     const storedVersion = parseInt(localStorage.getItem('version') ?? '0', 10);
-    if (storedVersion < currentVersion) {
+    if (storedVersion < 400) {
       localStorage.clear();
       // TODO: migrate
+    }
+    if (storedVersion < currentVersion) {
       localStorage.setItem('version', `${currentVersion}`);
     }
   }
