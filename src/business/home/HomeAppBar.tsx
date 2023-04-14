@@ -14,7 +14,7 @@ import ChatIcon from "../../component/ChatIcon";
 
 interface HomeAppBarProps {
   chats: Chat[],
-  contentId: string,
+  contentId: number,
   handleChatSettingsDialogOpen: () => void,
   setDrawerOpen: (drawerOpen: boolean) => void,
 }

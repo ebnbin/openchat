@@ -10,8 +10,8 @@ export enum ConversationEntityType {
 }
 
 export interface ConversationEntity {
-  id: string;
-  chatId: string;
+  id: number;
+  chatId: number;
   userMessage: string;
   assistantMessage: string;
   likeTimestamp: number;

@@ -169,7 +169,7 @@ function getErrorConversationEntitiesNoContext(
 
 interface ChatProps {
   chat: Chat,
-  updateChat: (chatId: string, chat: Partial<Chat>) => void,
+  updateChat: (chatId: number, chat: Partial<Chat>) => void,
   createChat?: (chat: Chat) => void, // For new chat
   children?: React.ReactNode; // For new chat
 }
@@ -223,7 +223,7 @@ export default function ChatPage(props: ChatProps) {
       store.updateConversationsDeleteConversationAsync(conversationEntity.id);
     } else {
       store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
-        chat_id: '',
+        chat_id: 0,
       });
     }
   }
@@ -243,7 +243,7 @@ export default function ChatPage(props: ChatProps) {
     })
     store.updateConversationsCreateConversationAsync(requestingConversation);
     props.updateChat(props.chat.id, {
-      update_timestamp: parseInt(requestingConversation.id, 10),
+      update_timestamp: requestingConversation.id,
     });
 
 

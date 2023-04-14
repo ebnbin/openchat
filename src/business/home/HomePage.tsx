@@ -10,8 +10,8 @@ import store from "../../util/store";
 import Logo from "../../component/Logo";
 import LikesPage from "../likes/LikesPage";
 
-export const contentNewChat = '';
-export const contentLikes = 'likes';
+export const contentNewChat = 0;
+export const contentLikes = -1;
 
 interface HomePageProps {
   settings: Settings;
@@ -34,7 +34,7 @@ export default function HomePage(props: HomePageProps) {
     setSelectedChatId(chat.id)
   }
 
-  const updateChat = (chatId: string, chat: Partial<Chat>) => {
+  const updateChat = (chatId: number, chat: Partial<Chat>) => {
     _setChats((chats) => chats.map((foundChat) => {
       if (foundChat.id === chatId) {
         return {
@@ -58,7 +58,7 @@ export default function HomePage(props: HomePageProps) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const [selectedChatId, setSelectedChatId] = useState('');
+  const [selectedChatId, setSelectedChatId] = useState(contentNewChat);
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
   const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = React.useState(false);

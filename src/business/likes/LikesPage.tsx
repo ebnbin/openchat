@@ -39,7 +39,7 @@ export default function LikesPage() {
     _setConversationEntities((conversationEntities) => {
       return conversationEntities.filter((c) => c.id !== conversationEntity.id);
     });
-    if (conversationEntity.chatId === '') {
+    if (conversationEntity.chatId === 0) {
       store.updateConversationsDeleteConversationAsync(conversationEntity.id);
     } else {
       store.updateConversationsUpdateConversationAsync(conversationEntity.id, {

@@ -20,9 +20,9 @@ import ChatIcon from "../../component/ChatIcon";
 interface HomeDrawerContentProps {
   settings: Settings,
   chats: Chat[],
-  selectedContentId: string,
+  selectedContentId: number,
   handleChatSettingsDialogOpen: () => void,
-  handleChatItemClick: (chatId: string) => void,
+  handleChatItemClick: (chatId: number) => void,
   handleSettingsDialogOpen: () => void,
   handleNewChatClick: () => void,
   handleLikesClick: () => void,

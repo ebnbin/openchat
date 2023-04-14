@@ -16,7 +16,7 @@ import ChatIcon from "../../component/ChatIcon";
 interface ChatSettingsDialogProps {
   chat: Chat;
   isNew: boolean;
-  updateChat?: (chatId: string, chat: Partial<Chat>) => void;
+  updateChat?: (chatId: number, chat: Partial<Chat>) => void;
   deleteChat?: (chat: Chat) => void;
   createChat?: (chat: Chat) => void;
   dialogOpen: boolean;

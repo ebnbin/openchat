@@ -53,7 +53,7 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
             variant={'caption'}
             color={theme.palette.text.disabled}
           >
-            {`${new Date(parseInt(props.conversationEntity.id, 10)).toLocaleString()}`}
+            {`${new Date(props.conversationEntity.id).toLocaleString()}`}
           </Typography>
           <Box
             sx={{

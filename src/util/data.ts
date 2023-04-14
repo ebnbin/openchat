@@ -4,7 +4,7 @@ export interface Data {
 }
 
 export interface Chat {
-  'id': string;
+  'id': number;
   'title': string;
   'icon_text': string;
   'icon_text_size': string;
@@ -16,8 +16,8 @@ export interface Chat {
 }
 
 export interface Conversation {
-  'id': string;
-  'chat_id': string;
+  'id': number;
+  'chat_id': number;
   'user_message': string;
   'assistant_message': string;
   'like_timestamp': number;
