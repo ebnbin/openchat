@@ -3,11 +3,13 @@ import Box from "@mui/material/Box";
 import React from "react";
 import {Chat} from "../../util/data";
 import ChatIcon from "../../component/ChatIcon";
-import {AddRounded, SettingsRounded} from "@mui/icons-material";
+import {AddRounded, FavoriteRounded, SettingsRounded} from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import List from "@mui/material/List";
+import {contentLikes} from "./HomePage";
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const chunkedArr: T[][] = [];
@@ -95,6 +97,34 @@ export default function HomeGridCard(props: HomeGridCardProps) {
           </Button>
         </Box>
         <Divider/>
+        <ListItem
+          key={contentLikes}
+          disablePadding={true}
+        >
+          <ListItemButton
+            onClick={() => {
+              props.handleLikesClick();
+              props.handleClose();
+            }}
+            selected={props.selectedContentId === contentLikes}
+          >
+            <ListItemIcon>
+              <FavoriteRounded
+                sx={{
+                  marginLeft: '8px',
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary={'Likes'}
+              primaryTypographyProps={{
+                noWrap: props.selectedContentId !== contentLikes,
+                fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
+        <Divider/>
         {chatGrid.map((row, index) => (
           <Box
             key={index}
@@ -163,6 +193,40 @@ export default function HomeGridCard(props: HomeGridCardProps) {
             ))}
           </Box>
         ))}
+        <Divider/>
+        <List
+          sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+          }}
+        >
+          {getChats().map((chat: Chat) => (
+            <ListItem
+              key={chat.id}
+              disablePadding={true}
+            >
+              <ListItemButton
+                onClick={() => handleChatItemClick(chat.id)}
+                selected={props.selectedContentId === chat.id}
+              >
+                <ListItemIcon>
+                  <ChatIcon
+                    iconText={chat.icon_text}
+                    iconTextSize={chat.icon_text_size}
+                    iconColor={chat.icon_color}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary={chat.title === '' ? 'New chat' : chat.title}
+                  primaryTypographyProps={{
+                    noWrap: props.selectedContentId !== chat.id,
+                    fontWeight: props.selectedContentId === chat.id ? 'bold' : undefined,
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
         <Divider/>
         <ListItem
           disablePadding={true}

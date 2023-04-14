@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import HomeDrawer from "./HomeDrawer";
 import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
@@ -56,8 +55,6 @@ export default function HomePage(props: HomePageProps) {
 
   const { setSettingsOpen } = props
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
   const [selectedChatId, setSelectedChatId] = useState(contentNewChat);
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
@@ -69,13 +66,11 @@ export default function HomePage(props: HomePageProps) {
 
   const handleLikesClick = () => {
     setSelectedChatId(contentLikes)
-    setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
     setSelectedChatId(contentNewChat);
-    setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
@@ -155,19 +150,6 @@ export default function HomePage(props: HomePageProps) {
           flexDirection: 'row',
         }}
       >
-        <HomeDrawer
-          settings={props.settings}
-          chats={chats}
-          selectedChatId={selectedChatId}
-          setSelectedChatId={setSelectedChatId}
-          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-          setSettingsOpen={setSettingsOpen}
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
-          handleNewChatClick={handleNewChatClick}
-          handleLikesClick={handleLikesClick}
-          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-        />
         <Box
           sx={{
             flexGrow: 1,
@@ -179,7 +161,6 @@ export default function HomePage(props: HomePageProps) {
             chats={chats}
             contentId={selectedChatId}
             handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-            setDrawerOpen={setMobileOpen}
             selectedContentId={selectedChatId}
             setSelectedContentId={setSelectedChatId}
             handleNewChatClick={handleNewChatClick}
