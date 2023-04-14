@@ -8,6 +8,7 @@ import {useEffect, useState} from "react";
 import store from "../../util/store";
 import Logo from "../../component/Logo";
 import LikesPage from "../likes/LikesPage";
+import HomeGridCard from "./HomeGridCard";
 
 export const contentNewChat = 0;
 export const contentLikes = -1;
@@ -51,6 +52,26 @@ export default function HomePage(props: HomePageProps) {
     _setChats((chats) => chats.filter((foundChat) => foundChat.id !== chat.id));
     store.updateChatsDeleteChatAsync(chat.id);
     store.updateConversationsDeleteConversationsAsync(chat.id);
+  }
+
+  const updateChatPinTimestamps = (pinTimestamps: Record<number, number>) => {
+    _setChats((chats) => chats.map((chat) => {
+      if (chat.id in pinTimestamps) {
+        return {
+          ...chat,
+          pin_timestamp: pinTimestamps[chat.id],
+        }
+      }
+      return chat
+    }));
+    store.updateChatsAsync((chatId: number) => {
+      if (chatId in pinTimestamps) {
+        return {
+          pin_timestamp: pinTimestamps[chatId],
+        }
+      }
+      return {};
+    });
   }
 
   const { setSettingsOpen } = props
@@ -140,6 +161,18 @@ export default function HomePage(props: HomePageProps) {
     )
   }
 
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
   return (
     <>
       <Box
@@ -162,11 +195,8 @@ export default function HomePage(props: HomePageProps) {
             contentId={selectedChatId}
             handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
             selectedContentId={selectedChatId}
-            setSelectedContentId={setSelectedChatId}
-            handleNewChatClick={handleNewChatClick}
-            handleLikesClick={handleLikesClick}
             handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-            handleSettingsDialogOpen={() => setSettingsOpen(true)}
+            handleAppsClick={handleClick}
           />
           <Box
             style={{
@@ -179,6 +209,19 @@ export default function HomePage(props: HomePageProps) {
           </Box>
         </Box>
       </Box>
+      <HomeGridCard
+        chats={chats}
+        anchorEl={anchorEl}
+        open={open}
+        handleClose={handleClose}
+        selectedContentId={selectedChatId}
+        setSelectedContentId={setSelectedChatId}
+        handleNewChatClick={handleNewChatClick}
+        handleLikesClick={handleLikesClick}
+        handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+        handleSettingsDialogOpen={() => setSettingsOpen(true)}
+        updateChatPinTimestamps={updateChatPinTimestamps}
+      />
       {dialogPage()}
     </>
   );

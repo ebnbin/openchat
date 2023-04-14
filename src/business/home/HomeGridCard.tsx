@@ -1,6 +1,6 @@
 import {Button, Divider, IconButton, Popover, Typography, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Chat} from "../../util/data";
 import ChatIcon from "../../component/ChatIcon";
 import {AddRounded, FavoriteRounded, SettingsRounded} from "@mui/icons-material";
@@ -30,31 +30,91 @@ interface HomeGridCardProps {
   handleLikesClick: () => void,
   handleNewChatSettingsDialogOpen: () => void,
   handleSettingsDialogOpen: () => void,
+  updateChatPinTimestamps: (pinTimestamps: Record<number, number>) => void,
 }
 
 export default function HomeGridCard(props: HomeGridCardProps) {
   const theme = useTheme();
 
-  const getChats = () => {
-    return [...props.chats].sort((a, b) => {
-      return b.update_timestamp - a.update_timestamp;
-    });
+  function initChatPinTimestamps(): Record<number, number> {
+    return props.chats.reduce((acc, chat) => {
+      acc[chat.id] = chat.pin_timestamp;
+      return acc;
+    }, {} as Record<number, number>)
   }
 
-  console.log(props.chats.length)
-  const chatGrid = chunkArray(getChats(), 3);
-  console.log(chatGrid)
+  const [updatingPins, setUpdatingPins] = useState(false);
 
-  const handleChatItemClick = (chatId: number) => {
+  const [chatPinTimestamps, setChatPinTimestamps] = useState<Record<number, number>>({});
+
+  useEffect(() => {
+    setChatPinTimestamps(initChatPinTimestamps());
+  }, [props.chats]);
+
+  const pinnedChats = () => {
+    const chats = [...props.chats]
+      .filter((chat) => chatPinTimestamps[chat.id] > 0)
+      .sort((a, b) => {
+        return chatPinTimestamps[a.id] - chatPinTimestamps[b.id];
+      });
+    return chunkArray(chats, 3)
+  }
+
+  const unpinnedChats = () => {
+    return [...props.chats]
+      .filter((chat) => chatPinTimestamps[chat.id] === 0 || chatPinTimestamps[chat.id] === undefined)
+      .sort((a, b) => {
+        return b.update_timestamp - a.update_timestamp;
+      });
+  }
+
+  const handlePinedItemClick = (chatId: number) => {
+    if (updatingPins) {
+      setChatPinTimestamps((prev) => {
+        return {
+          ...prev,
+          [chatId]: 0,
+        }
+      });
+      return;
+    }
     props.setSelectedContentId(chatId);
+    handlePopoverClose();
+  }
+
+  const handleUnpinedItemClick = (chatId: number) => {
+    if (updatingPins) {
+      setChatPinTimestamps((prev) => {
+        return {
+          ...prev,
+          [chatId]: Date.now(),
+        }
+      });
+      return;
+    }
+    props.setSelectedContentId(chatId);
+    handlePopoverClose();
+  }
+
+  const handlePopoverClose = () => {
     props.handleClose();
+  }
+
+  const savePinTimestamps = () => {
+    setUpdatingPins(false);
+    props.updateChatPinTimestamps(chatPinTimestamps);
+  }
+
+  const cancelPinTimestamps = () => {
+    setUpdatingPins(false);
+    setChatPinTimestamps(initChatPinTimestamps());
   }
 
   return (
     <Popover
       open={props.open}
       anchorEl={props.anchorEl}
-      onClose={props.handleClose}
+      onClose={handlePopoverClose}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'right',
@@ -73,7 +133,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
       >
         <Box
           sx={{
-            display: 'flex',
+            display: updatingPins ? 'none' : 'flex',
             flexDirection: 'column',
             flexGrow: 0,
           }}
@@ -89,7 +149,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               size={'small'}
               onClick={() => {
                 props.handleNewChatClick();
-                props.handleClose();
+                handlePopoverClose();
               }}
               sx={{
                 margin: '8px',
@@ -106,7 +166,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
             <IconButton
               onClick={() => {
                 props.handleSettingsDialogOpen();
-                props.handleClose();
+                handlePopoverClose();
               }}
               sx={{
                 width: '48px',
@@ -117,6 +177,54 @@ export default function HomeGridCard(props: HomeGridCardProps) {
           </Box>
           <Divider/>
         </Box>
+        <Box
+          sx={{
+            display: updatingPins ? 'flex' : 'none',
+            flexDirection: 'column',
+            flexGrow: 0,
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              padding: '8px',
+            }}
+          >
+            <Button
+              variant={'outlined'}
+              size={'small'}
+              onClick={cancelPinTimestamps}
+              sx={{
+                flexGrow: 1,
+                width: '0px',
+                textTransform: 'none',
+              }}
+            >
+              {'Cancel'}
+            </Button>
+            <Box
+              sx={{
+                width: '8px',
+              }}
+            >
+            </Box>
+            <Button
+              variant={'outlined'}
+              size={'small'}
+              onClick={savePinTimestamps}
+              sx={{
+                flexGrow: 1,
+                width: '0px',
+                textTransform: 'none',
+              }}
+            >
+              {'Save'}
+            </Button>
+          </Box>
+          <Divider/>
+        </Box>
+
         <List
           sx={{
             flexGrow: 1,
@@ -125,7 +233,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
             minWidth: '300px',
           }}
         >
-          {chatGrid.map((row, index) => (
+          {pinnedChats().map((row, index) => (
             <Box
               key={index}
               sx={{
@@ -137,7 +245,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               {row.map((chat, index) => (
                 <ListItemButton
                   key={index}
-                  onClick={() => handleChatItemClick(chat.id)}
+                  onClick={() => handlePinedItemClick(chat.id)}
                   selected={chat.id === props.selectedContentId}
                   sx={{
                     color: theme.palette.text.primary,
@@ -197,11 +305,15 @@ export default function HomeGridCard(props: HomeGridCardProps) {
           <ListItem
             key={contentLikes}
             disablePadding={true}
+            sx={{
+              display: updatingPins ? 'none' : 'flex',
+              minWidth: '300px',
+            }}
           >
             <ListItemButton
               onClick={() => {
                 props.handleLikesClick();
-                props.handleClose();
+                handlePopoverClose();
               }}
               selected={props.selectedContentId === contentLikes}
             >
@@ -221,13 +333,16 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               />
             </ListItemButton>
           </ListItem>
-          {getChats().map((chat: Chat) => (
+          {unpinnedChats().map((chat: Chat) => (
             <ListItem
               key={chat.id}
               disablePadding={true}
+              sx={{
+                minWidth: '300px',
+              }}
             >
               <ListItemButton
-                onClick={() => handleChatItemClick(chat.id)}
+                onClick={() => handleUnpinedItemClick(chat.id)}
                 selected={props.selectedContentId === chat.id}
               >
                 <ListItemIcon>
@@ -247,6 +362,20 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               </ListItemButton>
             </ListItem>
           ))}
+          <Divider/>
+          <Button
+            size={'small'}
+            onClick={() => setUpdatingPins(true)}
+            sx={{
+              borderRadius: '0px',
+              width: '100%',
+              height: '40px',
+              textTransform: 'none',
+              display: updatingPins ? 'none' : 'flex',
+            }}
+          >
+            {'Customize your pins'}
+          </Button>
         </List>
       </Box>
     </Popover>

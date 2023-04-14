@@ -9,19 +9,14 @@ import {Chat} from "../../util/data";
 import {contentLikes, contentNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ChatIcon from "../../component/ChatIcon";
-import {useState} from "react";
-import HomeGridCard from "./HomeGridCard";
 
 interface HomeAppBarProps {
   chats: Chat[],
   contentId: number,
   handleChatSettingsDialogOpen: () => void,
   selectedContentId: number,
-  setSelectedContentId: (selectedContentId: number) => void,
-  handleNewChatClick: () => void,
-  handleLikesClick: () => void,
   handleNewChatSettingsDialogOpen: () => void,
-  handleSettingsDialogOpen: () => void,
+  handleAppsClick: (event: React.MouseEvent<HTMLButtonElement>) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
@@ -80,18 +75,6 @@ export default function HomeAppBar(props: HomeAppBarProps) {
     return props.handleChatSettingsDialogOpen();
   }
 
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-
   return (
     <Box
       sx={{
@@ -130,24 +113,12 @@ export default function HomeAppBar(props: HomeAppBarProps) {
           <IconButton
             edge={'end'}
             color={'inherit'}
-            onClick={handleClick}
+            onClick={props.handleAppsClick}
           >
             <AppsRounded/>
           </IconButton>
         </Toolbar>
       </AppBar>
-      <HomeGridCard
-        chats={props.chats}
-        anchorEl={anchorEl}
-        open={open}
-        handleClose={handleClose}
-        selectedContentId={props.selectedContentId}
-        setSelectedContentId={props.setSelectedContentId}
-        handleNewChatClick={props.handleNewChatClick}
-        handleLikesClick={props.handleLikesClick}
-        handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
-        handleSettingsDialogOpen={props.handleSettingsDialogOpen}
-      />
     </Box>
   );
 }

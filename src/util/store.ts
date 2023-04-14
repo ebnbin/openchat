@@ -87,6 +87,7 @@ class Store {
       system_message: '',
       user_message_template: '',
       update_timestamp: timestamp,
+      pin_timestamp: 0,
     };
   }
 
@@ -136,6 +137,20 @@ class Store {
         return [];
       }
       return chats.filter((foundChat) => foundChat.id !== chatId);
+    }).finally();
+  }
+
+  updateChatsAsync(chat: ((id: number) => Partial<Chat>)) {
+    update<Chat[]>('chats', (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.map((foundChat) => {
+        return {
+          ...foundChat,
+          ...chat(foundChat.id),
+        };
+      });
     }).finally();
   }
 
