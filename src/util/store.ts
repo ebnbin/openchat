@@ -15,18 +15,24 @@ class Store {
     this.settings = new Preference<Settings>('settings', {
       theme: 'system',
     } as Settings);
-
-    this.migrate();
   }
 
-  private migrate() {
-    const currentVersion = 401; // 0.4.1
+  async migrate() {
+    const currentVersion = 500; // 0.5.0
     const storedVersion = parseInt(localStorage.getItem('version') ?? '0', 10);
     if (storedVersion < 400) {
       localStorage.clear();
-      // TODO: migrate
     }
     if (storedVersion < currentVersion) {
+      await update<Chat[]>('chats', (chats) => {
+        if (!chats) {
+          return [];
+        }
+        return chats.map((chat) => {
+          chat.pin_timestamp = 0;
+          return chat;
+        });
+      });
       localStorage.setItem('version', `${currentVersion}`);
     }
   }
