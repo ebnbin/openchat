@@ -1,4 +1,4 @@
-import {Button, Divider, Popover, Typography, useTheme} from "@mui/material";
+import {Button, Divider, IconButton, Popover, Typography, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
 import React from "react";
 import {Chat} from "../../util/data";
@@ -67,139 +67,160 @@ export default function HomeGridCard(props: HomeGridCardProps) {
       <Box
         sx={{
           maxHeight: '398px',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Box
           sx={{
-            flexShrink: 0,
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
+            flexGrow: 0,
           }}
         >
-          <Button
-            variant={'outlined'}
-            size={'small'}
-            onClick={() => {
-              props.handleNewChatClick();
-              props.handleClose();
-            }}
-            sx={{
-              margin: '8px',
-              flexGrow: 1,
-            }}
-          >
-            <AddRounded
-              sx={{
-                marginRight: '8px',
-              }}
-            />
-            {'New chat'}
-          </Button>
-        </Box>
-        <Divider/>
-        <ListItem
-          key={contentLikes}
-          disablePadding={true}
-        >
-          <ListItemButton
-            onClick={() => {
-              props.handleLikesClick();
-              props.handleClose();
-            }}
-            selected={props.selectedContentId === contentLikes}
-          >
-            <ListItemIcon>
-              <FavoriteRounded
-                sx={{
-                  marginLeft: '8px',
-                }}
-              />
-            </ListItemIcon>
-            <ListItemText
-              primary={'Likes'}
-              primaryTypographyProps={{
-                noWrap: props.selectedContentId !== contentLikes,
-                fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
-        <Divider/>
-        {chatGrid.map((row, index) => (
           <Box
-            key={index}
             sx={{
-              width: '300px',
               display: 'flex',
               flexDirection: 'row',
             }}
           >
-            {row.map((chat, index) => (
-              <ListItemButton
-                key={index}
-                onClick={() => handleChatItemClick(chat.id)}
-                selected={chat.id === props.selectedContentId}
+            <Button
+              variant={'outlined'}
+              size={'small'}
+              onClick={() => {
+                props.handleNewChatClick();
+                props.handleClose();
+              }}
+              sx={{
+                margin: '8px',
+                flexGrow: 1,
+              }}
+            >
+              <AddRounded
                 sx={{
-                  color: theme.palette.text.primary,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: '100px',
-                  maxWidth: '100px',
-                  height: '100px',
-                  padding: '12px',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textTransform: 'none',
+                  marginRight: '8px',
                 }}
-              >
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ChatIcon
-                    iconText={chat.icon_text}
-                    iconTextSize={chat.icon_text_size}
-                    iconColor={chat.icon_color}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    height: '32px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginTop: '4px',
-                  }}
-                >
-                  <Typography
-                    variant={'caption'}
-                    align={'center'}
-                    sx={{
-                      width: '100%',
-                      overflow: 'hidden',
-                      maxLines: 2,
-                      textOverflow: 'ellipsis',
-                      lineHeight: 1.2,
-                      fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
-                    }}
-                  >
-                    {chat.title}
-                  </Typography>
-                </Box>
-              </ListItemButton>
-            ))}
+              />
+              {'New chat'}
+            </Button>
+            <IconButton
+              onClick={() => {
+                props.handleSettingsDialogOpen();
+                props.handleClose();
+              }}
+              sx={{
+                width: '48px',
+              }}
+            >
+              <SettingsRounded/>
+            </IconButton>
           </Box>
-        ))}
-        <Divider/>
+          <Divider/>
+        </Box>
         <List
           sx={{
             flexGrow: 1,
             overflow: 'auto',
+            padding: '0px',
+            minWidth: '300px',
           }}
         >
+          {chatGrid.map((row, index) => (
+            <Box
+              key={index}
+              sx={{
+                width: '300px',
+                display: 'flex',
+                flexDirection: 'row',
+              }}
+            >
+              {row.map((chat, index) => (
+                <ListItemButton
+                  key={index}
+                  onClick={() => handleChatItemClick(chat.id)}
+                  selected={chat.id === props.selectedContentId}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100px',
+                    maxWidth: '100px',
+                    height: '100px',
+                    padding: '12px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textTransform: 'none',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ChatIcon
+                      iconText={chat.icon_text}
+                      iconTextSize={chat.icon_text_size}
+                      iconColor={chat.icon_color}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: '4px',
+                    }}
+                  >
+                    <Typography
+                      variant={'caption'}
+                      align={'center'}
+                      sx={{
+                        width: '100%',
+                        overflow: 'hidden',
+                        maxLines: 2,
+                        textOverflow: 'ellipsis',
+                        lineHeight: 1.2,
+                        fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
+                      }}
+                    >
+                      {chat.title}
+                    </Typography>
+                  </Box>
+                </ListItemButton>
+              ))}
+            </Box>
+          ))}
+          <Divider/>
+          <ListItem
+            key={contentLikes}
+            disablePadding={true}
+          >
+            <ListItemButton
+              onClick={() => {
+                props.handleLikesClick();
+                props.handleClose();
+              }}
+              selected={props.selectedContentId === contentLikes}
+            >
+              <ListItemIcon>
+                <FavoriteRounded
+                  sx={{
+                    marginLeft: '8px',
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={'Likes'}
+                primaryTypographyProps={{
+                  noWrap: props.selectedContentId !== contentLikes,
+                  fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
           {getChats().map((chat: Chat) => (
             <ListItem
               key={chat.id}
@@ -227,31 +248,6 @@ export default function HomeGridCard(props: HomeGridCardProps) {
             </ListItem>
           ))}
         </List>
-        <Divider/>
-        <ListItem
-          disablePadding={true}
-          sx={{
-            flexShrink: 0,
-          }}
-        >
-          <ListItemButton
-            onClick={() => {
-              props.handleSettingsDialogOpen();
-              props.handleClose();
-            }}
-          >
-            <ListItemIcon>
-              <SettingsRounded
-                sx={{
-                  marginLeft: '8px',
-                }}
-              />
-            </ListItemIcon>
-            <ListItemText
-              primary={'Settings'}
-            />
-          </ListItemButton>
-        </ListItem>
       </Box>
     </Popover>
   );
