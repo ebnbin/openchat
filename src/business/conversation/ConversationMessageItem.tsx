@@ -8,7 +8,7 @@ import React from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../component/Markdown";
 import {copy} from "../../util/util";
-import {ReactComponent as ChatGPTLogo} from '../../chatgpt_logo.svg';
+import chatGPTLogo from '../../chatgpt_logo.png';
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationMessageItemProps {
@@ -75,7 +75,13 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               bgcolor: context ? (isUser ? theme.palette.primary.main : '#74aa9c') : theme.palette.action.disabled,
             }}
           >
-            {isUser ? <FaceRounded/> : <ChatGPTLogo/>}
+            {isUser ? <FaceRounded/> : (
+              <img
+                src={chatGPTLogo}
+                width={'24px'}
+                height={'24px'}
+              />
+            )}
           </Avatar>
           <Typography
             variant={'caption'}
