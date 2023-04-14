@@ -64,6 +64,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
           }}
         >
           <Avatar
+            variant={isUser ? 'circular' : 'rounded'}
             onClick={isLoading ? undefined : handleMarkdownClick}
             sx={{
               width: '24px',
