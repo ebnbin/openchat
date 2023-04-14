@@ -180,6 +180,12 @@ export default function HomePage(props: HomePageProps) {
             contentId={selectedChatId}
             handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
             setDrawerOpen={setMobileOpen}
+            selectedContentId={selectedChatId}
+            setSelectedContentId={setSelectedChatId}
+            handleNewChatClick={handleNewChatClick}
+            handleLikesClick={handleLikesClick}
+            handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+            handleSettingsDialogOpen={() => setSettingsOpen(true)}
           />
           <Box
             style={{

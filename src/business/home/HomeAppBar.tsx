@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import {EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
+import {AppsRounded, EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
@@ -11,12 +11,20 @@ import {widePageWidth} from "../../util/util";
 import {contentLikes, contentNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ChatIcon from "../../component/ChatIcon";
+import {useState} from "react";
+import HomeGridCard from "./HomeGridCard";
 
 interface HomeAppBarProps {
   chats: Chat[],
   contentId: number,
   handleChatSettingsDialogOpen: () => void,
   setDrawerOpen: (drawerOpen: boolean) => void,
+  selectedContentId: number,
+  setSelectedContentId: (selectedContentId: number) => void,
+  handleNewChatClick: () => void,
+  handleLikesClick: () => void,
+  handleNewChatSettingsDialogOpen: () => void,
+  handleSettingsDialogOpen: () => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
@@ -64,7 +72,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   }
 
   const chatSettingsVisibility = () => {
-    if (props.contentId === contentNewChat || props.contentId === contentLikes) {
+    if (props.contentId === contentLikes) {
       return 'hidden';
     }
     return undefined;
@@ -77,7 +85,19 @@ export default function HomeAppBar(props: HomeAppBarProps) {
     return props.handleChatSettingsDialogOpen();
   }
 
-  return isWidePage ? null : (
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  return (
     <Box
       sx={{
         height: '56px',
@@ -105,7 +125,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
           />
           <IconButton
             color={'inherit'}
-            onClick={handleChatSettingsOnClick}
+            onClick={props.selectedContentId === contentNewChat ? props.handleNewChatSettingsDialogOpen : handleChatSettingsOnClick}
             sx={{
               visibility: chatSettingsVisibility(),
             }}
@@ -113,14 +133,32 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             <EditRounded/>
           </IconButton>
           <IconButton
-            edge={'end'}
             color={'inherit'}
             onClick={() => props.setDrawerOpen(true)}
           >
             <MenuRounded/>
           </IconButton>
+          <IconButton
+            edge={'end'}
+            color={'inherit'}
+            onClick={handleClick}
+          >
+            <AppsRounded/>
+          </IconButton>
         </Toolbar>
       </AppBar>
+      <HomeGridCard
+        chats={props.chats}
+        anchorEl={anchorEl}
+        open={open}
+        handleClose={handleClose}
+        selectedContentId={props.selectedContentId}
+        setSelectedContentId={props.setSelectedContentId}
+        handleNewChatClick={props.handleNewChatClick}
+        handleLikesClick={props.handleLikesClick}
+        handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
+        handleSettingsDialogOpen={props.handleSettingsDialogOpen}
+      />
     </Box>
   );
 }
