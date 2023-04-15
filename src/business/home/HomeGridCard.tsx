@@ -97,6 +97,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
   }
 
   const handlePopoverClose = () => {
+    cancelPinTimestamps();
     props.handleClose();
   }
 
@@ -231,6 +232,9 @@ export default function HomeGridCard(props: HomeGridCardProps) {
             overflow: 'auto',
             padding: '0px',
             minWidth: '300px',
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
           }}
         >
           {pinnedChats().map((row, index) => (
