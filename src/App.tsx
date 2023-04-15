@@ -13,6 +13,13 @@ export default function App() {
     load();
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     isLoading ? (<></>) : (<AppPage/>)
   )
