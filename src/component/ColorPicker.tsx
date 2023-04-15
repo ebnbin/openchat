@@ -134,8 +134,8 @@ export default function ColorPicker(props: ColorPickerProps) {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: 'bottom',
+          horizontal: 'right',
         }}
         transformOrigin={{
           vertical: 'top',

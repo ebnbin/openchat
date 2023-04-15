@@ -117,7 +117,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
       anchorEl={props.anchorEl}
       onClose={handlePopoverClose}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'right',
       }}
       transformOrigin={{
