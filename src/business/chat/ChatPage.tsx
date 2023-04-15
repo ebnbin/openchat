@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation} from "../../util/data";
 import ConversationList, {ConversationEntity, ConversationEntityType} from "../conversation/ConversationList";
@@ -182,7 +182,7 @@ export default function ChatPage(props: ChatProps) {
       .then((conversations) => {
         const conversationEntitiesNoContext = conversationsToConversationEntities(conversations)
         setConversationEntitiesNoContext(conversationEntitiesNoContext)
-        scrollToBottom(false);
+        setInitScrolledToBottom(true)
       });
   }, [props.chat.id]);
 
@@ -210,11 +210,16 @@ export default function ChatPage(props: ChatProps) {
     setConversationEntities(conversationEntities);
   }, [props.chat, conversationEntitiesNoContext]);
 
-  useEffect(() => {
+  const [initScrolledToBottom, setInitScrolledToBottom] = useState(false);
+
+  useLayoutEffect(() => {
     if (conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting) {
       scrollToBottom(true);
     }
-  }, [conversationEntities]);
+    if (initScrolledToBottom) {
+      scrollToBottom(false);
+    }
+  }, [conversationEntities, initScrolledToBottom]);
 
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
@@ -276,8 +281,9 @@ export default function ChatPage(props: ChatProps) {
 
   const scrollToBottom = (smooth: boolean) => {
     virtuosoRef.current?.scrollToIndex({
-      index: Number.MAX_SAFE_INTEGER,
+      index: 'LAST',
       behavior: smooth ? 'smooth' : undefined,
+      align: 'end',
     })
   }
 
