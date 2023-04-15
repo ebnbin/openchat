@@ -3,18 +3,23 @@ import {
   Button, ButtonGroup,
   Dialog,
   DialogActions,
-  DialogContent, DialogTitle, MenuItem, Select,
+  DialogContent, DialogTitle, Icon, MenuItem, Select, SelectChangeEvent,
   TextField
 } from "@mui/material";
 import store from "../../util/store";
-import {Settings} from "../../util/data";
+import {Chat, Settings} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
-import {DeleteRounded} from "@mui/icons-material";
+import {BookmarksRounded, DeleteRounded} from "@mui/icons-material";
+import ChatIcon from "../../component/ChatIcon";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import {contentLikes, contentNewChat} from "../home/HomePage";
 
 interface SettingsDialogProps {
   settings: Settings;
   updateSettings: (settingsPartial: Partial<Settings>) => void;
+  chats: Chat[];
   dialogOpen: boolean
   handleDialogClose: () => void
 }
@@ -80,6 +85,29 @@ export function SettingsDialog(props: SettingsDialogProps) {
       props.handleDialogClose();
       setDataTimestamp({ data: Date.now() })
     }
+  }
+
+  const handleStartupPageChange = (event: SelectChangeEvent<number>) => {
+    props.updateSettings({
+      startup_page: event.target.value as number,
+    });
+  };
+
+  const startupPageIds = [contentNewChat, contentLikes, ...props.chats.map((chat) => chat.id)];
+
+  const chatById = (chatId: number) => {
+    return props.chats.find((chat) => chat.id === chatId)!;
+  }
+
+  const startupPageValue = () => {
+    const value = props.settings.startup_page;
+    if (value === contentNewChat || value === contentLikes) {
+      return value;
+    }
+    if (props.chats.some((chat) => chat.id === value)) {
+      return value;
+    }
+    return contentNewChat;
   }
 
   return (
@@ -164,6 +192,71 @@ export function SettingsDialog(props: SettingsDialogProps) {
               {'Send on Command+Enter'}
             </Button>
           </ButtonGroup>
+        </SettingsItem>
+        <SettingsItem
+          title={'Startup page'}
+        >
+          <Select
+            value={startupPageValue()}
+            onChange={handleStartupPageChange}
+            variant={'outlined'}
+            size={'small'}
+            sx={{
+            }}
+          >
+            {startupPageIds.map((chatId) => (
+              <MenuItem value={chatId}>
+                <Box
+                  key={chatId}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    height: '40px',
+                    // minWidth: '300px',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      marginRight: '16px',
+                      alignItems: 'center',
+                      display: 'flex',
+                    }}
+                  >
+                    {
+                      chatId !== contentNewChat && chatId !== contentLikes ? (
+                        <ChatIcon
+                          iconText={chatById(chatId).icon_text}
+                          iconTextSize={chatById(chatId).icon_text_size}
+                          iconColor={chatById(chatId).icon_color}
+                        />
+                      ) : (
+                        chatId === contentNewChat ? (
+                          <></>
+                          ) : (
+                          <BookmarksRounded
+                            sx={{
+                              marginX: '8px',
+                            }}
+                          />
+                        )
+                      )
+                    }
+                  </Box>
+                  <Typography
+                    variant={'body1'}
+                    noWrap={true}
+                  >
+                    {
+                      chatId === contentNewChat ? 'Welcome page' :
+                        chatId === contentLikes ? 'Save list' :
+                          (chatById(chatId).title === '' ? 'New chat' : chatById(chatId).title)
+                    }
+                  </Typography>
+                </Box>
+              </MenuItem>
+            ))}
+          </Select>
         </SettingsItem>
         <SettingsItem
           title={'OPENAI_API_KEY'}

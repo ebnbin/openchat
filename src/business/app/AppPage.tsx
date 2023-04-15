@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {createTheme, ThemeProvider} from "@mui/material";
-import {SettingsDialog} from "../settings/SettingsDialog";
 import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../util/util";
 import HomePage from "../home/HomePage";
@@ -17,12 +16,6 @@ export const useDataTimestamp = () => {
 
 export default function AppPage() {
   const [dataTimestamp, setDataTimestamp] = useState({ data: Date.now() })
-
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-
-  const handleSettingsClose = () => {
-    setSettingsOpen(false);
-  };
 
   const [settings, _setSettings] = useState(store.getSettings())
 
@@ -94,13 +87,7 @@ export default function AppPage() {
         <CssBaseline />
         <HomePage
           settings={settings}
-          setSettingsOpen={setSettingsOpen}
-        />
-        <SettingsDialog
-          settings={settings}
           updateSettings={updateSettings}
-          dialogOpen={settingsOpen}
-          handleDialogClose={handleSettingsClose}
         />
       </ThemeProvider>
     </DataTimestampContext.Provider>

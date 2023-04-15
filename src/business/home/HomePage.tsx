@@ -12,13 +12,14 @@ import LikesPage from "../likes/LikesPage";
 import HomeGridCard from "./HomeGridCard";
 import {useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../util/util";
+import {SettingsDialog} from "../settings/SettingsDialog";
 
 export const contentNewChat = 0;
 export const contentLikes = -1;
 
 interface HomePageProps {
   settings: Settings;
-  setSettingsOpen: (settingsOpen: boolean) => void
+  updateSettings: (settings: Partial<Settings>) => void;
 }
 
 export default function HomePage(props: HomePageProps) {
@@ -28,6 +29,7 @@ export default function HomePage(props: HomePageProps) {
     store.getChatsAsync()
       .then((chats) => {
         _setChats(chats)
+        setSelectedChatId(startupPage(chats))
       });
   }, []);
 
@@ -77,7 +79,16 @@ export default function HomePage(props: HomePageProps) {
     });
   }
 
-  const { setSettingsOpen } = props
+  const startupPage = (chats: Chat[]) => {
+    const value = props.settings.startup_page;
+    if (value === contentNewChat || value === contentLikes) {
+      return value;
+    }
+    if (chats.some((chat) => chat.id === value)) {
+      return value;
+    }
+    return contentNewChat;
+  }
 
   const [selectedChatId, setSelectedChatId] = useState(contentNewChat);
 
@@ -198,6 +209,12 @@ export default function HomePage(props: HomePageProps) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+  const handleSettingsClose = () => {
+    setSettingsOpen(false);
+  };
+
   return (
     <>
       <Box
@@ -263,6 +280,15 @@ export default function HomePage(props: HomePageProps) {
         updateChatPinTimestamps={updateChatPinTimestamps}
       />
       {dialogPage()}
+      {
+        <SettingsDialog
+          settings={props.settings}
+          updateSettings={props.updateSettings}
+          chats={chats}
+          dialogOpen={settingsOpen}
+          handleDialogClose={handleSettingsClose}
+        />
+      }
     </>
   );
 }
