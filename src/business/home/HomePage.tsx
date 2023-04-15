@@ -10,6 +10,8 @@ import store from "../../util/store";
 import Logo from "../../component/Logo";
 import LikesPage from "../likes/LikesPage";
 import HomeGridCard from "./HomeGridCard";
+import {useMediaQuery} from "@mui/material";
+import {widePageWidth} from "../../util/util";
 
 export const contentNewChat = 0;
 export const contentLikes = -1;
@@ -77,8 +79,6 @@ export default function HomePage(props: HomePageProps) {
 
   const { setSettingsOpen } = props
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
   const [selectedChatId, setSelectedChatId] = useState(contentNewChat);
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
@@ -90,13 +90,11 @@ export default function HomePage(props: HomePageProps) {
 
   const handleLikesClick = () => {
     setSelectedChatId(contentLikes)
-    setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
     setSelectedChatId(contentNewChat);
-    setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
@@ -192,6 +190,8 @@ export default function HomePage(props: HomePageProps) {
     };
   }, []);
 
+  const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
+
   return (
     <>
       <Box
@@ -202,19 +202,21 @@ export default function HomePage(props: HomePageProps) {
           flexDirection: 'row',
         }}
       >
-        <HomeDrawer
-          settings={props.settings}
-          chats={chats}
-          selectedChatId={selectedChatId}
-          setSelectedChatId={setSelectedChatId}
-          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-          setSettingsOpen={setSettingsOpen}
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
-          handleNewChatClick={handleNewChatClick}
-          handleLikesClick={handleLikesClick}
-          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-        />
+        {
+          isWidePage ? (
+            <HomeDrawer
+              settings={props.settings}
+              chats={chats}
+              selectedChatId={selectedChatId}
+              setSelectedChatId={setSelectedChatId}
+              handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
+              setSettingsOpen={setSettingsOpen}
+              handleNewChatClick={handleNewChatClick}
+              handleLikesClick={handleLikesClick}
+              handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+            />
+          ) : undefined
+        }
         <Box
           sx={{
             flexGrow: 1,
@@ -226,7 +228,6 @@ export default function HomePage(props: HomePageProps) {
             chats={chats}
             contentId={selectedChatId}
             handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-            setDrawerOpen={setMobileOpen}
             selectedContentId={selectedChatId}
             handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
             handleAppsClick={handleClick}
