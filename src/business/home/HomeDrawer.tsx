@@ -1,9 +1,9 @@
 import Drawer from "@mui/material/Drawer";
-import HomeDrawerContent from "./HomeDrawerContent";
 import * as React from "react";
 import {Chat, Settings} from "../../util/data";
+import HomeDrawerContent2 from "./HomeDrawerContent2";
 
-const drawerWidth = 300;
+export const drawerWidth = 301;
 
 interface HomeDrawerProps {
   settings: Settings,
@@ -15,21 +15,10 @@ interface HomeDrawerProps {
   handleNewChatClick: () => void,
   handleLikesClick: () => void,
   handleNewChatSettingsDialogOpen: () => void,
+  updateChatPinTimestamps: (pinTimestamps: Record<number, number>) => void,
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
-  const { chats, selectedChatId, setSelectedChatId, handleChatSettingsDialogOpen, setSettingsOpen,
-    handleNewChatClick
-  } = props
-
-  const handleClickSettingsOpen = () => {
-    setSettingsOpen(true);
-  };
-
-  const handleItemClick = (chatId: number) => {
-    setSelectedChatId(chatId)
-  }
-
   return (
     <Drawer
       variant={'permanent'}
@@ -40,16 +29,17 @@ export default function HomeDrawer(props: HomeDrawerProps) {
         '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
       }}
     >
-      <HomeDrawerContent
-        settings={props.settings}
-        chats={chats}
-        selectedContentId={selectedChatId}
-        handleChatSettingsDialogOpen={handleChatSettingsDialogOpen}
-        handleChatItemClick={handleItemClick}
-        handleSettingsDialogOpen={handleClickSettingsOpen}
-        handleNewChatClick={handleNewChatClick}
+      <HomeDrawerContent2
+        chats={props.chats}
+        handleClose={() => {}}
+        selectedContentId={props.selectedChatId}
+        setSelectedContentId={props.setSelectedChatId}
+        handleNewChatClick={props.handleNewChatClick}
         handleLikesClick={props.handleLikesClick}
         handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
+        handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
+        updateChatPinTimestamps={props.updateChatPinTimestamps}
+        isPopover={false}
       />
     </Drawer>
   )

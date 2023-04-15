@@ -87,6 +87,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
       }}
     >
       <AppBar
+        position={'sticky'}
         color={'default'}
       >
         <Toolbar
@@ -106,6 +107,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             }}
           />
           <IconButton
+            edge={isWidePage ? 'end' : undefined}
             color={'inherit'}
             onClick={props.selectedContentId === contentNewChat ? props.handleNewChatSettingsDialogOpen : handleChatSettingsOnClick}
             sx={{
@@ -118,6 +120,9 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             edge={'end'}
             color={'inherit'}
             onClick={props.handleAppsClick}
+            sx={{
+              display: isWidePage ? 'none' : undefined,
+            }}
           >
             <AppsRounded/>
           </IconButton>

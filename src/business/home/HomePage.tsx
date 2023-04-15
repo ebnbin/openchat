@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import HomeDrawer from "./HomeDrawer";
+import HomeDrawer, {drawerWidth} from "./HomeDrawer";
 import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
@@ -176,10 +176,12 @@ export default function HomePage(props: HomePageProps) {
 
   const open = Boolean(anchorEl);
 
+  const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
 
   useEffect(() => {
     function handleResize() {
+      setWidth(window.innerWidth);
       setHeight(window.innerHeight);
     }
 
@@ -196,7 +198,7 @@ export default function HomePage(props: HomePageProps) {
     <>
       <Box
         sx={{
-          width: '100%',
+          width: width,
           height: height,
           display: 'flex',
           flexDirection: 'row',
@@ -204,17 +206,26 @@ export default function HomePage(props: HomePageProps) {
       >
         {
           isWidePage ? (
-            <HomeDrawer
-              settings={props.settings}
-              chats={chats}
-              selectedChatId={selectedChatId}
-              setSelectedChatId={setSelectedChatId}
-              handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-              setSettingsOpen={setSettingsOpen}
-              handleNewChatClick={handleNewChatClick}
-              handleLikesClick={handleLikesClick}
-              handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-            />
+            <Box
+              sx={{
+                flexShrink: 0,
+                width: drawerWidth,
+                display: 'flex',
+              }}
+            >
+              <HomeDrawer
+                settings={props.settings}
+                chats={chats}
+                selectedChatId={selectedChatId}
+                setSelectedChatId={setSelectedChatId}
+                handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
+                setSettingsOpen={setSettingsOpen}
+                handleNewChatClick={handleNewChatClick}
+                handleLikesClick={handleLikesClick}
+                handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+                updateChatPinTimestamps={updateChatPinTimestamps}
+              />
+            </Box>
           ) : undefined
         }
         <Box
