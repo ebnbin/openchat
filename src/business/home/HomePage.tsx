@@ -173,12 +173,26 @@ export default function HomePage(props: HomePageProps) {
 
   const open = Boolean(anchorEl);
 
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    function handleResize() {
+      setHeight(window.innerHeight);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <>
       <Box
         sx={{
           width: '100%',
-          height: '100vh',
+          height: height,
           display: 'flex',
           flexDirection: 'row',
         }}
