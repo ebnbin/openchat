@@ -1,6 +1,11 @@
 import Box from "@mui/material/Box";
-import {Button, Divider, IconButton, Typography, useTheme} from "@mui/material";
-import {AddRounded, DashboardCustomizeRounded, FavoriteRounded, SettingsRounded} from "@mui/icons-material";
+import {Chip, Divider, IconButton, Typography, useTheme} from "@mui/material";
+import {
+  AddRounded, CloseRounded,
+  DashboardCustomizeRounded, DoneRounded,
+  FavoriteRounded,
+  SettingsRounded
+} from "@mui/icons-material";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ChatIcon from "../../component/ChatIcon";
@@ -129,89 +134,78 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           sx={{
             display: 'flex',
             flexDirection: 'row',
+            alignItems: 'center',
+            height: '48px',
           }}
         >
-          <Button
+          <Chip
             variant={'outlined'}
-            size={'small'}
+            color={'primary'}
+            label={'New chat'}
+            icon={<AddRounded/>}
             onClick={() => {
               props.handleNewChatClick();
               handlePopoverClose();
             }}
             sx={{
-              margin: '8px',
+              fontSize: theme.typography.body2.fontSize,
+              marginX: '16px',
               flexGrow: 1,
             }}
-          >
-            <AddRounded
-              sx={{
-                marginRight: '8px',
-              }}
-            />
-            {'New chat'}
-          </Button>
+          />
           <IconButton
-            onClick={() => {
-              props.handleSettingsDialogOpen();
-              handlePopoverClose();
-            }}
+            onClick={() => setUpdatingPins(true)}
             sx={{
               width: '48px',
+              height: '48px',
             }}
           >
-            <SettingsRounded/>
+            <DashboardCustomizeRounded/>
           </IconButton>
         </Box>
-        <Divider/>
       </Box>
       <Box
         sx={{
+          height: '48px',
+          alignItems: 'center',
           display: updatingPins ? 'flex' : 'none',
-          flexDirection: 'column',
-          flexGrow: 0,
+          flexDirection: 'row',
         }}
       >
-        <Box
+        <Typography
+          textAlign={'center'}
+          variant={'body2'}
+          color={theme.palette.primary.main}
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            padding: '8px',
+            flexGrow: 1,
           }}
         >
-          <Button
-            variant={'outlined'}
-            size={'small'}
-            onClick={cancelPinTimestamps}
-            sx={{
-              flexGrow: 1,
-              width: '0px',
-              textTransform: 'none',
-            }}
-          >
-            {'Cancel'}
-          </Button>
-          <Box
-            sx={{
-              width: '8px',
-            }}
-          >
-          </Box>
-          <Button
-            variant={'outlined'}
-            size={'small'}
-            onClick={savePinTimestamps}
-            sx={{
-              flexGrow: 1,
-              width: '0px',
-              textTransform: 'none',
-            }}
-          >
-            {'Save'}
-          </Button>
-        </Box>
-        <Divider/>
+          {'Customize your pins'}
+        </Typography>
+        <IconButton
+          onClick={cancelPinTimestamps}
+          sx={{
+            width: '48px',
+            height: '48px',
+            padding: '0px',
+            marginX: '0px',
+          }}
+        >
+          <CloseRounded/>
+        </IconButton>
+        <IconButton
+          onClick={savePinTimestamps}
+          sx={{
+            width: '48px',
+            height: '48px',
+            padding: '0px',
+            marginX: '0px',
+          }}
+        >
+          <DoneRounded/>
+        </IconButton>
       </Box>
-
+      <Divider/>
       <List
         sx={{
           flexGrow: 1,
@@ -415,28 +409,11 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           </ListItem>
         ))}
       </List>
-      <Button
-        size={'small'}
-        onClick={() => setUpdatingPins(true)}
-        sx={{
-          borderRadius: '0px',
-          width: '100%',
-          height: '40px',
-          textTransform: 'none',
-          display: updatingPins ? 'none' : 'flex',
-        }}
-      >
-        <DashboardCustomizeRounded
-          sx={{
-            marginRight: '8px',
-          }}
-        />
-        {'Customize your pins'}
-      </Button>
       <Divider/>
       <ListItem
         disablePadding={true}
         sx={{
+          display: updatingPins ? 'none' : 'flex',
           flexShrink: 0,
         }}
       >
