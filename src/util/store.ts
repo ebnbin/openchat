@@ -19,7 +19,7 @@ class Store {
   }
 
   async migrate() {
-    const currentVersion = 501; // 0.5.1
+    const currentVersion = 502; // 0.5.2
     const storedVersion = parseInt(localStorage.getItem('version') ?? '0', 10);
     if (storedVersion < 400) {
       localStorage.clear();

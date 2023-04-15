@@ -1,6 +1,6 @@
 {
   "name": "openchat",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "homepage": "https://ebnbin.github.io/openchat",
   "private": true,
   "dependencies": {
