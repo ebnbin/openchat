@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import React, {useEffect, useState} from "react";
 import {Chat} from "../../util/data";
 import ChatIcon from "../../component/ChatIcon";
-import {AddRounded, FavoriteRounded, SettingsRounded} from "@mui/icons-material";
+import {AddRounded, DashboardCustomizeRounded, FavoriteRounded, SettingsRounded} from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -305,7 +305,11 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               ))}
             </Box>
           ))}
-          <Divider/>
+          <Divider
+            sx={{
+              display: pinnedChats().length === 0 ? 'none' : 'block',
+            }}
+          />
           <ListItem
             key={contentLikes}
             disablePadding={true}
@@ -366,7 +370,11 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               </ListItemButton>
             </ListItem>
           ))}
-          <Divider/>
+          <Divider
+            sx={{
+              display: updatingPins ? 'none' : 'block',
+            }}
+          />
           <Button
             size={'small'}
             onClick={() => setUpdatingPins(true)}
@@ -378,6 +386,11 @@ export default function HomeGridCard(props: HomeGridCardProps) {
               display: updatingPins ? 'none' : 'flex',
             }}
           >
+            <DashboardCustomizeRounded
+              sx={{
+                marginRight: '8px',
+              }}
+            />
             {'Customize your pins'}
           </Button>
         </List>
