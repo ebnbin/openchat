@@ -1,6 +1,7 @@
 import React, {ChangeEvent, useState} from "react";
 import {Card, IconButton, InputAdornment, TextField, useMediaQuery} from "@mui/material";
 import {SendRounded} from "@mui/icons-material";
+import store from "../../util/store";
 
 interface ChatInputProps {
   isLoading: boolean,
@@ -18,10 +19,19 @@ export default function ChatInput(props: ChatInputProps) {
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey && !composition) {
-      event.preventDefault()
-      if (canRequest()) {
-        request()
+    if (store.getSettings().send_on_enter) {
+      if (event.key === 'Enter' && !event.shiftKey && !composition) {
+        event.preventDefault()
+        if (canRequest()) {
+          request()
+        }
+      }
+    } else {
+      if (event.key === 'Enter' && event.metaKey && !composition) {
+        event.preventDefault()
+        if (canRequest()) {
+          request()
+        }
       }
     }
   }

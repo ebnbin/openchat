@@ -32,4 +32,5 @@ export interface Usage {
 
 export interface Settings {
   'theme': string;
+  'send_on_enter': boolean;
 }

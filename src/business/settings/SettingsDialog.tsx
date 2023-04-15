@@ -136,6 +136,36 @@ export function SettingsDialog(props: SettingsDialogProps) {
           </ButtonGroup>
         </SettingsItem>
         <SettingsItem
+          title={'Send message'}
+        >
+          <ButtonGroup
+            size={'small'}
+          >
+            <Button
+              variant={props.settings.send_on_enter ? 'contained' : 'outlined'}
+              onClick={() => props.updateSettings({
+                send_on_enter: true,
+              })}
+              sx={{
+                textTransform: 'none',
+              }}
+            >
+              {'Send on Enter'}
+            </Button>
+            <Button
+              variant={props.settings.send_on_enter ? 'outlined' : 'contained'}
+              onClick={() => props.updateSettings({
+                send_on_enter: false,
+              })}
+              sx={{
+                textTransform: 'none',
+              }}
+            >
+              {'Send on Command+Enter'}
+            </Button>
+          </ButtonGroup>
+        </SettingsItem>
+        <SettingsItem
           title={'OPENAI_API_KEY'}
         >
           <TextField
