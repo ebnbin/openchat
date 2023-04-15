@@ -298,7 +298,7 @@ export default function HomeGridCard(props: HomeGridCardProps) {
                         fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
                       }}
                     >
-                      {chat.title}
+                      {chat.title === '' ? 'New chat' : chat.title}
                     </Typography>
                   </Box>
                 </ListItemButton>
