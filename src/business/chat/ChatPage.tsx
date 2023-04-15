@@ -182,7 +182,7 @@ export default function ChatPage(props: ChatProps) {
       .then((conversations) => {
         const conversationEntitiesNoContext = conversationsToConversationEntities(conversations)
         setConversationEntitiesNoContext(conversationEntitiesNoContext)
-        setInitScrolledToBottom(true)
+        scrollToBottom(false);
       });
   }, [props.chat.id]);
 
@@ -210,16 +210,11 @@ export default function ChatPage(props: ChatProps) {
     setConversationEntities(conversationEntities);
   }, [props.chat, conversationEntitiesNoContext]);
 
-  const [initScrolledToBottom, setInitScrolledToBottom] = useState(false);
-
   useLayoutEffect(() => {
     if (conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting) {
       scrollToBottom(true);
     }
-    if (initScrolledToBottom) {
-      scrollToBottom(false);
-    }
-  }, [conversationEntities, initScrolledToBottom]);
+  }, [conversationEntities]);
 
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
     const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)

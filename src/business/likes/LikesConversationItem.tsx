@@ -1,6 +1,6 @@
 import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
-import {HeartBrokenRounded} from "@mui/icons-material";
+import {BookmarkRemoveRounded} from "@mui/icons-material";
 import React from "react";
 import ConversationMessageItem from "../conversation/ConversationMessageItem";
 import {ConversationEntity} from "../conversation/ConversationList";
@@ -66,13 +66,13 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
             variant={'text'}
             size={'small'}
             color={'error'}
-            startIcon={<HeartBrokenRounded />}
+            startIcon={<BookmarkRemoveRounded />}
             onClick={() => props.unlikeConversationEntity(props.conversationEntity)}
             sx={{
               textTransform: 'none',
             }}
           >
-            {'Unlike'}
+            {'Remove'}
           </Button>
         </Box>
       </Box>

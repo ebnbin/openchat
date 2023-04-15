@@ -1,9 +1,8 @@
 import Box from "@mui/material/Box";
 import {Chip, Divider, IconButton, Typography, useTheme} from "@mui/material";
 import {
-  AddRounded, CloseRounded,
+  AddRounded, BookmarksRounded, CloseRounded,
   DashboardCustomizeRounded, DoneRounded,
-  FavoriteRounded,
   SettingsRounded
 } from "@mui/icons-material";
 import List from "@mui/material/List";
@@ -364,14 +363,14 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             selected={props.selectedContentId === contentLikes}
           >
             <ListItemIcon>
-              <FavoriteRounded
+              <BookmarksRounded
                 sx={{
                   marginLeft: '8px',
                 }}
               />
             </ListItemIcon>
             <ListItemText
-              primary={'Likes'}
+              primary={'Save list'}
               primaryTypographyProps={{
                 noWrap: props.selectedContentId !== contentLikes,
                 fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,

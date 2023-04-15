@@ -1,7 +1,11 @@
 import ConversationMessageItem from "./ConversationMessageItem";
 import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {contentWidth} from "../chat/ChatPage";
-import {DeleteRounded, FavoriteBorderRounded, FavoriteRounded} from "@mui/icons-material";
+import {
+  BookmarkAddedRounded,
+  BookmarkBorderRounded,
+  DeleteRounded
+} from "@mui/icons-material";
 import React from "react";
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
@@ -74,14 +78,14 @@ export default function ConversationItem(props: ConversationItemProps) {
             variant={'text'}
             size={'small'}
             color={'info'}
-            startIcon={props.conversationEntity.likeTimestamp === 0 ? <FavoriteBorderRounded /> : <FavoriteRounded />}
+            startIcon={props.conversationEntity.likeTimestamp === 0 ? <BookmarkBorderRounded /> : <BookmarkAddedRounded />}
             onClick={handleLikeClick}
             sx={{
               textTransform: 'none',
               visibility: props.conversationEntity.type !== ConversationEntityType.Requesting ? 'visible' : 'hidden',
             }}
           >
-            {props.conversationEntity.likeTimestamp === 0 ? 'Like' : 'Liked'}
+            {props.conversationEntity.likeTimestamp === 0 ? 'Save' : 'Saved'}
           </Button>
           <Button
             variant={'text'}

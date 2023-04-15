@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import {EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
+import {BookmarksRounded, EditRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
@@ -32,7 +32,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
     if (props.contentId === contentLikes) {
       return (
         <ListItemIcon>
-          <FavoriteRounded
+          <BookmarksRounded
             sx={{
               marginLeft: '8px',
             }}
@@ -57,7 +57,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
       return 'OpenChat';
     }
     if (props.contentId === contentLikes) {
-      return 'Likes';
+      return 'Save list';
     }
     const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
     if (chat.title === '') {

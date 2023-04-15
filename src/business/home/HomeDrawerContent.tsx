@@ -4,9 +4,8 @@ import {Chat, Settings} from "../../util/data";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import {
-  AddRounded,
-  EditRounded, FavoriteRounded,
-  SettingsRounded
+  AddRounded, BookmarksRounded,
+  EditRounded, SettingsRounded
 } from "@mui/icons-material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
@@ -97,14 +96,14 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
             selected={props.selectedContentId === contentLikes}
           >
             <ListItemIcon>
-              <FavoriteRounded
+              <BookmarksRounded
                 sx={{
                   marginLeft: '8px',
                 }}
               />
             </ListItemIcon>
             <ListItemText
-              primary={'Likes'}
+              primary={'Save list'}
               primaryTypographyProps={{
                 noWrap: props.selectedContentId !== contentLikes,
                 fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
