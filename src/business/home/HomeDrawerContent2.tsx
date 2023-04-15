@@ -113,7 +113,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
   return (
     <Box
       sx={{
-        maxHeight: props.isPopover ? '398px' : undefined,
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -217,17 +217,17 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           flexGrow: 1,
           overflow: 'auto',
           padding: '0px',
-          minWidth: '300px',
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
+          // minWidth: '300px',
+          // '&::-webkit-scrollbar': {
+          //   display: 'none',
+          // },
         }}
       >
         {pinnedChats().map((row, index) => (
           <Box
             key={index}
             sx={{
-              width: '300px',
+              // width: '300px',
               display: 'flex',
               flexDirection: 'row',
             }}
@@ -241,10 +241,9 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
                   color: theme.palette.text.primary,
                   display: 'flex',
                   flexDirection: 'column',
-                  width: '100px',
+                  flexGrow: 1,
                   maxWidth: '100px',
                   height: '100px',
-                  padding: '12px',
                   alignItems: 'center',
                   justifyContent: 'center',
                   textTransform: 'none',
@@ -252,43 +251,102 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
               >
                 <Box
                   sx={{
-                    width: '100%',
                     display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ChatIcon
-                    iconText={chat.icon_text}
-                    iconTextSize={chat.icon_text_size}
-                    iconColor={chat.icon_color}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    height: '32px',
-                    display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginTop: '4px',
+                    width: '100%',
                   }}
                 >
-                  <Typography
-                    variant={'caption'}
-                    align={'center'}
+                  <Box
                     sx={{
-                      width: '100%',
-                      overflow: 'hidden',
-                      maxLines: 2,
-                      textOverflow: 'ellipsis',
-                      lineHeight: 1.2,
-                      fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
+                      width: '80px',
+                      display: 'flex',
+                      justifyContent: 'center',
                     }}
                   >
-                    {chat.title === '' ? 'New chat' : chat.title}
-                  </Typography>
+                    <ChatIcon
+                      iconText={chat.icon_text}
+                      iconTextSize={chat.icon_text_size}
+                      iconColor={chat.icon_color}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      width: '80px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: '4px',
+                    }}
+                  >
+                    <Typography
+                      variant={'caption'}
+                      align={'center'}
+                      sx={{
+                        width: '100%',
+                        overflow: 'hidden',
+                        maxLines: 2,
+                        textOverflow: 'ellipsis',
+                        lineHeight: 1.2,
+                        fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
+                      }}
+                    >
+                      {chat.title === '' ? 'New chat' : chat.title}
+                    </Typography>
+                  </Box>
                 </Box>
               </ListItemButton>
             ))}
+            {
+              row.length < 3 ? (
+                <ListItemButton
+                  disabled={true}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexGrow: 3 - row.length,
+                    maxWidth: '100px',
+                    height: '100px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textTransform: 'none',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: '80px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
+                    >
+                    </Box>
+                    <Box
+                      sx={{
+                        width: '80px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: '4px',
+                      }}
+                    >
+                    </Box>
+                  </Box>
+                </ListItemButton>
+              ) : undefined
+            }
           </Box>
         ))}
         <Divider
@@ -301,7 +359,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           disablePadding={true}
           sx={{
             display: updatingPins ? 'none' : 'flex',
-            minWidth: '300px',
+            // minWidth: '300px',
           }}
         >
           <ListItemButton
@@ -332,7 +390,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             key={chat.id}
             disablePadding={true}
             sx={{
-              minWidth: '300px',
+              // minWidth: '300px',
             }}
           >
             <ListItemButton
@@ -356,30 +414,47 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             </ListItemButton>
           </ListItem>
         ))}
-        <Divider
+      </List>
+      <Button
+        size={'small'}
+        onClick={() => setUpdatingPins(true)}
+        sx={{
+          borderRadius: '0px',
+          width: '100%',
+          height: '40px',
+          textTransform: 'none',
+          display: updatingPins ? 'none' : 'flex',
+        }}
+      >
+        <DashboardCustomizeRounded
           sx={{
-            display: updatingPins ? 'none' : 'block',
+            marginRight: '8px',
           }}
         />
-        <Button
-          size={'small'}
-          onClick={() => setUpdatingPins(true)}
-          sx={{
-            borderRadius: '0px',
-            width: '100%',
-            height: '40px',
-            textTransform: 'none',
-            display: updatingPins ? 'none' : 'flex',
-          }}
+        {'Customize your pins'}
+      </Button>
+      <Divider/>
+      <ListItem
+        disablePadding={true}
+        sx={{
+          flexShrink: 0,
+        }}
+      >
+        <ListItemButton
+          onClick={props.handleSettingsDialogOpen}
         >
-          <DashboardCustomizeRounded
-            sx={{
-              marginRight: '8px',
-            }}
+          <ListItemIcon>
+            <SettingsRounded
+              sx={{
+                marginLeft: '8px',
+              }}
+            />
+          </ListItemIcon>
+          <ListItemText
+            primary={'Settings'}
           />
-          {'Customize your pins'}
-        </Button>
-      </List>
+        </ListItemButton>
+      </ListItem>
     </Box>
   )
 }

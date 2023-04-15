@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import {AppsRounded, EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
+import {EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
@@ -16,6 +16,7 @@ interface HomeAppBarProps {
   chats: Chat[],
   contentId: number,
   handleChatSettingsDialogOpen: () => void,
+  setDrawerOpen: (drawerOpen: boolean) => void,
   selectedContentId: number,
   handleNewChatSettingsDialogOpen: () => void,
   handleAppsClick: (event: React.MouseEvent<HTMLButtonElement>) => void,
@@ -119,12 +120,12 @@ export default function HomeAppBar(props: HomeAppBarProps) {
           <IconButton
             edge={'end'}
             color={'inherit'}
-            onClick={props.handleAppsClick}
+            onClick={() => props.setDrawerOpen(true)}
             sx={{
               display: isWidePage ? 'none' : undefined,
             }}
           >
-            <AppsRounded/>
+            <MenuRounded/>
           </IconButton>
         </Toolbar>
       </AppBar>
