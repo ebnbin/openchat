@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import HomeDrawer from "./HomeDrawer";
 import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
@@ -76,6 +77,8 @@ export default function HomePage(props: HomePageProps) {
 
   const { setSettingsOpen } = props
 
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
   const [selectedChatId, setSelectedChatId] = useState(contentNewChat);
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
@@ -87,11 +90,13 @@ export default function HomePage(props: HomePageProps) {
 
   const handleLikesClick = () => {
     setSelectedChatId(contentLikes)
+    setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
     setSelectedChatId(contentNewChat);
+    setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
@@ -194,25 +199,47 @@ export default function HomePage(props: HomePageProps) {
           width: '100%',
           height: height,
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
         }}
       >
-        <HomeAppBar
+        <HomeDrawer
+          settings={props.settings}
           chats={chats}
-          contentId={selectedChatId}
+          selectedChatId={selectedChatId}
+          setSelectedChatId={setSelectedChatId}
           handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-          selectedContentId={selectedChatId}
+          setSettingsOpen={setSettingsOpen}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+          handleNewChatClick={handleNewChatClick}
+          handleLikesClick={handleLikesClick}
           handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-          handleAppsClick={handleClick}
         />
         <Box
-          style={{
-            width: '100%',
+          sx={{
             flexGrow: 1,
-            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {contentPage()}
+          <HomeAppBar
+            chats={chats}
+            contentId={selectedChatId}
+            handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
+            setDrawerOpen={setMobileOpen}
+            selectedContentId={selectedChatId}
+            handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+            handleAppsClick={handleClick}
+          />
+          <Box
+            style={{
+              width: '100%',
+              flexGrow: 1,
+              overflow: 'auto',
+            }}
+          >
+            {contentPage()}
+          </Box>
         </Box>
       </Box>
       <HomeGridCard

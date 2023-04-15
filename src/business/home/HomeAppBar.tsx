@@ -2,10 +2,12 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import {AppsRounded, EditRounded, FavoriteRounded} from "@mui/icons-material";
+import {AppsRounded, EditRounded, FavoriteRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
+import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../util/data";
+import {widePageWidth} from "../../util/util";
 import {contentLikes, contentNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ChatIcon from "../../component/ChatIcon";
@@ -14,12 +16,15 @@ interface HomeAppBarProps {
   chats: Chat[],
   contentId: number,
   handleChatSettingsDialogOpen: () => void,
+  setDrawerOpen: (drawerOpen: boolean) => void,
   selectedContentId: number,
   handleNewChatSettingsDialogOpen: () => void,
   handleAppsClick: (event: React.MouseEvent<HTMLButtonElement>) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
+  const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
+
   const icon = () => {
     if (props.contentId === contentNewChat) {
       return undefined;
@@ -109,6 +114,12 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             }}
           >
             <EditRounded/>
+          </IconButton>
+          <IconButton
+            color={'inherit'}
+            onClick={() => props.setDrawerOpen(true)}
+          >
+            <MenuRounded/>
           </IconButton>
           <IconButton
             edge={'end'}
