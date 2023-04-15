@@ -18,12 +18,12 @@ class Store {
   }
 
   async migrate() {
-    const currentVersion = 500; // 0.5.0
+    const currentVersion = 501; // 0.5.1
     const storedVersion = parseInt(localStorage.getItem('version') ?? '0', 10);
     if (storedVersion < 400) {
       localStorage.clear();
     }
-    if (storedVersion < currentVersion) {
+    if (storedVersion < 500) {
       await update<Chat[]>('chats', (chats) => {
         if (!chats) {
           return [];
@@ -33,6 +33,8 @@ class Store {
           return chat;
         });
       });
+    }
+    if (storedVersion < currentVersion) {
       localStorage.setItem('version', `${currentVersion}`);
     }
   }
