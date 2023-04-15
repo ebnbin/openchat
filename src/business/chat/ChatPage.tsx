@@ -314,7 +314,7 @@ export default function ChatPage(props: ChatProps) {
           height: '100%',
           position: 'absolute',
           display: props.children === undefined ? 'none' : 'flex',
-          paddingBottom: '72px',
+          paddingBottom: '64px',
         }}
       >
         {props.children}
@@ -322,7 +322,7 @@ export default function ChatPage(props: ChatProps) {
       <Box
         sx={{
           width: '100%',
-          position: 'absolute',
+          position: 'fixed',
           bottom: 0,
         }}
       >

@@ -194,33 +194,25 @@ export default function HomePage(props: HomePageProps) {
           width: '100%',
           height: height,
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection: 'column',
         }}
       >
+        <HomeAppBar
+          chats={chats}
+          contentId={selectedChatId}
+          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
+          selectedContentId={selectedChatId}
+          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+          handleAppsClick={handleClick}
+        />
         <Box
-          sx={{
+          style={{
+            width: '100%',
             flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
+            overflow: 'auto',
           }}
         >
-          <HomeAppBar
-            chats={chats}
-            contentId={selectedChatId}
-            handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-            selectedContentId={selectedChatId}
-            handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-            handleAppsClick={handleClick}
-          />
-          <Box
-            style={{
-              width: '100%',
-              flexGrow: 1,
-              overflow: 'auto',
-            }}
-          >
-            {contentPage()}
-          </Box>
+          {contentPage()}
         </Box>
       </Box>
       <HomeGridCard
