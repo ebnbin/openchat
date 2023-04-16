@@ -316,7 +316,7 @@ export default function ChatPage(props: ChatProps) {
           deleteConversationEntity={handleDeleteConversationClick}
           virtuosoRef={virtuosoRef}
           atBottomStateChange={(atBottom) => {
-            setShowScrollToBottom(!atBottom)
+            setShowScrollToBottom(!atBottom && conversationEntities.length > 0)
           }}
         />
       </Box>
