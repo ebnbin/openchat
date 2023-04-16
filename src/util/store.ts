@@ -107,6 +107,7 @@ class Store {
       chat_id: 0,
       user_message: '',
       assistant_message: '',
+      finish_reason: '',
       like_timestamp: 0,
       ...conversation,
     };

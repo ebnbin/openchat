@@ -21,6 +21,7 @@ export interface Conversation {
   'chat_id': number;
   'user_message': string;
   'assistant_message': string;
+  'finish_reason': string;
   'like_timestamp': number;
 }
 

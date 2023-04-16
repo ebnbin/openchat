@@ -12,6 +12,7 @@ function conversationsToConversationEntities(conversations: Conversation[]): Con
       chatId: conversation.chat_id,
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
+      finishReason: conversation.finish_reason,
       likeTimestamp: conversation.like_timestamp,
       userMessageMarkdown: true,
       assistantMessageMarkdown: true,

@@ -20,6 +20,7 @@ function conversationsToConversationEntities(conversations: Conversation[]): Con
       chatId: conversation.chat_id,
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
+      finishReason: conversation.finish_reason,
       likeTimestamp: conversation.like_timestamp,
       userMessageMarkdown: true,
       assistantMessageMarkdown: true,
@@ -67,6 +68,7 @@ function getRequestingConversationEntity(conversation: Conversation): Conversati
     chatId: conversation.chat_id,
     userMessage: conversation.user_message,
     assistantMessage: conversation.assistant_message,
+    finishReason: conversation.finish_reason,
     likeTimestamp: conversation.like_timestamp,
     userMessageMarkdown: true,
     assistantMessageMarkdown: true,
@@ -134,6 +136,7 @@ function handleResponseUpdateConversation(
   const responseMessageContent = response.choices[0].message!!.content;
   store.updateConversationsUpdateConversationAsync(requestingConversation.id, {
     assistant_message: responseMessageContent,
+    finish_reason: response.choices[0].finish_reason,
   })
 }
 
@@ -148,6 +151,9 @@ function getResponseConversationEntitiesNoContext(
       assistantMessage: conversationEntity.type === ConversationEntityType.Requesting
         ? responseMessageContent
         : conversationEntity.assistantMessage,
+      finishReason: conversationEntity.type === ConversationEntityType.Requesting
+        ? (response.choices[0].finish_reason ?? '')
+        : conversationEntity.finishReason,
       type: ConversationEntityType.Default,
     };
   });

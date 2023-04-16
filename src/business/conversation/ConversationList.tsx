@@ -14,6 +14,7 @@ export interface ConversationEntity {
   chatId: number;
   userMessage: string;
   assistantMessage: string;
+  finishReason: string;
   likeTimestamp: number;
   userMessageMarkdown: boolean,
   assistantMessageMarkdown: boolean,
