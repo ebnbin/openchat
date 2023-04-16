@@ -6,6 +6,9 @@ class Store {
   private readonly usage: Preference<Usage>;
   private readonly settings: Preference<Settings>;
 
+  readonly theme: Preference<string>;
+  readonly openAIApiKey: Preference<string>;
+
   constructor() {
     this.usage = new Preference<Usage>('usage', {
       tokens: 0,
@@ -17,6 +20,9 @@ class Store {
       startup_page_id: 0,
       selected_page_id: 0,
     } as Settings);
+
+    this.theme = new Preference<string>('theme', 'system');
+    this.openAIApiKey = new Preference<string>('openai_api_key', '');
   }
 
   async migrate() {
@@ -257,14 +263,6 @@ class Store {
 
   updateSettings(settings: Partial<Settings>) {
     this.settings.update(settings);
-  }
-
-  getTheme(): string {
-    return localStorage.getItem('theme') ?? 'system';
-  }
-
-  setTheme(theme: string) {
-    localStorage.setItem('theme', theme);
   }
 
   //*******************************************************************************************************************

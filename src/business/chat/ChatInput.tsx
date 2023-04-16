@@ -40,7 +40,7 @@ export default function ChatInput(props: ChatInputProps) {
   }
 
   const handleSendClick = () => {
-    if (store.getOpenAIApiKey() === '') {
+    if (store.openAIApiKey.get() === '') {
       setSnackbarOpen(true)
     } else if (canRequest()) {
       const currInput = input

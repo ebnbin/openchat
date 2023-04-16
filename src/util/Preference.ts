@@ -25,11 +25,19 @@ export default class Preference<T> {
     if (json === null) {
       value = this.defaultValue;
     } else {
-      const parsedValue = JSON.parse(json);
-      value = {
-        ...this.defaultValue,
-        ...parsedValue,
-      };
+      if (typeof this.defaultValue === 'string') {
+        value = json as T;
+      } else if (typeof this.defaultValue === 'number') {
+        value = Number(json) as T;
+      } else if (typeof this.defaultValue === 'boolean') {
+        value = (json === 'true') as T;
+      } else {
+        const parsedValue = JSON.parse(json);
+        value = {
+          ...this.defaultValue,
+          ...parsedValue,
+        };
+      }
     }
     this.cacheValue = value;
     this.cached = true;
@@ -42,11 +50,23 @@ export default class Preference<T> {
     }
     this.cacheValue = value;
     this.cached = true;
-    const json = JSON.stringify(value);
+    let json;
+    if (typeof value === 'string') {
+      json = value;
+    } else if (typeof value === 'number') {
+      json = value.toString();
+    } else if (typeof value === 'boolean') {
+      json = value.toString();
+    } else {
+      json = JSON.stringify(value);
+    }
     localStorage.setItem(this.key, json);
   }
 
   update(value: Partial<T>): T {
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      throw new Error('Preference.update() does not support primitive types');
+    }
     this.set({
       ...this.get(),
       ...value,

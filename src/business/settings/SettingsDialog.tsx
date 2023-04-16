@@ -33,7 +33,13 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog(props: SettingsDialogProps) {
-  const [openAIApiKey, setOpenAIApiKey] = useState(store.getOpenAIApiKey())
+  const [openAIApiKey, _setOpenAIApiKey] = useState(store.openAIApiKey.get())
+
+  const setOpenAIApiKey = (openAIApiKey: string) => {
+    _setOpenAIApiKey(openAIApiKey)
+    store.openAIApiKey.set(openAIApiKey)
+  }
+
   const [githubToken, setGithubToken] = useState(store.getGithubToken())
   const [githubGistId, setGithubGistId] = useState(store.getGithubGistId())
 
@@ -294,7 +300,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
               value={openAIApiKey}
               onChange={(event) => {
                 setOpenAIApiKey(event.target.value);
-                store.setOpenAIApiKey(event.target.value);
               }}
               type={showOpenAIAPIKey ? 'text' : 'password'}
               endAdornment={

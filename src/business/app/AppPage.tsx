@@ -27,11 +27,11 @@ export default function AppPage() {
     }
   }
 
-  const [storeTheme, _setStoreTheme] = useState(store.getTheme())
+  const [storeTheme, _setStoreTheme] = useState(store.theme.get())
 
   const setStoreTheme = (theme: string) => {
     _setStoreTheme(theme)
-    store.setTheme(theme)
+    store.theme.set(theme)
   }
 
   const isSystemDarkMode = useDarkMode()
