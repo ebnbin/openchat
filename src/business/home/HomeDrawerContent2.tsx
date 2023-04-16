@@ -134,7 +134,8 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            height: '48px',
+            height: '56px',
+            paddingX: '4px',
           }}
         >
           <Chip
@@ -153,6 +154,19 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             }}
           />
           <IconButton
+            onClick={() => {
+              props.handleLikesClick();
+              handlePopoverClose();
+            }}
+            color={props.selectedContentId === contentLikes ? 'primary' : 'default'}
+            sx={{
+              width: '48px',
+              height: '48px',
+            }}
+          >
+            <BookmarksRounded/>
+          </IconButton>
+          <IconButton
             onClick={() => setUpdatingPins(true)}
             sx={{
               width: '48px',
@@ -165,10 +179,11 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
       </Box>
       <Box
         sx={{
-          height: '48px',
           alignItems: 'center',
           display: updatingPins ? 'flex' : 'none',
           flexDirection: 'row',
+          height: '56px',
+          paddingX: '4px',
         }}
       >
         <Typography
@@ -349,37 +364,6 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             display: pinnedChats().length === 0 ? 'none' : 'block',
           }}
         />
-        <ListItem
-          key={contentLikes}
-          disablePadding={true}
-          sx={{
-            display: updatingPins ? 'none' : 'flex',
-            // minWidth: '300px',
-          }}
-        >
-          <ListItemButton
-            onClick={() => {
-              props.handleLikesClick();
-              handlePopoverClose();
-            }}
-            selected={props.selectedContentId === contentLikes}
-          >
-            <ListItemIcon>
-              <BookmarksRounded
-                sx={{
-                  marginLeft: '8px',
-                }}
-              />
-            </ListItemIcon>
-            <ListItemText
-              primary={'Save list'}
-              primaryTypographyProps={{
-                noWrap: props.selectedContentId !== contentLikes,
-                fontWeight: props.selectedContentId === contentLikes ? 'bold' : undefined,
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
         {unpinnedChats().map((chat: Chat) => (
           <ListItem
             key={chat.id}
