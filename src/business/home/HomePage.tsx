@@ -4,7 +4,7 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
-import {Chat, Settings} from "../../util/data";
+import {Chat} from "../../util/data";
 import {useEffect, useState} from "react";
 import store from "../../util/store";
 import Logo from "../../component/Logo";
@@ -19,8 +19,8 @@ export const contentLikes = -1;
 export const contentLatest = Number.MIN_SAFE_INTEGER;
 
 interface HomePageProps {
-  settings: Settings;
-  updateSettings: (settings: Partial<Settings>) => void;
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
 export default function HomePage(props: HomePageProps) {
@@ -81,7 +81,7 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const startupPage = (chats: Chat[]) => {
-    const value = props.settings.startup_page_id;
+    const value = store.getSettings().startup_page_id;
     if (value === contentNewChat || value === contentLikes) {
       return value;
     }
@@ -244,7 +244,6 @@ export default function HomePage(props: HomePageProps) {
         }}
       >
         <HomeDrawer
-          settings={props.settings}
           chats={chats}
           selectedChatId={selectedChatId}
           setSelectedChatId={updateSelectedChatId}
@@ -300,8 +299,8 @@ export default function HomePage(props: HomePageProps) {
       {dialogPage()}
       {
         <SettingsDialog
-          settings={props.settings}
-          updateSettings={props.updateSettings}
+          theme={props.theme}
+          setTheme={props.setTheme}
           chats={chats}
           dialogOpen={settingsOpen}
           handleDialogClose={handleSettingsClose}

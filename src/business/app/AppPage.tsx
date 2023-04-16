@@ -6,7 +6,6 @@ import HomePage from "../home/HomePage";
 import {blue, blueGrey, grey, red} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";
 import store from "../../util/store";
-import {Settings} from "../../util/data";
 
 const DataTimestampContext = createContext<any>(null);
 
@@ -16,16 +15,6 @@ export const useDataTimestamp = () => {
 
 export default function AppPage() {
   const [dataTimestamp, setDataTimestamp] = useState({ data: Date.now() })
-
-  const [settings, _setSettings] = useState(store.getSettings())
-
-  const updateSettings = (settingsPartial: Partial<Settings>) => {
-    _setSettings({
-      ...settings,
-      ...settingsPartial,
-    })
-    store.updateSettings(settingsPartial)
-  }
 
   const themeMode = (darkMode: string, isSystemDarkMode: boolean) => {
     switch (darkMode) {
@@ -38,8 +27,15 @@ export default function AppPage() {
     }
   }
 
+  const [storeTheme, _setStoreTheme] = useState(store.getTheme())
+
+  const setStoreTheme = (theme: string) => {
+    _setStoreTheme(theme)
+    store.setTheme(theme)
+  }
+
   const isSystemDarkMode = useDarkMode()
-  const isDarkMode = themeMode(settings.theme, isSystemDarkMode) === 'dark'
+  const isDarkMode = themeMode(storeTheme, isSystemDarkMode) === 'dark'
   const theme = isDarkMode ? createTheme({
     palette: {
       mode: 'dark',
@@ -86,8 +82,8 @@ export default function AppPage() {
       >
         <CssBaseline />
         <HomePage
-          settings={settings}
-          updateSettings={updateSettings}
+          theme={storeTheme}
+          setTheme={setStoreTheme}
         />
       </ThemeProvider>
     </DataTimestampContext.Provider>

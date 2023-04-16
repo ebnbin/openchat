@@ -25,8 +25,8 @@ import Typography from "@mui/material/Typography";
 import {contentLatest, contentLikes, contentNewChat} from "../home/HomePage";
 
 interface SettingsDialogProps {
-  settings: Settings;
-  updateSettings: (settingsPartial: Partial<Settings>) => void;
+  theme: string;
+  setTheme: (theme: string) => void;
   chats: Chat[];
   dialogOpen: boolean
   handleDialogClose: () => void
@@ -36,6 +36,16 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const [openAIApiKey, setOpenAIApiKey] = useState(store.getOpenAIApiKey())
   const [githubToken, setGithubToken] = useState(store.getGithubToken())
   const [githubGistId, setGithubGistId] = useState(store.getGithubGistId())
+
+  const [settings, _setSettings] = useState(store.getSettings())
+
+  const updateSettings = (settingsPartial: Partial<Settings>) => {
+    _setSettings({
+      ...settings,
+      ...settingsPartial,
+    })
+    store.updateSettings(settingsPartial)
+  }
 
   const usageText = () => {
     const usage = store.getUsage()
@@ -96,7 +106,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   }
 
   const handleStartupPageChange = (event: SelectChangeEvent<number>) => {
-    props.updateSettings({
+    updateSettings({
       startup_page_id: event.target.value as number,
     });
   };
@@ -108,7 +118,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   }
 
   const startupPageValue = () => {
-    const value = props.settings.startup_page_id;
+    const value = settings.startup_page_id;
     if (value === contentNewChat || value === contentLikes || value === contentLatest) {
       return value;
     }
@@ -146,10 +156,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
             size={'small'}
           >
             <Button
-              variant={props.settings.theme === 'system' ? 'contained' : 'outlined'}
-              onClick={() => props.updateSettings({
-                theme: 'system',
-              })}
+              variant={props.theme === 'system' ? 'contained' : 'outlined'}
+              onClick={() => props.setTheme('system')}
               sx={{
                 textTransform: 'none',
               }}
@@ -157,10 +165,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
               {'System'}
             </Button>
             <Button
-              variant={props.settings.theme === 'light' ? 'contained' : 'outlined'}
-              onClick={() => props.updateSettings({
-                theme: 'light',
-              })}
+              variant={props.theme === 'light' ? 'contained' : 'outlined'}
+              onClick={() => props.setTheme('light')}
               sx={{
                 textTransform: 'none',
               }}
@@ -168,10 +174,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
               {'Light'}
             </Button>
             <Button
-              variant={props.settings.theme === 'dark' ? 'contained' : 'outlined'}
-              onClick={() => props.updateSettings({
-                theme: 'dark',
-              })}
+              variant={props.theme === 'dark' ? 'contained' : 'outlined'}
+              onClick={() => props.setTheme('dark')}
               sx={{
                 textTransform: 'none',
               }}
@@ -187,8 +191,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
             size={'small'}
           >
             <Button
-              variant={props.settings.send_on_enter ? 'contained' : 'outlined'}
-              onClick={() => props.updateSettings({
+              variant={settings.send_on_enter ? 'contained' : 'outlined'}
+              onClick={() => updateSettings({
                 send_on_enter: true,
               })}
               sx={{
@@ -198,8 +202,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
               {'Enter'}
             </Button>
             <Button
-              variant={props.settings.send_on_enter ? 'outlined' : 'contained'}
-              onClick={() => props.updateSettings({
+              variant={settings.send_on_enter ? 'outlined' : 'contained'}
+              onClick={() => updateSettings({
                 send_on_enter: false,
               })}
               sx={{

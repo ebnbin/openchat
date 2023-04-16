@@ -32,7 +32,6 @@ export interface Usage {
 }
 
 export interface Settings {
-  'theme': string;
   'send_on_enter': boolean;
   'startup_page_id': number;
   'selected_page_id': number;

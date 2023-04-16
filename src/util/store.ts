@@ -13,7 +13,6 @@ class Store {
       char_count: 0,
     } as Usage);
     this.settings = new Preference<Settings>('settings', {
-      theme: 'system',
       send_on_enter: true,
       startup_page_id: 0,
       selected_page_id: 0,
@@ -258,6 +257,14 @@ class Store {
 
   updateSettings(settings: Partial<Settings>) {
     this.settings.update(settings);
+  }
+
+  getTheme(): string {
+    return localStorage.getItem('theme') ?? 'system';
+  }
+
+  setTheme(theme: string) {
+    localStorage.setItem('theme', theme);
   }
 
   //*******************************************************************************************************************
