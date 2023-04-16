@@ -288,6 +288,8 @@ export default function ChatPage(props: ChatProps) {
     })
   }
 
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
   return (
     <Box
       sx={{
@@ -313,6 +315,9 @@ export default function ChatPage(props: ChatProps) {
           updateConversationEntityLike={updateConversationEntityLike}
           deleteConversationEntity={handleDeleteConversationClick}
           virtuosoRef={virtuosoRef}
+          atBottomStateChange={(atBottom) => {
+            setShowScrollToBottom(!atBottom)
+          }}
         />
       </Box>
       <Box
@@ -342,6 +347,10 @@ export default function ChatPage(props: ChatProps) {
           <ChatInput
             isLoading={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting}
             handleRequest={handleRequest}
+            showScrollToButton={showScrollToBottom}
+            handleScrollToBottom={() => {
+              scrollToBottom(true);
+            }}
           />
         </Box>
       </Box>

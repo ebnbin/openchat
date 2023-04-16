@@ -29,6 +29,7 @@ interface ConversationListProps {
   updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
+  atBottomStateChange: (atBottom: boolean) => void;
 }
 
 export default function ConversationList(props: ConversationListProps) {
@@ -44,6 +45,8 @@ export default function ConversationList(props: ConversationListProps) {
       ref={props.virtuosoRef}
       data={[...conversationEntities, 0]}
       totalCount={conversationEntities.length + 1}
+      atBottomStateChange={props.atBottomStateChange}
+      atBottomThreshold={161}
       itemContent={(index, item) => {
         if (item === 0) {
           return (
