@@ -1,16 +1,24 @@
 import React, {useState} from "react";
 import {
-  Button, ButtonGroup,
+  Button,
+  ButtonGroup,
   Dialog,
   DialogActions,
-  DialogContent, DialogTitle, Icon, MenuItem, Select, SelectChangeEvent,
-  TextField
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputAdornment, InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent
 } from "@mui/material";
 import store from "../../util/store";
 import {Chat, Settings} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
-import {BookmarksRounded, DeleteRounded} from "@mui/icons-material";
+import {BookmarksRounded, DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";
 import ChatIcon from "../../component/ChatIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -73,7 +81,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
       .then((content) => store.setData(JSON.parse(content)))
       .then(() => {
         setDataTimestamp({ data: Date.now() })
-        props.handleDialogClose();
+        handleDialogClose2();
         alert('Download success');
       })
       .catch(() => alert('Download error'));
@@ -82,7 +90,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const handleDeleteAllDataClick = () => {
     if (window.confirm('Are you sure you want to delete all your data?')) {
       store.deleteAllData();
-      props.handleDialogClose();
+      handleDialogClose2();
       setDataTimestamp({ data: Date.now() })
     }
   }
@@ -110,11 +118,20 @@ export function SettingsDialog(props: SettingsDialogProps) {
     return contentNewChat;
   }
 
+  const [showOpenAIAPIKey, setShowOpenAIAPIKey] = React.useState(false);
+  const [showGitHubToken, setShowGitHubToken] = React.useState(false);
+
+  const handleDialogClose2 = () => {
+    setShowOpenAIAPIKey(false);
+    setShowGitHubToken(false);
+    props.handleDialogClose();
+  }
+
   return (
     <Dialog
       fullWidth={true}
       open={props.dialogOpen}
-      onClose={props.handleDialogClose}
+      onClose={handleDialogClose2}
     >
       <DialogTitle>
         {'Settings'}
@@ -262,46 +279,95 @@ export function SettingsDialog(props: SettingsDialogProps) {
         <SettingsItem
           title={'OPENAI_API_KEY'}
         >
-          <TextField
-            variant={'outlined'}
-            size={'small'}
+          <FormControl
             fullWidth={true}
-            placeholder={'OPENAI_API_KEY'}
-            value={openAIApiKey}
-            onChange={(event) => {
-              setOpenAIApiKey(event.target.value);
-              store.setOpenAIApiKey(event.target.value);
-            }}
-          />
+            variant={'outlined'}
+            size={'small'}>
+            <OutlinedInput
+              size={'small'}
+              fullWidth={true}
+              placeholder={'OPENAI_API_KEY'}
+              value={openAIApiKey}
+              onChange={(event) => {
+                setOpenAIApiKey(event.target.value);
+                store.setOpenAIApiKey(event.target.value);
+              }}
+              type={showOpenAIAPIKey ? 'text' : 'password'}
+              endAdornment={
+                <InputAdornment
+                  position="end"
+                >
+                  <IconButton
+                    onClick={() => setShowOpenAIAPIKey(!showOpenAIAPIKey)}
+                    edge={'end'}
+                  >
+                    {showOpenAIAPIKey ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
         </SettingsItem>
         <SettingsItem
           title={'Backup and restore'}
         >
-          <TextField
+          <FormControl
+            fullWidth={true}
             variant={'outlined'}
             size={'small'}
-            fullWidth={true}
-            placeholder={'GitHub token'}
-            value={githubToken}
-            onChange={(event) => {
-              setGithubToken(event.target.value);
-              store.setGithubToken(event.target.value);
-            }}
-          />
-          <TextField
-            variant={'outlined'}
-            size={'small'}
-            fullWidth={true}
-            placeholder={'GitHub gist id'}
-            value={githubGistId}
-            onChange={(event) => {
-              setGithubGistId(event.target.value);
-              store.setGithubGistId(event.target.value);
-            }}
             sx={{
-              marginTop: '8px',
+              marginTop: '16px',
             }}
-          />
+          >
+            <InputLabel>
+              {'GitHub token'}
+            </InputLabel>
+            <OutlinedInput
+              label={'GitHub token'}
+              size={'small'}
+              fullWidth={true}
+              value={githubToken}
+              onChange={(event) => {
+                setGithubToken(event.target.value);
+                store.setGithubToken(event.target.value);
+              }}
+              type={showGitHubToken ? 'text' : 'password'}
+              endAdornment={
+                <InputAdornment
+                  position="end"
+                >
+                  <IconButton
+                    onClick={() => setShowGitHubToken(!showGitHubToken)}
+                    edge={'end'}
+                  >
+                    {showGitHubToken ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+          <FormControl
+            fullWidth={true}
+            variant={'outlined'}
+            size={'small'}
+            sx={{
+              marginTop: '16px',
+            }}
+          >
+            <InputLabel>
+              {'GitHub gist id'}
+            </InputLabel>
+            <OutlinedInput
+              label={'GitHub gist id'}
+              size={'small'}
+              fullWidth={true}
+              value={githubGistId}
+              onChange={(event) => {
+                setGithubGistId(event.target.value);
+                store.setGithubGistId(event.target.value);
+              }}
+            />
+          </FormControl>
           <Button
             onClick={gistBackup}
             sx={{
@@ -338,7 +404,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={props.handleDialogClose}
+          onClick={handleDialogClose2}
         >
           {'OK'}
         </Button>
