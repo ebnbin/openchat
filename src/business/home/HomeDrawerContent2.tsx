@@ -279,8 +279,10 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
                       align={'center'}
                       sx={{
                         width: '100%',
+                        display: '-webkit-box',
                         overflow: 'hidden',
-                        maxLines: 2,
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2,
                         textOverflow: 'ellipsis',
                         lineHeight: 1.2,
                         fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
