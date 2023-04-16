@@ -14,7 +14,7 @@ import {BookmarksRounded, DeleteRounded} from "@mui/icons-material";
 import ChatIcon from "../../component/ChatIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {contentLikes, contentNewChat} from "../home/HomePage";
+import {contentLatest, contentLikes, contentNewChat} from "../home/HomePage";
 
 interface SettingsDialogProps {
   settings: Settings;
@@ -89,19 +89,19 @@ export function SettingsDialog(props: SettingsDialogProps) {
 
   const handleStartupPageChange = (event: SelectChangeEvent<number>) => {
     props.updateSettings({
-      startup_page: event.target.value as number,
+      startup_page_id: event.target.value as number,
     });
   };
 
-  const startupPageIds = [contentNewChat, contentLikes, ...props.chats.map((chat) => chat.id)];
+  const startupPageIds = [contentNewChat, contentLikes, contentLatest, ...props.chats.map((chat) => chat.id)];
 
   const chatById = (chatId: number) => {
     return props.chats.find((chat) => chat.id === chatId)!;
   }
 
   const startupPageValue = () => {
-    const value = props.settings.startup_page;
-    if (value === contentNewChat || value === contentLikes) {
+    const value = props.settings.startup_page_id;
+    if (value === contentNewChat || value === contentLikes || value === contentLatest) {
       return value;
     }
     if (props.chats.some((chat) => chat.id === value)) {
@@ -224,14 +224,14 @@ export function SettingsDialog(props: SettingsDialogProps) {
                     }}
                   >
                     {
-                      chatId !== contentNewChat && chatId !== contentLikes ? (
+                      chatId !== contentNewChat && chatId !== contentLikes && chatId !== contentLatest ? (
                         <ChatIcon
                           iconText={chatById(chatId).icon_text}
                           iconTextSize={chatById(chatId).icon_text_size}
                           iconColor={chatById(chatId).icon_color}
                         />
                       ) : (
-                        chatId === contentNewChat ? (
+                        chatId === contentNewChat || chatId === contentLatest ? (
                           <></>
                           ) : (
                           <BookmarksRounded
@@ -250,6 +250,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                     {
                       chatId === contentNewChat ? 'Welcome page' :
                         chatId === contentLikes ? 'Save list' :
+                          chatId === contentLatest ? 'Most recently chat' :
                           (chatById(chatId).title === '' ? 'New chat' : chatById(chatId).title)
                     }
                   </Typography>

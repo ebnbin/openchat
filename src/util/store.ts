@@ -15,7 +15,8 @@ class Store {
     this.settings = new Preference<Settings>('settings', {
       theme: 'system',
       send_on_enter: true,
-      startup_page: 0,
+      startup_page_id: 0,
+      selected_page_id: 0,
     } as Settings);
   }
 

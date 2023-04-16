@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import HomeDrawer, {drawerWidth} from "./HomeDrawer";
+import HomeDrawer from "./HomeDrawer";
 import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
@@ -16,6 +16,7 @@ import {SettingsDialog} from "../settings/SettingsDialog";
 
 export const contentNewChat = 0;
 export const contentLikes = -1;
+export const contentLatest = Number.MIN_SAFE_INTEGER;
 
 interface HomePageProps {
   settings: Settings;
@@ -29,14 +30,14 @@ export default function HomePage(props: HomePageProps) {
     store.getChatsAsync()
       .then((chats) => {
         _setChats(chats)
-        setSelectedChatId(startupPage(chats))
+        _setSelectedChatId(startupPage(chats))
       });
   }, []);
 
   const createChat = (chat: Chat) => {
     _setChats((chats) => [...chats, chat]);
     store.updateChatsCreateChatAsync(chat);
-    setSelectedChatId(chat.id)
+    updateSelectedChatId(chat.id)
   }
 
   const updateChat = (chatId: number, chat: Partial<Chat>) => {
@@ -80,9 +81,19 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const startupPage = (chats: Chat[]) => {
-    const value = props.settings.startup_page;
+    const value = props.settings.startup_page_id;
     if (value === contentNewChat || value === contentLikes) {
       return value;
+    }
+    if (value === contentLatest) {
+      const latestId = store.getSettings().selected_page_id;
+      if (latestId === contentNewChat || latestId === contentLikes) {
+        return latestId;
+      }
+      if (chats.some((chat) => chat.id === latestId)) {
+        return latestId;
+      }
+      return contentNewChat;
     }
     if (chats.some((chat) => chat.id === value)) {
       return value;
@@ -90,7 +101,14 @@ export default function HomePage(props: HomePageProps) {
     return contentNewChat;
   }
 
-  const [selectedChatId, setSelectedChatId] = useState(contentNewChat);
+  const [selectedChatId, _setSelectedChatId] = useState(contentNewChat);
+
+  const updateSelectedChatId = (chatId: number) => {
+    _setSelectedChatId(chatId)
+    store.updateSettings({
+      selected_page_id: chatId,
+    })
+  }
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
   const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = React.useState(false);
@@ -100,13 +118,13 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const handleLikesClick = () => {
-    setSelectedChatId(contentLikes)
+    updateSelectedChatId(contentLikes)
     setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
-    setSelectedChatId(contentNewChat);
+    updateSelectedChatId(contentNewChat);
     setMobileOpen(false)
   }
 
@@ -229,7 +247,7 @@ export default function HomePage(props: HomePageProps) {
           settings={props.settings}
           chats={chats}
           selectedChatId={selectedChatId}
-          setSelectedChatId={setSelectedChatId}
+          setSelectedChatId={updateSelectedChatId}
           handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
           setSettingsOpen={setSettingsOpen}
           handleNewChatClick={handleNewChatClick}
@@ -272,7 +290,7 @@ export default function HomePage(props: HomePageProps) {
         open={open}
         handleClose={handleClose}
         selectedContentId={selectedChatId}
-        setSelectedContentId={setSelectedChatId}
+        setSelectedContentId={updateSelectedChatId}
         handleNewChatClick={handleNewChatClick}
         handleLikesClick={handleLikesClick}
         handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
