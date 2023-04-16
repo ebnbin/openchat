@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from "react";
-import {Card, IconButton, InputAdornment, TextField, useMediaQuery} from "@mui/material";
+import {Alert, Card, Chip, IconButton, InputAdornment, Snackbar, TextField, useMediaQuery} from "@mui/material";
 import {ExpandCircleDownRounded, SendRounded} from "@mui/icons-material";
 import store from "../../util/store";
 import Box from "@mui/material/Box";
@@ -25,16 +25,12 @@ export default function ChatInput(props: ChatInputProps) {
     if (store.getSettings().send_on_enter) {
       if (event.key === 'Enter' && !event.shiftKey && !composition) {
         event.preventDefault()
-        if (canRequest()) {
-          request()
-        }
+        handleSendClick()
       }
     } else {
       if (event.key === 'Enter' && event.metaKey && !composition) {
         event.preventDefault()
-        if (canRequest()) {
-          request()
-        }
+        handleSendClick()
       }
     }
   }
@@ -43,13 +39,19 @@ export default function ChatInput(props: ChatInputProps) {
     return input !== '' && !isLoading
   }
 
-  const request = () => {
-    const currInput = input
-    setInput('')
-    handleRequest(currInput)
+  const handleSendClick = () => {
+    if (store.getOpenAIApiKey() === '') {
+      setSnackbarOpen(true)
+    } else if (canRequest()) {
+      const currInput = input
+      setInput('')
+      handleRequest(currInput)
+    }
   }
 
   const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   return (
     <Box
@@ -107,7 +109,7 @@ export default function ChatInput(props: ChatInputProps) {
                 <IconButton
                   size={'small'}
                   disabled={!canRequest()}
-                  onClick={request}
+                  onClick={handleSendClick}
                 >
                   <SendRounded />
                 </IconButton>
@@ -116,6 +118,21 @@ export default function ChatInput(props: ChatInputProps) {
           }}
         />
       </Card>
+      <Snackbar
+        anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          severity={'error'}
+          sx={{
+            width: '100%'
+          }}
+        >
+          {'OpenAI API key is not set'}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
