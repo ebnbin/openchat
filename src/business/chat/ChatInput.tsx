@@ -22,7 +22,7 @@ export default function ChatInput(props: ChatInputProps) {
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (store.getSettings().send_on_enter) {
+    if (store.sendOnEnter.get()) {
       if (event.key === 'Enter' && !event.shiftKey && !composition) {
         event.preventDefault()
         handleSendClick()

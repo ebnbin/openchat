@@ -1,33 +1,26 @@
-import {Chat, Conversation, Data, Settings, Usage} from "./data";
+import {Chat, Conversation, Data, Usage} from "./data";
 import {del, get, set, update} from "idb-keyval";
 import Preference from "./Preference";
 
 class Store {
-  private readonly usage: Preference<Usage>;
-  private readonly settings: Preference<Settings>;
+  private readonly usage: Preference<Usage> = new Preference<Usage>('usage', {
+    tokens: 0,
+    conversation_count: 0,
+    char_count: 0,
+  } as Usage);
 
-  readonly theme: Preference<string>;
-  readonly openAIApiKey: Preference<string>;
-
-  constructor() {
-    this.usage = new Preference<Usage>('usage', {
-      tokens: 0,
-      conversation_count: 0,
-      char_count: 0,
-    } as Usage);
-    this.settings = new Preference<Settings>('settings', {
-      send_on_enter: true,
-      startup_page_id: 0,
-      selected_page_id: 0,
-    } as Settings);
-
-    this.theme = new Preference<string>('theme', 'system');
-    this.openAIApiKey = new Preference<string>('openai_api_key', '');
-  }
+  private readonly version: Preference<number> = new Preference<number>('version', 0);
+  readonly theme: Preference<string> = new Preference<string>('theme', 'system');
+  readonly openAIApiKey: Preference<string> = new Preference<string>('openai_api_key', '');
+  readonly githubToken: Preference<string> = new Preference<string>('github_token', '');
+  readonly githubGistId: Preference<string> = new Preference<string>('github_gist_id', '');
+  readonly reopenChat: Preference<boolean> = new Preference<boolean>('reopen_chat', false);
+  readonly selectedPageId: Preference<number> = new Preference<number>('selected_page_id', 0);
+  readonly sendOnEnter: Preference<boolean> = new Preference<boolean>('send_on_enter', true);
 
   async migrate() {
     const currentVersion = 502; // 0.5.2
-    const storedVersion = parseInt(localStorage.getItem('version') ?? '0', 10);
+    const storedVersion = this.version.get();
     if (storedVersion < 400) {
       localStorage.clear();
     }
@@ -43,7 +36,7 @@ class Store {
       });
     }
     if (storedVersion < currentVersion) {
-      localStorage.setItem('version', `${currentVersion}`);
+      this.version.set(currentVersion);
     }
   }
 
@@ -63,30 +56,6 @@ class Store {
       set('conversations', data.conversations),
     ]).then(() => {
     });
-  }
-
-  getOpenAIApiKey(): string {
-    return localStorage.getItem('openai_api_key') ?? '';
-  }
-
-  setOpenAIApiKey(openAIApiKey: string) {
-    localStorage.setItem('openai_api_key', openAIApiKey);
-  }
-
-  getGithubToken(): string {
-    return localStorage.getItem('github_token') ?? '';
-  }
-
-  setGithubToken(githubToken: string) {
-    localStorage.setItem('github_token', githubToken);
-  }
-
-  getGithubGistId(): string {
-    return localStorage.getItem('github_gist_id') ?? '';
-  }
-
-  setGithubGistId(githubGistId: string) {
-    localStorage.setItem('github_gist_id', githubGistId);
   }
 
   //*******************************************************************************************************************
@@ -253,16 +222,6 @@ class Store {
       conversation_count: prev.conversation_count + (usage.conversation_count ?? 0),
       char_count: prev.char_count + (usage.char_count ?? 0),
     } as Usage);
-  }
-
-  //*******************************************************************************************************************
-
-  getSettings(): Settings {
-    return this.settings.get();
-  }
-
-  updateSettings(settings: Partial<Settings>) {
-    this.settings.update(settings);
   }
 
   //*******************************************************************************************************************

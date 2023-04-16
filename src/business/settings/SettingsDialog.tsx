@@ -1,28 +1,21 @@
 import React, {useState} from "react";
 import {
   Button,
-  ButtonGroup,
+  ButtonGroup, Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
+  FormControl, FormControlLabel,
   IconButton,
   InputAdornment, InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent
+  OutlinedInput
 } from "@mui/material";
 import store from "../../util/store";
-import {Chat, Settings} from "../../util/data";
+import {Chat} from "../../util/data";
 import SettingsItem from "../../component/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
-import {BookmarksRounded, DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";
-import ChatIcon from "../../component/ChatIcon";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import {contentLatest, contentLikes, contentNewChat} from "../home/HomePage";
+import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";
 
 interface SettingsDialogProps {
   theme: string;
@@ -34,23 +27,34 @@ interface SettingsDialogProps {
 
 export function SettingsDialog(props: SettingsDialogProps) {
   const [openAIApiKey, _setOpenAIApiKey] = useState(store.openAIApiKey.get())
+  const [githubToken, _setGithubToken] = useState(store.githubToken.get())
+  const [githubGistId, _setGithubGistId] = useState(store.githubGistId.get())
+  const [reopenChat, _setReopenChat] = useState(store.reopenChat.get())
+  const [sendOnEnter, _setSendOnEnter] = useState(store.sendOnEnter.get())
 
   const setOpenAIApiKey = (openAIApiKey: string) => {
     _setOpenAIApiKey(openAIApiKey)
     store.openAIApiKey.set(openAIApiKey)
   }
 
-  const [githubToken, setGithubToken] = useState(store.getGithubToken())
-  const [githubGistId, setGithubGistId] = useState(store.getGithubGistId())
+  const setGithubToken = (githubToken: string) => {
+    _setGithubToken(githubToken)
+    store.githubToken.set(githubToken)
+  }
 
-  const [settings, _setSettings] = useState(store.getSettings())
+  const setGithubGistId = (githubGistId: string) => {
+    _setGithubGistId(githubGistId)
+    store.githubGistId.set(githubGistId)
+  }
 
-  const updateSettings = (settingsPartial: Partial<Settings>) => {
-    _setSettings({
-      ...settings,
-      ...settingsPartial,
-    })
-    store.updateSettings(settingsPartial)
+  const setReopenChat = (reopenChat: boolean) => {
+    _setReopenChat(reopenChat)
+    store.reopenChat.set(reopenChat)
+  }
+
+  const setSendOnEnter = (sendOnEnter: boolean) => {
+    _setSendOnEnter(sendOnEnter)
+    store.sendOnEnter.set(sendOnEnter)
   }
 
   const usageText = () => {
@@ -109,29 +113,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
       handleDialogClose2();
       setDataTimestamp({ data: Date.now() })
     }
-  }
-
-  const handleStartupPageChange = (event: SelectChangeEvent<number>) => {
-    updateSettings({
-      startup_page_id: event.target.value as number,
-    });
-  };
-
-  const startupPageIds = [contentNewChat, contentLikes, contentLatest, ...props.chats.map((chat) => chat.id)];
-
-  const chatById = (chatId: number) => {
-    return props.chats.find((chat) => chat.id === chatId)!;
-  }
-
-  const startupPageValue = () => {
-    const value = settings.startup_page_id;
-    if (value === contentNewChat || value === contentLikes || value === contentLatest) {
-      return value;
-    }
-    if (props.chats.some((chat) => chat.id === value)) {
-      return value;
-    }
-    return contentNewChat;
   }
 
   const [showOpenAIAPIKey, setShowOpenAIAPIKey] = React.useState(false);
@@ -197,10 +178,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
             size={'small'}
           >
             <Button
-              variant={settings.send_on_enter ? 'contained' : 'outlined'}
-              onClick={() => updateSettings({
-                send_on_enter: true,
-              })}
+              variant={sendOnEnter ? 'contained' : 'outlined'}
+              onClick={() => setSendOnEnter(true)}
               sx={{
                 textTransform: 'none',
               }}
@@ -208,10 +187,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
               {'Enter'}
             </Button>
             <Button
-              variant={settings.send_on_enter ? 'outlined' : 'contained'}
-              onClick={() => updateSettings({
-                send_on_enter: false,
-              })}
+              variant={sendOnEnter ? 'outlined' : 'contained'}
+              onClick={() => setSendOnEnter(false)}
               sx={{
                 textTransform: 'none',
               }}
@@ -223,68 +200,13 @@ export function SettingsDialog(props: SettingsDialogProps) {
         <SettingsItem
           title={'Startup page'}
         >
-          <Select
-            value={startupPageValue()}
-            onChange={handleStartupPageChange}
-            variant={'outlined'}
-            size={'small'}
-            fullWidth={true}
-          >
-            {startupPageIds.map((chatId) => (
-              <MenuItem
-                value={chatId}
-              >
-                <Box
-                  key={chatId}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    height: '40px',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      marginRight: '16px',
-                      alignItems: 'center',
-                      display: 'flex',
-                    }}
-                  >
-                    {
-                      chatId !== contentNewChat && chatId !== contentLikes && chatId !== contentLatest ? (
-                        <ChatIcon
-                          iconText={chatById(chatId).icon_text}
-                          iconTextSize={chatById(chatId).icon_text_size}
-                          iconColor={chatById(chatId).icon_color}
-                        />
-                      ) : (
-                        chatId === contentNewChat || chatId === contentLatest ? (
-                          <></>
-                          ) : (
-                          <BookmarksRounded
-                            sx={{
-                              marginX: '8px',
-                            }}
-                          />
-                        )
-                      )
-                    }
-                  </Box>
-                  <Typography
-                    variant={'body1'}
-                    noWrap={true}
-                  >
-                    {
-                      chatId === contentNewChat ? 'Welcome page' :
-                        chatId === contentLikes ? 'Save list' :
-                          chatId === contentLatest ? 'Most recently chat' :
-                          (chatById(chatId).title === '' ? 'New chat' : chatById(chatId).title)
-                    }
-                  </Typography>
-                </Box>
-              </MenuItem>
-            ))}
-          </Select>
+          <FormControlLabel
+            control={<Checkbox
+              checked={reopenChat}
+              onChange={(event) => setReopenChat(event.target.checked)}
+            />}
+            label={'Reopen chat on startup'}
+          />
         </SettingsItem>
         <SettingsItem
           title={'OPENAI_API_KEY'}
@@ -338,7 +260,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
               value={githubToken}
               onChange={(event) => {
                 setGithubToken(event.target.value);
-                store.setGithubToken(event.target.value);
               }}
               type={showGitHubToken ? 'text' : 'password'}
               endAdornment={
@@ -373,7 +294,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
               value={githubGistId}
               onChange={(event) => {
                 setGithubGistId(event.target.value);
-                store.setGithubGistId(event.target.value);
               }}
             />
           </FormControl>

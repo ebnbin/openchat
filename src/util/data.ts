@@ -30,9 +30,3 @@ export interface Usage {
   'conversation_count': number;
   'char_count': number;
 }
-
-export interface Settings {
-  'send_on_enter': boolean;
-  'startup_page_id': number;
-  'selected_page_id': number;
-}

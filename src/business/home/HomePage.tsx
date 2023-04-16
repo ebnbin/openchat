@@ -81,22 +81,16 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const startupPage = (chats: Chat[]) => {
-    const value = store.getSettings().startup_page_id;
-    if (value === contentNewChat || value === contentLikes) {
-      return value;
-    }
-    if (value === contentLatest) {
-      const latestId = store.getSettings().selected_page_id;
-      if (latestId === contentNewChat || latestId === contentLikes) {
-        return latestId;
-      }
-      if (chats.some((chat) => chat.id === latestId)) {
-        return latestId;
-      }
+    const reopen = store.reopenChat.get();
+    if (!reopen) {
       return contentNewChat;
     }
-    if (chats.some((chat) => chat.id === value)) {
-      return value;
+    const latestId = store.selectedPageId.get();
+    if (latestId === contentNewChat || latestId === contentLikes) {
+      return latestId;
+    }
+    if (chats.some((chat) => chat.id === latestId)) {
+      return latestId;
     }
     return contentNewChat;
   }
@@ -105,9 +99,7 @@ export default function HomePage(props: HomePageProps) {
 
   const updateSelectedChatId = (chatId: number) => {
     _setSelectedChatId(chatId)
-    store.updateSettings({
-      selected_page_id: chatId,
-    })
+    store.selectedPageId.set(chatId)
   }
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
