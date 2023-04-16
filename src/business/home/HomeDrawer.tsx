@@ -2,7 +2,7 @@ import Drawer from "@mui/material/Drawer";
 import * as React from "react";
 import {Chat, Settings} from "../../util/data";
 import HomeDrawerContent2 from "./HomeDrawerContent2";
-import {useMediaQuery} from "@mui/material";
+import {Card, useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../util/util";
 
 export const drawerWidth = 300;
@@ -47,7 +47,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               keepMounted: false, // Better open performance on mobile.
             }}
             sx={{
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              // '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
           >
             <HomeDrawerContent2
@@ -73,21 +73,30 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             sx={{
               width: drawerWidth,
               flexShrink: 0,
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              // '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
           >
-            <HomeDrawerContent2
-              chats={props.chats}
-              handleClose={() => {}}
-              selectedContentId={props.selectedChatId}
-              setSelectedContentId={handleItemClick}
-              handleNewChatClick={props.handleNewChatClick}
-              handleLikesClick={props.handleLikesClick}
-              handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
-              handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
-              updateChatPinTimestamps={props.updateChatPinTimestamps}
-              isPopover={false}
-            />
+            <Card
+              elevation={1}
+              sx={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '0px',
+              }}
+            >
+              <HomeDrawerContent2
+                chats={props.chats}
+                handleClose={() => {}}
+                selectedContentId={props.selectedChatId}
+                setSelectedContentId={handleItemClick}
+                handleNewChatClick={props.handleNewChatClick}
+                handleLikesClick={props.handleLikesClick}
+                handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
+                handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
+                updateChatPinTimestamps={props.updateChatPinTimestamps}
+                isPopover={false}
+              />
+            </Card>
           </Drawer>
         )
       }

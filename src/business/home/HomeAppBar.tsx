@@ -90,6 +90,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
       <AppBar
         position={'sticky'}
         color={'default'}
+        elevation={4}
       >
         <Toolbar
           variant={'dense'}
