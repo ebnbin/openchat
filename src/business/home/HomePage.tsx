@@ -235,19 +235,6 @@ export default function HomePage(props: HomePageProps) {
           flexDirection: 'row',
         }}
       >
-        <HomeDrawer
-          chats={chats}
-          selectedChatId={selectedChatId}
-          setSelectedChatId={updateSelectedChatId}
-          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-          setSettingsOpen={setSettingsOpen}
-          handleNewChatClick={handleNewChatClick}
-          handleLikesClick={handleLikesClick}
-          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-          updateChatPinTimestamps={updateChatPinTimestamps}
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
-        />
         <Box
           sx={{
             flexGrow: 1,
@@ -274,6 +261,19 @@ export default function HomePage(props: HomePageProps) {
             {contentPage()}
           </Box>
         </Box>
+        <HomeDrawer
+          chats={chats}
+          selectedChatId={selectedChatId}
+          setSelectedChatId={updateSelectedChatId}
+          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
+          setSettingsOpen={setSettingsOpen}
+          handleNewChatClick={handleNewChatClick}
+          handleLikesClick={handleLikesClick}
+          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
+          updateChatPinTimestamps={updateChatPinTimestamps}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
       </Box>
       <HomeGridCard
         chats={chats}

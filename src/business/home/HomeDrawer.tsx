@@ -67,6 +67,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
       {
         isWidePage && (
           <Drawer
+            anchor={'right'}
             variant={'permanent'}
             open={true}
             sx={{
