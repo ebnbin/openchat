@@ -19,7 +19,6 @@ interface HomeAppBarProps {
   setDrawerOpen: (drawerOpen: boolean) => void,
   selectedContentId: number,
   handleNewChatSettingsDialogOpen: () => void,
-  handleAppsClick: (event: React.MouseEvent<HTMLButtonElement>) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {

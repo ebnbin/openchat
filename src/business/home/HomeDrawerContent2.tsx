@@ -14,6 +14,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import {Chat} from "../../util/data";
 import React, {useEffect, useState} from "react";
+import store from "../../util/store";
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const chunkedArr: T[][] = [];
@@ -32,40 +33,32 @@ interface HomeDrawerContent2Props {
   handleLikesClick: () => void,
   handleNewChatSettingsDialogOpen: () => void,
   handleSettingsDialogOpen: () => void,
-  updateChatPinTimestamps: (pinTimestamps: Record<number, number>) => void,
   isPopover: boolean,
 }
 
 export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
   const theme = useTheme();
 
-  function initChatPinTimestamps(): Record<number, number> {
-    return props.chats.reduce((acc, chat) => {
-      acc[chat.id] = chat.pin_timestamp;
-      return acc;
-    }, {} as Record<number, number>)
-  }
-
   const [updatingPins, setUpdatingPins] = useState(false);
 
-  const [chatPinTimestamps, setChatPinTimestamps] = useState<Record<number, number>>({});
+  const [pinChats, _setPinChats] = useState<number[]>([]);
 
   useEffect(() => {
-    setChatPinTimestamps(initChatPinTimestamps());
-  }, [props.chats]);
+    _setPinChats(store.getPinChats());
+  }, []);
 
   const pinnedChats = () => {
-    const chats = [...props.chats]
-      .filter((chat) => chatPinTimestamps[chat.id] > 0)
-      .sort((a, b) => {
-        return chatPinTimestamps[a.id] - chatPinTimestamps[b.id];
-      });
+    const chats = ([...pinChats]
+      .map((chatId) => {
+        return props.chats.find((chat) => chat.id === chatId);
+      })
+      .filter((chat) => chat !== undefined)) as Chat[]
     return chunkArray(chats, 3)
   }
 
   const unpinnedChats = () => {
     return [...props.chats]
-      .filter((chat) => chatPinTimestamps[chat.id] === 0 || chatPinTimestamps[chat.id] === undefined)
+      .filter((chat) => !pinChats.includes(chat.id))
       .sort((a, b) => {
         return b.update_timestamp - a.update_timestamp;
       });
@@ -73,11 +66,8 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
 
   const handlePinedItemClick = (chatId: number) => {
     if (updatingPins) {
-      setChatPinTimestamps((prev) => {
-        return {
-          ...prev,
-          [chatId]: 0,
-        }
+      _setPinChats((prev) => {
+        return prev.filter((id) => id !== chatId);
       });
       return;
     }
@@ -87,11 +77,8 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
 
   const handleUnpinedItemClick = (chatId: number) => {
     if (updatingPins) {
-      setChatPinTimestamps((prev) => {
-        return {
-          ...prev,
-          [chatId]: Date.now(),
-        }
+      _setPinChats((prev) => {
+        return [...prev, chatId];
       });
       return;
     }
@@ -106,12 +93,12 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
 
   const savePinTimestamps = () => {
     setUpdatingPins(false);
-    props.updateChatPinTimestamps(chatPinTimestamps);
+    store.setPinChats(pinChats);
   }
 
   const cancelPinTimestamps = () => {
     setUpdatingPins(false);
-    setChatPinTimestamps(initChatPinTimestamps());
+    _setPinChats(store.getPinChats());
   }
 
   return (

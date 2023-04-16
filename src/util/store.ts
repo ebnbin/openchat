@@ -18,6 +18,20 @@ class Store {
   readonly selectedPageId: Preference<number> = new Preference<number>('selected_page_id', 0);
   readonly sendOnEnter: Preference<boolean> = new Preference<boolean>('send_on_enter', true);
 
+  // readonly pinChats: Preference<number[]> = new Preference<number[]>('pin_chats', []);
+
+  setPinChats(pinChats: number[]) {
+    localStorage.setItem('pin_chats', JSON.stringify(pinChats));
+  }
+
+  getPinChats(): number[] {
+    const json = localStorage.getItem('pin_chats');
+    if (json === null) {
+      return [];
+    }
+    return JSON.parse(json);
+  }
+
   async migrate() {
     const currentVersion = 502; // 0.5.2
     const storedVersion = this.version.get();
@@ -30,7 +44,7 @@ class Store {
           return [];
         }
         return chats.map((chat) => {
-          chat.pin_timestamp = 0;
+          // chat.pin_timestamp = 0;
           return chat;
         });
       });
@@ -72,7 +86,6 @@ class Store {
       system_message: '',
       user_message_template: '',
       update_timestamp: timestamp,
-      pin_timestamp: 0,
     };
   }
 

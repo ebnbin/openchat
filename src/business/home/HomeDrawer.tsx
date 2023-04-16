@@ -16,7 +16,6 @@ interface HomeDrawerProps {
   handleNewChatClick: () => void,
   handleLikesClick: () => void,
   handleNewChatSettingsDialogOpen: () => void,
-  updateChatPinTimestamps: (pinTimestamps: Record<number, number>) => void,
   mobileOpen: boolean,
   setMobileOpen: (mobileOpen: boolean) => void,
 }
@@ -58,7 +57,6 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               handleLikesClick={props.handleLikesClick}
               handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
               handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
-              updateChatPinTimestamps={props.updateChatPinTimestamps}
               isPopover={false}
             />
           </Drawer>
@@ -93,7 +91,6 @@ export default function HomeDrawer(props: HomeDrawerProps) {
                 handleLikesClick={props.handleLikesClick}
                 handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
                 handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
-                updateChatPinTimestamps={props.updateChatPinTimestamps}
                 isPopover={false}
               />
             </Card>

@@ -13,7 +13,6 @@ export interface Chat {
   'system_message': string;
   'user_message_template': string;
   'update_timestamp': number;
-  'pin_timestamp': number;
 }
 
 export interface Conversation {
