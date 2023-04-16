@@ -178,7 +178,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                 textTransform: 'none',
               }}
             >
-              {'Send on Enter'}
+              {'Enter'}
             </Button>
             <Button
               variant={props.settings.send_on_enter ? 'outlined' : 'contained'}
@@ -189,7 +189,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                 textTransform: 'none',
               }}
             >
-              {'Send on Command+Enter'}
+              {'Command+Enter'}
             </Button>
           </ButtonGroup>
         </SettingsItem>
@@ -201,11 +201,12 @@ export function SettingsDialog(props: SettingsDialogProps) {
             onChange={handleStartupPageChange}
             variant={'outlined'}
             size={'small'}
-            sx={{
-            }}
+            fullWidth={true}
           >
             {startupPageIds.map((chatId) => (
-              <MenuItem value={chatId}>
+              <MenuItem
+                value={chatId}
+              >
                 <Box
                   key={chatId}
                   sx={{
@@ -213,7 +214,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
                     flexDirection: 'row',
                     alignItems: 'center',
                     height: '40px',
-                    // minWidth: '300px',
                   }}
                 >
                   <Box
