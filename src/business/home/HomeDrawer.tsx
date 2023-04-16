@@ -47,7 +47,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               keepMounted: false, // Better open performance on mobile.
             }}
             sx={{
-              // '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
           >
             <HomeDrawerContent2
@@ -73,7 +73,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
             sx={{
               width: drawerWidth,
               flexShrink: 0,
-              // '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
           >
             <Card

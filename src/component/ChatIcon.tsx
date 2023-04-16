@@ -33,7 +33,7 @@ export default function ChatIcon(props: ChatIconProps) {
       sx={{
         fontSize: fontSize(),
         textAlign: 'center',
-        color: props.iconText === '' && props.iconColor === '' ? 'inherit' : textColor,
+        color: props.iconText === '' && props.iconColor === '' ? theme.palette.text.primary : textColor,
         bgcolor: bgColor,
       }}
     >
