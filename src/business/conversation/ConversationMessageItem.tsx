@@ -8,7 +8,7 @@ import React from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../component/Markdown";
 import {copy} from "../../util/util";
-import chatGPTLogo from '../../chatgpt_logo.png';
+import chatGPTLogo from '../../assets/chatgpt_logo.png';
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationMessageItemProps {
