@@ -35,7 +35,7 @@ export default function Logo() {
             userSelect: "none",
           }}
         >
-          OpenChat
+          {"OpenChat"}
         </Typography>
       </Box>
       <Box
@@ -51,7 +51,7 @@ export default function Logo() {
             fontSize: "10px",
           }}
         >
-          Powered by&nbsp;
+          {"Powered by "}
         </Typography>
         <Link
           variant={"overline"}
@@ -62,7 +62,7 @@ export default function Logo() {
             fontSize: "10px",
           }}
         >
-          OpenAI
+          {"OpenAI"}
         </Link>
       </Box>
     </Container>
