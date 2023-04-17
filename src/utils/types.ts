@@ -1,4 +1,6 @@
 export interface Data {
+  'version': number;
+  'timestamp': number;
   'chats': Chat[];
   'conversations': Conversation[];
 }

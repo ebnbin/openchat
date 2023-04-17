@@ -57,6 +57,8 @@ class Store {
     return Promise.all([this.getChatsAsync(), this.getAllConversationsAsync()])
       .then(([chats, conversations]) => {
         return {
+          version: this.version.get(),
+          timestamp: Date.now(),
           chats,
           conversations,
         } as Data;
