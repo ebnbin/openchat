@@ -13,6 +13,8 @@ export interface Chat {
   'system_message': string;
   'user_message_template': string;
   'update_timestamp': number;
+  'char_count': number;
+  'token_count': number;
 }
 
 export interface Conversation {
@@ -25,7 +27,6 @@ export interface Conversation {
 }
 
 export interface Usage {
-  'tokens': number;
+  'token_count': number;
   'conversation_count': number;
-  'char_count': number;
 }

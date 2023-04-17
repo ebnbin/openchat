@@ -4,9 +4,8 @@ import Preference from "./Preference";
 
 class Store {
   private readonly usage: Preference<Usage> = new Preference<Usage>('usage', {
-    tokens: 0,
+    token_count: 0,
     conversation_count: 0,
-    char_count: 0,
   } as Usage);
 
   private readonly version: Preference<number> = new Preference<number>('version', 0);
@@ -86,6 +85,8 @@ class Store {
       system_message: '',
       user_message_template: '',
       update_timestamp: timestamp,
+      char_count: 0,
+      token_count: 0,
     };
   }
 
@@ -220,20 +221,11 @@ class Store {
     return this.usage.get();
   }
 
-  getTokensPerChar(): number {
-    const usage = this.usage.get();
-    if (usage.char_count === 0) {
-      return 0.25;
-    }
-    return usage.tokens / usage.char_count;
-  }
-
   increaseUsage(usage: Partial<Usage>) {
     const prev = this.usage.get();
     this.usage.set({
-      tokens: prev.tokens + (usage.tokens ?? 0),
+      token_count: prev.token_count + (usage.token_count ?? 0),
       conversation_count: prev.conversation_count + (usage.conversation_count ?? 0),
-      char_count: prev.char_count + (usage.char_count ?? 0),
     } as Usage);
   }
 

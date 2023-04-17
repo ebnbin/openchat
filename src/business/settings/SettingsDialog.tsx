@@ -59,7 +59,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
 
   const usageText = () => {
     const usage = store.getUsage()
-    return `Tokens: ${usage.tokens}\nConversation count: ${usage.conversation_count}\nEstimated price: ${(usage.tokens / 1000 * 0.002).toFixed(2)}`
+    return `Tokens: ${usage.token_count}\nConversation count: ${usage.conversation_count}\nEstimated price: ${(usage.token_count / 1000 * 0.002).toFixed(2)}`
   }
 
   const { dataTimestamp, setDataTimestamp } = useDataTimestamp();

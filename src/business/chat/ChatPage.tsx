@@ -36,7 +36,7 @@ function updateConversationEntitiesContext(
   const maxTokens = defaultOpenAIModel.maxTokens * chat.context_threshold;
   let usedTokens = 0;
   if (chat.system_message !== '') {
-    usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * store.getTokensPerChar();
+    usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * getTokensPerChar(chat);
   }
   return conversationEntitiesNoContext
     .filter(() => true)
@@ -47,7 +47,7 @@ function updateConversationEntitiesContext(
         context = false;
       } else {
         const tokens = (conversationEntity.userMessage.length + conversationEntity.assistantMessage.length
-          + 2 * defaultOpenAIModel.extraCharsPerMessage) * store.getTokensPerChar();
+          + 2 * defaultOpenAIModel.extraCharsPerMessage) * getTokensPerChar(chat);
         usedTokens += tokens;
         context = usedTokens <= maxTokens;
       }
@@ -110,8 +110,16 @@ function getRequestingMessages(
   return result;
 }
 
+function getTokensPerChar(chat: Chat): number {
+  if (chat.char_count === 0) {
+    return 0.25;
+  }
+  return chat.token_count / chat.char_count;
+}
+
 function handleResponseUpdateChat(
   chat: Chat,
+  updateChat: (chatId: number, chat: Partial<Chat>) => void,
   requestingMessages: ChatCompletionRequestMessage[],
   response: CreateChatCompletionResponse,
 ) {
@@ -122,9 +130,12 @@ function handleResponseUpdateChat(
     .concat(responseMessageContent)
     .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
   store.increaseUsage({
-    tokens: responseTotalTokens,
+    token_count: responseTotalTokens,
     conversation_count: 1,
-    char_count: charCount,
+  })
+  updateChat(chat.id, {
+    token_count: chat.token_count + responseTotalTokens,
+    char_count: chat.char_count + charCount,
   })
 }
 
@@ -264,7 +275,7 @@ export default function ChatPage(props: ChatProps) {
         messages: requestingMessages,
       })
       .then((response) => {
-        handleResponseUpdateChat(props.chat, requestingMessages, response.data);
+        handleResponseUpdateChat(props.chat, props.updateChat, requestingMessages, response.data);
         handleResponseUpdateConversation(props.chat, requestingConversation, response.data);
 
         const responseConversationEntitiesNoContext =
