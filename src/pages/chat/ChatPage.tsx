@@ -1,6 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, Conversation} from "../../utils/types";
+import {Chat, Conversation, FinishReason} from "../../utils/types";
 import ConversationList, {ConversationEntity, ConversationEntityType} from "./ConversationList";
 import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../utils/util";
@@ -147,7 +147,7 @@ function handleResponseUpdateConversation(
   const responseMessageContent = response.choices[0].message!!.content;
   store.updateConversationsUpdateConversationAsync(requestingConversation.id, {
     assistant_message: responseMessageContent,
-    finish_reason: response.choices[0].finish_reason,
+    finish_reason: (response.choices[0].finish_reason ?? "") as FinishReason,
   })
 }
 

@@ -15,14 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import {Chat} from "../../utils/types";
 import React, {useEffect, useState} from "react";
 import store from "../../utils/store";
-
-function chunkArray<T>(arr: T[], size: number): T[][] {
-  const chunkedArr: T[][] = [];
-  while (arr.length) {
-    chunkedArr.push(arr.splice(0, size));
-  }
-  return chunkedArr;
-}
+import {chunk} from "../../utils/util";
 
 interface HomeDrawerContent2Props {
   chats: Chat[];
@@ -53,7 +46,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
         return props.chats.find((chat) => chat.id === chatId);
       })
       .filter((chat) => chat !== undefined)) as Chat[]
-    return chunkArray(chats, 3)
+    return chunk(chats, 3)
   }
 
   const unpinnedChats = () => {

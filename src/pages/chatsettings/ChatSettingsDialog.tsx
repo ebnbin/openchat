@@ -1,4 +1,4 @@
-import {Chat} from "../../utils/types";
+import {Chat, IconColor, IconTextSize} from "../../utils/types";
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {
   Button, Dialog, DialogActions,
@@ -8,9 +8,9 @@ import {
 } from "@mui/material";
 import {defaultOpenAIModel} from "../../utils/util";
 import SettingsItem from "../../components/SettingsItem";
-import {DeleteRounded, FormatSizeRounded} from "@mui/icons-material";
+import {DeleteRounded, FormatSizeRounded, PaletteRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";
-import ColorPicker from "../../components/ColorPicker";
+import IconColorPicker from "../../components/IconColorPicker";
 import ChatIcon from "../../components/ChatIcon";
 
 interface ChatSettingsDialogProps {
@@ -52,7 +52,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     }
     setChat({
       ...chat,
-      icon_text_size: nextSize,
+      icon_text_size: nextSize as IconTextSize,
     })
   }
 
@@ -69,7 +69,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     }
   }
 
-  const handleIconColorChange = (color: string) => {
+  const handleIconColorChange = (color: IconColor) => {
     setChat({
       ...chat,
       icon_color: color,
@@ -145,6 +145,12 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     setChatInfo(info);
   }, [props.chat.id, props.isNew, props.dialogOpen]);
 
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   return (
     <Dialog
       fullWidth={true}
@@ -210,9 +216,15 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
                 }}
               />
             </IconButton>
-            <ColorPicker
-              color={chat.icon_color}
-              setColor={handleIconColorChange}
+            <IconButton
+              onClick={handleButtonClick}
+            >
+              <PaletteRounded/>
+            </IconButton>
+            <IconColorPicker
+              anchorEl={anchorEl}
+              setAnchorEl={setAnchorEl}
+              setIconColor={handleIconColorChange}
             />
           </Box>
         </SettingsItem>

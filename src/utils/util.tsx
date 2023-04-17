@@ -44,6 +44,14 @@ export function useDarkMode(): boolean {
   return isDarkMode;
 }
 
+export function chunk<T>(arr: T[], size: number): T[][] {
+  const chunkedArr: T[][] = [];
+  while (arr.length) {
+    chunkedArr.push(arr.splice(0, size));
+  }
+  return chunkedArr;
+}
+
 export const widePageWidth = 1200;
 
 interface OpenAIModel {
