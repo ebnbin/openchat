@@ -1,4 +1,4 @@
-import {Chat} from "../../util/data";
+import {Chat} from "../../utils/data";
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {
   Button, Dialog, DialogActions,
@@ -6,7 +6,7 @@ import {
   DialogTitle, IconButton, Slider,
   TextField
 } from "@mui/material";
-import {defaultOpenAIModel} from "../../util/util";
+import {defaultOpenAIModel} from "../../utils/util";
 import SettingsItem from "../../components/SettingsItem";
 import {DeleteRounded, FormatSizeRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";

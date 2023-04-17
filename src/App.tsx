@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import AppPage from "./pages/app/AppPage";
-import store from "./util/store";
+import store from "./utils/store";
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);

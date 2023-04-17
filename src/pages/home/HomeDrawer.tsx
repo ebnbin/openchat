@@ -1,9 +1,9 @@
 import Drawer from "@mui/material/Drawer";
 import * as React from "react";
-import {Chat} from "../../util/data";
+import {Chat} from "../../utils/data";
 import HomeDrawerContent2 from "./HomeDrawerContent2";
 import {Card, useMediaQuery} from "@mui/material";
-import {widePageWidth} from "../../util/util";
+import {widePageWidth} from "../../utils/util";
 
 export const drawerWidth = 300;
 

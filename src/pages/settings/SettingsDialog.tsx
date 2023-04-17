@@ -11,8 +11,8 @@ import {
   InputAdornment, InputLabel,
   OutlinedInput
 } from "@mui/material";
-import store from "../../util/store";
-import {Chat} from "../../util/data";
+import store from "../../utils/store";
+import {Chat} from "../../utils/data";
 import SettingsItem from "../../components/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";

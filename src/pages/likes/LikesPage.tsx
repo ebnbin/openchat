@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
-import store from "../../util/store";
-import {Conversation} from "../../util/data";
+import store from "../../utils/store";
+import {Conversation} from "../../utils/data";
 import {ConversationEntity, ConversationEntityType} from "../conversation/ConversationList";
 import LikesConversationList from "./LikesConversationList";
 

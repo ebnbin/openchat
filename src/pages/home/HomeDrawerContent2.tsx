@@ -12,9 +12,9 @@ import ListItem from "@mui/material/ListItem";
 import {contentLikes} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import {Chat} from "../../util/data";
+import {Chat} from "../../utils/data";
 import React, {useEffect, useState} from "react";
-import store from "../../util/store";
+import store from "../../utils/store";
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const chunkedArr: T[][] = [];

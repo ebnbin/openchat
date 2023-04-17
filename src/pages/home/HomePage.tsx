@@ -4,13 +4,13 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
 import * as React from "react";
-import {Chat} from "../../util/data";
+import {Chat} from "../../utils/data";
 import {useEffect, useState} from "react";
-import store from "../../util/store";
+import store from "../../utils/store";
 import Logo from "../../components/Logo";
 import LikesPage from "../likes/LikesPage";
 import {useMediaQuery} from "@mui/material";
-import {widePageWidth} from "../../util/util";
+import {widePageWidth} from "../../utils/util";
 import {SettingsDialog} from "../settings/SettingsDialog";
 
 export const contentNewChat = 0;

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {createTheme, ThemeProvider} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import {useDarkMode} from "../../util/util";
+import {useDarkMode} from "../../utils/util";
 import HomePage from "../home/HomePage";
 import {blue, blueGrey, grey, red} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";
-import store from "../../util/store";
+import store from "../../utils/store";
 
 const DataTimestampContext = createContext<any>(null);
 
