@@ -15,7 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import {Chat} from "../../utils/types";
 import React, {useEffect, useState} from "react";
 import store from "../../utils/store";
-import {chunk} from "../../utils/util";
+import {chunk} from "../../utils/utils";
 
 interface HomeDrawerContent2Props {
   chats: Chat[];

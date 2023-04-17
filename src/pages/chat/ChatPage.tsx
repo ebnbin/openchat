@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import {Chat, Conversation, FinishReason} from "../../utils/types";
 import ConversationList, {ConversationEntity, ConversationEntityType} from "./ConversationList";
 import ChatInput from "./ChatInput";
-import {defaultOpenAIModel, openAIApi} from "../../utils/util";
+import {defaultOpenAIModel, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";

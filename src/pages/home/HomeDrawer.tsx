@@ -3,7 +3,7 @@ import * as React from "react";
 import {Chat} from "../../utils/types";
 import HomeDrawerContent2 from "./HomeDrawerContent2";
 import {Card, useMediaQuery} from "@mui/material";
-import {widePageWidth} from "../../utils/util";
+import {widePageWidth} from "../../utils/utils";
 
 export const drawerWidth = 300;
 

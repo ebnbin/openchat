@@ -3,7 +3,7 @@ import {Icon, Popover, useTheme} from "@mui/material";
 import React from "react";
 import {ICON_COLORS, IconColor} from "../utils/types";
 import {iconColorValue} from "./ChatIcon";
-import {chunk} from "../utils/util";
+import {chunk} from "../utils/utils";
 import {InvertColorsRounded} from "@mui/icons-material";
 
 interface IconColorPickerProps {

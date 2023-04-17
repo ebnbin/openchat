@@ -10,7 +10,7 @@ import store from "../../utils/store";
 import Logo from "../../components/Logo";
 import LikesPage from "../likes/LikesPage";
 import {useMediaQuery} from "@mui/material";
-import {widePageWidth} from "../../utils/util";
+import {widePageWidth} from "../../utils/utils";
 import {SettingsDialog} from "../settings/SettingsDialog";
 
 export const contentNewChat = 0;

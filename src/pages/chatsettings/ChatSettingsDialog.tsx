@@ -6,7 +6,7 @@ import {
   DialogTitle, IconButton, Slider,
   TextField
 } from "@mui/material";
-import {defaultOpenAIModel} from "../../utils/util";
+import {defaultOpenAIModel} from "../../utils/utils";
 import SettingsItem from "../../components/SettingsItem";
 import {DeleteRounded, FormatSizeRounded, PaletteRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";

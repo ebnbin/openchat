@@ -1,7 +1,7 @@
 import * as React from "react";
 import {createTheme, ThemeProvider} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import {useDarkMode} from "../../utils/util";
+import {useDarkMode} from "../../utils/utils";
 import HomePage from "../home/HomePage";
 import {blue, blueGrey, grey, red} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";

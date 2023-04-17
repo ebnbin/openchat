@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../utils/types";
-import {widePageWidth} from "../../utils/util";
+import {widePageWidth} from "../../utils/utils";
 import {contentLikes, contentNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ChatIcon from "../../components/ChatIcon";
