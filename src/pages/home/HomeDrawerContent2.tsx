@@ -44,7 +44,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
   const [pinChats, _setPinChats] = useState<number[]>([]);
 
   useEffect(() => {
-    _setPinChats(store.getPinChats());
+    _setPinChats(store.pinChats.get());
   }, []);
 
   const pinnedChats = () => {
@@ -93,12 +93,12 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
 
   const savePinTimestamps = () => {
     setUpdatingPins(false);
-    store.setPinChats(pinChats);
+    store.pinChats.set(pinChats);
   }
 
   const cancelPinTimestamps = () => {
     setUpdatingPins(false);
-    _setPinChats(store.getPinChats());
+    _setPinChats(store.pinChats.get());
   }
 
   return (

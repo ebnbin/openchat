@@ -16,20 +16,7 @@ class Store {
   readonly reopenChat: Preference<boolean> = new Preference<boolean>('reopen_chat', false);
   readonly selectedPageId: Preference<number> = new Preference<number>('selected_page_id', 0);
   readonly sendOnEnter: Preference<boolean> = new Preference<boolean>('send_on_enter', true);
-
-  // readonly pinChats: Preference<number[]> = new Preference<number[]>('pin_chats', []);
-
-  setPinChats(pinChats: number[]) {
-    localStorage.setItem('pin_chats', JSON.stringify(pinChats));
-  }
-
-  getPinChats(): number[] {
-    const json = localStorage.getItem('pin_chats');
-    if (json === null) {
-      return [];
-    }
-    return JSON.parse(json);
-  }
+  readonly pinChats: Preference<number[]> = new Preference<number[]>('pin_chats', []);
 
   async migrate() {
     const currentVersion = 502; // 0.5.2
