@@ -1,4 +1,4 @@
-import {Box} from "@mui/material";
+import {Box, Button} from "@mui/material";
 import React, {RefObject} from "react";
 import ConversationItem from "./ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
@@ -30,6 +30,7 @@ interface ConversationListProps {
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
   atBottomStateChange: (atBottom: boolean) => void;
+  controller: RefObject<AbortController | null>;
 }
 
 export default function ConversationList(props: ConversationListProps) {
@@ -64,6 +65,7 @@ export default function ConversationList(props: ConversationListProps) {
               updateConversationEntityNoStore={updateConversationEntityNoStore}
               updateConversationEntityLike={props.updateConversationEntityLike}
               deleteConversationEntity={deleteConversationEntity}
+              controller={props.controller}
             />
           );
         }

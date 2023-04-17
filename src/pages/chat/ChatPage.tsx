@@ -245,6 +245,8 @@ export default function ChatPage(props: ChatProps) {
     }
   }
 
+  const controllerRef = useRef<AbortController | null>(null);
+
   const handleRequest = (input: string) => {
     if (props.createChat !== undefined) {
       props.createChat(props.chat);
@@ -269,10 +271,18 @@ export default function ChatPage(props: ChatProps) {
     setConversationEntitiesNoContext(requestingConversationEntities);
 
     const requestingMessages = getRequestingMessages(props.chat, requestingConversationEntities);
+
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+    controllerRef.current = new AbortController();
+
     openAIApi()
       .createChatCompletion({
         model: defaultOpenAIModel.model,
         messages: requestingMessages,
+      }, {
+        signal: controllerRef.current.signal,
       })
       .then((response) => {
         handleResponseUpdateChat(props.chat, props.updateChat, requestingMessages, response.data);
@@ -282,12 +292,21 @@ export default function ChatPage(props: ChatProps) {
           getResponseConversationEntitiesNoContext(requestingConversationEntities, response.data);
         setConversationEntitiesNoContext(responseConversationEntitiesNoContext);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         const errorConversationEntitiesNoContext =
           getErrorConversationEntitiesNoContext(requestingConversationEntities);
         setConversationEntitiesNoContext(errorConversationEntitiesNoContext);
       })
   }
+
+  useEffect(() => {
+    return () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+    }
+  }, []);
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
 
@@ -329,6 +348,7 @@ export default function ChatPage(props: ChatProps) {
           atBottomStateChange={(atBottom) => {
             setShowScrollToBottom(!atBottom && conversationEntities.length > 0)
           }}
+          controller={controllerRef}
         />
       </Box>
       <Box

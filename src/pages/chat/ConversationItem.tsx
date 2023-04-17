@@ -6,7 +6,7 @@ import {
   BookmarkBorderRounded,
   DeleteRounded
 } from "@mui/icons-material";
-import React from "react";
+import React, {RefObject} from "react";
 import {ConversationEntity, ConversationEntityType} from "./ConversationList";
 
 interface ConversationItemProps {
@@ -14,6 +14,7 @@ interface ConversationItemProps {
   updateConversationEntityNoStore: (conversationEntity: ConversationEntity) => void;
   updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
+  controller: RefObject<AbortController | null>;
 }
 
 export default function ConversationItem(props: ConversationItemProps) {
@@ -45,6 +46,7 @@ export default function ConversationItem(props: ConversationItemProps) {
         conversationEntity={props.conversationEntity}
         updateConversationEntityNoStore={props.updateConversationEntityNoStore}
         isUser={false}
+        controller={props.conversationEntity.type === ConversationEntityType.Requesting ? props.controller : undefined}
       />
       <Box
         sx={{

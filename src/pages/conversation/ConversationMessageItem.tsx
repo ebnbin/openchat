@@ -4,7 +4,7 @@ import {
   FaceRounded
 } from "@mui/icons-material";
 import Box from "@mui/material/Box";
-import React from "react";
+import React, {RefObject} from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {copy} from "../../utils/util";
@@ -15,6 +15,7 @@ interface ConversationMessageItemProps {
   conversationEntity: ConversationEntity,
   updateConversationEntityNoStore: (conversationEntity: ConversationEntity) => void,
   isUser: boolean,
+  controller?: RefObject<AbortController | null>;
 }
 
 export default function ConversationMessageItem(props: ConversationMessageItemProps) {
@@ -124,6 +125,18 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               <CircularProgress
                 size={'32px'}
               />
+              <Button
+                variant={'text'}
+                color={'error'}
+                sx={{
+                  marginLeft: '8px',
+                }}
+                onClick={() => {
+                  props.controller?.current?.abort()
+                }}
+              >
+                {'Cancel request'}
+              </Button>
             </Box>
           ) : (
             markdown ? (
