@@ -8,7 +8,7 @@ import {
   DialogTitle,
   FormControl, FormControlLabel,
   IconButton,
-  InputAdornment, InputLabel,
+  InputAdornment, InputLabel, Link,
   OutlinedInput
 } from "@mui/material";
 import store from "../../utils/store";
@@ -210,6 +210,18 @@ export function SettingsDialog(props: SettingsDialogProps) {
         </SettingsItem>
         <SettingsItem
           title={"OPENAI_API_KEY"}
+          description={
+            <>
+              Visit your&nbsp;
+              <Link
+                href={'https://platform.openai.com/account/api-keys'}
+                target={'_blank'}
+              >
+                API key
+              </Link>
+              &nbsp;page to retrieve the API key you'll use in your requests
+            </>
+          }
         >
           <FormControl
             fullWidth={true}

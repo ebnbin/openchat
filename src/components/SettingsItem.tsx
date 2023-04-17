@@ -1,27 +1,29 @@
-import {Typography} from "@mui/material";
+import {Typography, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
 import React from "react";
 
 interface SettingsItemProps {
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
   children?: React.ReactNode;
 }
 
 export default function SettingsItem(props: SettingsItemProps) {
+  const theme = useTheme();
+
   return (
     <Box
       sx={{
-        paddingBottom: "24px",
+        marginBottom: "24px",
       }}
     >
       {
         props.title === undefined ? undefined : (
           <Typography
             variant={"subtitle2"}
-            gutterBottom={true}
             sx={{
               fontWeight: "bold",
+              marginY: "4px",
             }}
           >
             {props.title}
@@ -32,17 +34,27 @@ export default function SettingsItem(props: SettingsItemProps) {
         props.description === undefined ? undefined : (
           <Typography
             variant={"body2"}
-            color={"text.secondary"}
-            gutterBottom={true}
+            color={theme.palette.text.secondary}
             sx={{
               whiteSpace: "pre-wrap",
+              marginY: "4px",
             }}
           >
             {props.description}
           </Typography>
         )
       }
-      {props.children}
+      {
+        props.children === undefined ? undefined : (
+          <Box
+            sx={{
+              marginY: "4px",
+            }}
+          >
+            {props.children}
+          </Box>
+        )
+      }
     </Box>
   );
 }
