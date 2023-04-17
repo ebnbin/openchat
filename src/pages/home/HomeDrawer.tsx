@@ -37,15 +37,15 @@ export default function HomeDrawer(props: HomeDrawerProps) {
       {
         !isWidePage && (
           <Drawer
-            variant={'temporary'}
+            variant={"temporary"}
             open={props.mobileOpen}
             onClose={handleDrawerClose}
-            anchor={'right'}
+            anchor={"right"}
             ModalProps={{
               keepMounted: false, // Better open performance on mobile.
             }}
             sx={{
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
             }}
           >
             <HomeDrawerContent2
@@ -65,21 +65,21 @@ export default function HomeDrawer(props: HomeDrawerProps) {
       {
         isWidePage && (
           <Drawer
-            anchor={'right'}
-            variant={'permanent'}
+            anchor={"right"}
+            variant={"permanent"}
             open={true}
             sx={{
               width: drawerWidth,
               flexShrink: 0,
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
             }}
           >
             <Card
               elevation={1}
               sx={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '0px',
+                width: "100%",
+                height: "100%",
+                borderRadius: "0px",
               }}
             >
               <HomeDrawerContent2

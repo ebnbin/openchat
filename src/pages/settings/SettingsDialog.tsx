@@ -68,47 +68,47 @@ export function SettingsDialog(props: SettingsDialogProps) {
     store.getDataAsync()
       .then(data => {
         fetch(`https://api.github.com/gists/${githubGistId}`, {
-          method: 'PATCH',
+          method: "PATCH",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${githubToken}`,
-            'Accept': 'application/vnd.github.v3+json',
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${githubToken}`,
+            "Accept": "application/vnd.github.v3+json",
           },
           body: JSON.stringify({
-            'files': {
-              'openchat_data.json': {
-                'content': JSON.stringify(data),
+            "files": {
+              "openchat_data.json": {
+                "content": JSON.stringify(data),
               },
             },
           }),
         })
           .then(() => alert(`Upload success`))
-          .catch(() => alert('Upload error'));
+          .catch(() => alert("Upload error"));
       })
   }
 
   const gistRestore = () => {
     fetch(`https://api.github.com/gists/${githubGistId}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${githubToken}`,
-        'Accept': 'application/vnd.github.v3+json',
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${githubToken}`,
+        "Accept": "application/vnd.github.v3+json",
       },
     })
       .then((response) => response.json())
-      .then((data) => data.files['openchat_data.json'].content)
+      .then((data) => data.files["openchat_data.json"].content)
       .then((content) => store.setData(JSON.parse(content)))
       .then(() => {
         setDataTimestamp({ data: Date.now() })
         handleDialogClose2();
-        alert('Download success');
+        alert("Download success");
       })
-      .catch(() => alert('Download error'));
+      .catch(() => alert("Download error"));
   }
 
   const handleDeleteAllDataClick = () => {
-    if (window.confirm('Are you sure you want to delete all your data?')) {
+    if (window.confirm("Are you sure you want to delete all your data?")) {
       store.deleteAllData();
       handleDialogClose2();
       setDataTimestamp({ data: Date.now() })
@@ -131,106 +131,106 @@ export function SettingsDialog(props: SettingsDialogProps) {
       onClose={handleDialogClose2}
     >
       <DialogTitle>
-        {'Settings'}
+        {"Settings"}
       </DialogTitle>
       <DialogContent
         dividers={true}
       >
         <SettingsItem
-          title={'Theme'}
+          title={"Theme"}
         >
           <ButtonGroup
-            size={'small'}
+            size={"small"}
           >
             <Button
-              variant={props.theme === 'system' ? 'contained' : 'outlined'}
-              onClick={() => props.setTheme('system')}
+              variant={props.theme === "system" ? "contained" : "outlined"}
+              onClick={() => props.setTheme("system")}
               sx={{
-                textTransform: 'none',
+                textTransform: "none",
               }}
             >
-              {'System'}
+              {"System"}
             </Button>
             <Button
-              variant={props.theme === 'light' ? 'contained' : 'outlined'}
-              onClick={() => props.setTheme('light')}
+              variant={props.theme === "light" ? "contained" : "outlined"}
+              onClick={() => props.setTheme("light")}
               sx={{
-                textTransform: 'none',
+                textTransform: "none",
               }}
             >
-              {'Light'}
+              {"Light"}
             </Button>
             <Button
-              variant={props.theme === 'dark' ? 'contained' : 'outlined'}
-              onClick={() => props.setTheme('dark')}
+              variant={props.theme === "dark" ? "contained" : "outlined"}
+              onClick={() => props.setTheme("dark")}
               sx={{
-                textTransform: 'none',
+                textTransform: "none",
               }}
             >
-              {'Dark'}
+              {"Dark"}
             </Button>
           </ButtonGroup>
         </SettingsItem>
         <SettingsItem
-          title={'Send message'}
+          title={"Send message"}
         >
           <ButtonGroup
-            size={'small'}
+            size={"small"}
           >
             <Button
-              variant={sendOnEnter ? 'contained' : 'outlined'}
+              variant={sendOnEnter ? "contained" : "outlined"}
               onClick={() => setSendOnEnter(true)}
               sx={{
-                textTransform: 'none',
+                textTransform: "none",
               }}
             >
-              {'Enter'}
+              {"Enter"}
             </Button>
             <Button
-              variant={sendOnEnter ? 'outlined' : 'contained'}
+              variant={sendOnEnter ? "outlined" : "contained"}
               onClick={() => setSendOnEnter(false)}
               sx={{
-                textTransform: 'none',
+                textTransform: "none",
               }}
             >
-              {'Command+Enter'}
+              {"Command+Enter"}
             </Button>
           </ButtonGroup>
         </SettingsItem>
         <SettingsItem
-          title={'Startup page'}
+          title={"Startup page"}
         >
           <FormControlLabel
             control={<Checkbox
               checked={reopenChat}
               onChange={(event) => setReopenChat(event.target.checked)}
             />}
-            label={'Reopen chat on startup'}
+            label={"Reopen chat on startup"}
           />
         </SettingsItem>
         <SettingsItem
-          title={'OPENAI_API_KEY'}
+          title={"OPENAI_API_KEY"}
         >
           <FormControl
             fullWidth={true}
-            variant={'outlined'}
-            size={'small'}>
+            variant={"outlined"}
+            size={"small"}>
             <OutlinedInput
-              size={'small'}
+              size={"small"}
               fullWidth={true}
-              placeholder={'OPENAI_API_KEY'}
+              placeholder={"OPENAI_API_KEY"}
               value={openAIApiKey}
               onChange={(event) => {
                 setOpenAIApiKey(event.target.value);
               }}
-              type={showOpenAIAPIKey ? 'text' : 'password'}
+              type={showOpenAIAPIKey ? "text" : "password"}
               endAdornment={
                 <InputAdornment
                   position="end"
                 >
                   <IconButton
                     onClick={() => setShowOpenAIAPIKey(!showOpenAIAPIKey)}
-                    edge={'end'}
+                    edge={"end"}
                   >
                     {showOpenAIAPIKey ? <VisibilityOffRounded /> : <VisibilityRounded />}
                   </IconButton>
@@ -240,35 +240,35 @@ export function SettingsDialog(props: SettingsDialogProps) {
           </FormControl>
         </SettingsItem>
         <SettingsItem
-          title={'Backup and restore'}
+          title={"Backup and restore"}
         >
           <FormControl
             fullWidth={true}
-            variant={'outlined'}
-            size={'small'}
+            variant={"outlined"}
+            size={"small"}
             sx={{
-              marginTop: '16px',
+              marginTop: "16px",
             }}
           >
             <InputLabel>
-              {'GitHub token'}
+              {"GitHub token"}
             </InputLabel>
             <OutlinedInput
-              label={'GitHub token'}
-              size={'small'}
+              label={"GitHub token"}
+              size={"small"}
               fullWidth={true}
               value={githubToken}
               onChange={(event) => {
                 setGithubToken(event.target.value);
               }}
-              type={showGitHubToken ? 'text' : 'password'}
+              type={showGitHubToken ? "text" : "password"}
               endAdornment={
                 <InputAdornment
                   position="end"
                 >
                   <IconButton
                     onClick={() => setShowGitHubToken(!showGitHubToken)}
-                    edge={'end'}
+                    edge={"end"}
                   >
                     {showGitHubToken ? <VisibilityOffRounded /> : <VisibilityRounded />}
                   </IconButton>
@@ -278,18 +278,18 @@ export function SettingsDialog(props: SettingsDialogProps) {
           </FormControl>
           <FormControl
             fullWidth={true}
-            variant={'outlined'}
-            size={'small'}
+            variant={"outlined"}
+            size={"small"}
             sx={{
-              marginTop: '16px',
+              marginTop: "16px",
             }}
           >
             <InputLabel>
-              {'GitHub gist id'}
+              {"GitHub gist id"}
             </InputLabel>
             <OutlinedInput
-              label={'GitHub gist id'}
-              size={'small'}
+              label={"GitHub gist id"}
+              size={"small"}
               fullWidth={true}
               value={githubGistId}
               onChange={(event) => {
@@ -300,29 +300,29 @@ export function SettingsDialog(props: SettingsDialogProps) {
           <Button
             onClick={gistBackup}
             sx={{
-              marginTop: '8px',
+              marginTop: "8px",
             }}
           >
-            {'Backup'}
+            {"Backup"}
           </Button>
           <Button
             onClick={gistRestore}
             sx={{
-              marginTop: '8px',
+              marginTop: "8px",
             }}
           >
-            {'Restore'}
+            {"Restore"}
           </Button>
         </SettingsItem>
         <SettingsItem
-          title={'OpenAI API Usage'}
+          title={"OpenAI API Usage"}
           description={usageText()}
         />
         <SettingsItem>
           <Button
-            variant={'outlined'}
-            size={'small'}
-            color={'error'}
+            variant={"outlined"}
+            size={"small"}
+            color={"error"}
             fullWidth={true}
             startIcon={<DeleteRounded />}
             onClick={handleDeleteAllDataClick}
@@ -335,7 +335,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
         <Button
           onClick={handleDialogClose2}
         >
-          {'OK'}
+          {"OK"}
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {createTheme, ThemeProvider} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../utils/util";
@@ -18,12 +18,12 @@ export default function AppPage() {
 
   const themeMode = (darkMode: string, isSystemDarkMode: boolean) => {
     switch (darkMode) {
-      case 'dark':
-        return 'dark';
-      case 'light':
-        return 'light';
+      case "dark":
+        return "dark";
+      case "light":
+        return "light";
       default:
-        return isSystemDarkMode ? 'dark' : 'light';
+        return isSystemDarkMode ? "dark" : "light";
     }
   }
 
@@ -35,18 +35,18 @@ export default function AppPage() {
   }
 
   const isSystemDarkMode = useDarkMode()
-  const isDarkMode = themeMode(storeTheme, isSystemDarkMode) === 'dark'
+  const isDarkMode = themeMode(storeTheme, isSystemDarkMode) === "dark"
   const theme = isDarkMode ? createTheme({
     palette: {
-      mode: 'dark',
+      mode: "dark",
       primary: {
-        main: blue['A100'],
+        main: blue["A100"],
       },
       info: {
-        main: blueGrey['A100'],
+        main: blueGrey["A100"],
       },
       error: {
-        main: red['A100'],
+        main: red["A100"],
       },
       background: {
         default: blueGrey[900],
@@ -55,7 +55,7 @@ export default function AppPage() {
     },
   }) : createTheme({
     palette: {
-      mode: 'light',
+      mode: "light",
       primary: {
         main: blue[700],
       },

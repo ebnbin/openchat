@@ -52,19 +52,19 @@ export default function LikesPage() {
   return (
     <Box
       sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
       }}
     >
       <Box
         sx={{
-          width: '100%',
+          width: "100%",
           flexGrow: 1,
-          padding: '0px',
-          overflow: 'auto',
+          padding: "0px",
+          overflow: "auto",
         }}
       >
         <LikesConversationList

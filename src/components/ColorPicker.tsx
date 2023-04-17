@@ -18,51 +18,51 @@ import {
 import {PaletteRounded} from "@mui/icons-material";
 
 export const colorValue = (theme: Theme, color: string) => {
-  const isDarkMode = theme.palette.mode === 'dark';
-  const index = isDarkMode ? 'A100' : '700';
+  const isDarkMode = theme.palette.mode === "dark";
+  const index = isDarkMode ? "A100" : "700";
   switch (color) {
-    case '':
-      return 'transparent';
-    case 'red':
+    case "":
+      return "transparent";
+    case "red":
       return red[index];
-    case 'pink':
+    case "pink":
       return pink[index];
-    case 'purple':
+    case "purple":
       return purple[index];
-    case 'deepPurple':
+    case "deepPurple":
       return deepPurple[index];
-    case 'indigo':
+    case "indigo":
       return indigo[index];
-    case 'blue':
+    case "blue":
       return blue[index];
-    case 'lightBlue':
+    case "lightBlue":
       return lightBlue[index];
-    case 'cyan':
+    case "cyan":
       return cyan[index];
-    case 'teal':
+    case "teal":
       return teal[index];
-    case 'green':
+    case "green":
       return green[index];
-    case 'lightGreen':
+    case "lightGreen":
       return lightGreen[index];
-    case 'lime':
+    case "lime":
       return lime[index];
-    case 'yellow':
+    case "yellow":
       return yellow[index];
-    case 'amber':
+    case "amber":
       return amber[index];
-    case 'orange':
+    case "orange":
       return orange[index];
-    case 'deepOrange':
+    case "deepOrange":
       return deepOrange[index];
-    case 'brown':
+    case "brown":
       return brown[index];
-    case 'grey':
+    case "grey":
       return grey[index];
-    case 'blueGrey':
+    case "blueGrey":
       return blueGrey[index];
     default:
-      return 'transparent';
+      return "transparent";
   }
 }
 
@@ -93,32 +93,32 @@ export default function ColorPicker(props: ColorPickerProps) {
 
   const colors = [
     [
-      '',
-      'red',
-      'pink',
-      'purple',
-      'deepPurple',
+      "",
+      "red",
+      "pink",
+      "purple",
+      "deepPurple",
     ],
     [
-      'indigo',
-      'blue',
-      'lightBlue',
-      'cyan',
-      'teal',
+      "indigo",
+      "blue",
+      "lightBlue",
+      "cyan",
+      "teal",
     ],
     [
-      'green',
-      'lightGreen',
-      'lime',
-      'yellow',
-      'amber',
+      "green",
+      "lightGreen",
+      "lime",
+      "yellow",
+      "amber",
     ],
     [
-      'orange',
-      'deepOrange',
-      'brown',
-      'grey',
-      'blueGrey',
+      "orange",
+      "deepOrange",
+      "brown",
+      "grey",
+      "blueGrey",
     ],
   ];
 
@@ -134,21 +134,21 @@ export default function ColorPicker(props: ColorPickerProps) {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
       >
         {colors.map((row, index) => (
           <Box
             key={index}
             sx={{
-              width: '200px',
-              display: 'flex',
-              flexDirection: 'row',
+              width: "200px",
+              display: "flex",
+              flexDirection: "row",
             }}
           >
             {row.map((color, index) => (
@@ -158,7 +158,7 @@ export default function ColorPicker(props: ColorPickerProps) {
                 sx={{
                   flexGrow: 1,
                   flexShrink: 0,
-                  height: '40px',
+                  height: "40px",
                   bgcolor: colorValue(theme, color),
                 }}
               />

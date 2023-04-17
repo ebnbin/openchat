@@ -12,16 +12,16 @@ export default function SettingsItem(props: SettingsItemProps) {
   return (
     <Box
       sx={{
-        paddingBottom: '24px',
+        paddingBottom: "24px",
       }}
     >
       {
         props.title === undefined ? undefined : (
           <Typography
-            variant={'subtitle2'}
+            variant={"subtitle2"}
             gutterBottom={true}
             sx={{
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
           >
             {props.title}
@@ -31,11 +31,11 @@ export default function SettingsItem(props: SettingsItemProps) {
       {
         props.description === undefined ? undefined : (
           <Typography
-            variant={'body2'}
-            color={'text.secondary'}
+            variant={"body2"}
+            color={"text.secondary"}
             gutterBottom={true}
             sx={{
-              whiteSpace: 'pre-wrap',
+              whiteSpace: "pre-wrap",
             }}
           >
             {props.description}

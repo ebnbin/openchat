@@ -35,7 +35,7 @@ function updateConversationEntitiesContext(
 ): ConversationEntity[] {
   const maxTokens = defaultOpenAIModel.maxTokens * chat.context_threshold;
   let usedTokens = 0;
-  if (chat.system_message !== '') {
+  if (chat.system_message !== "") {
     usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * getTokensPerChar(chat);
   }
   return conversationEntitiesNoContext
@@ -81,7 +81,7 @@ function getRequestingMessages(
   requestingConversationEntities: ConversationEntity[],
 ): ChatCompletionRequestMessage[] {
   const result: ChatCompletionRequestMessage[] = []
-  if (chat.system_message !== '') {
+  if (chat.system_message !== "") {
     result.push(
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
@@ -163,7 +163,7 @@ function getResponseConversationEntitiesNoContext(
         ? responseMessageContent
         : conversationEntity.assistantMessage,
       finishReason: conversationEntity.type === ConversationEntityType.Requesting
-        ? (response.choices[0].finish_reason ?? '')
+        ? (response.choices[0].finish_reason ?? "")
         : conversationEntity.finishReason,
       type: ConversationEntityType.Default,
     };
@@ -253,8 +253,8 @@ export default function ChatPage(props: ChatProps) {
     }
 
 
-    const formattedInput = props.chat.user_message_template.includes('{{message}}')
-      ? props.chat.user_message_template.replaceAll('{{message}}', input)
+    const formattedInput = props.chat.user_message_template.includes("{{message}}")
+      ? props.chat.user_message_template.replaceAll("{{message}}", input)
       : input;
     const requestingConversation = store.newConversation({
       chat_id: props.chat.id,
@@ -312,9 +312,9 @@ export default function ChatPage(props: ChatProps) {
 
   const scrollToBottom = (smooth: boolean) => {
     virtuosoRef.current?.scrollToIndex({
-      index: 'LAST',
-      behavior: smooth ? 'smooth' : undefined,
-      align: 'end',
+      index: "LAST",
+      behavior: smooth ? "smooth" : undefined,
+      align: "end",
     })
   }
 
@@ -323,20 +323,20 @@ export default function ChatPage(props: ChatProps) {
   return (
     <Box
       sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
       }}
     >
       <Box
         sx={{
-          width: '100%',
+          width: "100%",
           flexGrow: 1,
-          padding: '0px',
-          overflow: 'auto',
-          display: props.children !== undefined ? 'none' : 'block',
+          padding: "0px",
+          overflow: "auto",
+          display: props.children !== undefined ? "none" : "block",
         }}
       >
         <ConversationList
@@ -353,26 +353,26 @@ export default function ChatPage(props: ChatProps) {
       </Box>
       <Box
         sx={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          display: props.children === undefined ? 'none' : 'flex',
-          paddingBottom: '64px',
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          display: props.children === undefined ? "none" : "flex",
+          paddingBottom: "64px",
         }}
       >
         {props.children}
       </Box>
       <Box
         sx={{
-          width: '100%',
-          position: 'absolute',
+          width: "100%",
+          position: "absolute",
           bottom: 0,
         }}
       >
         <Box
           sx={{
             maxWidth: contentWidth,
-            margin: '0 auto',
+            margin: "0 auto",
           }}
         >
           <ChatInput

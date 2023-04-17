@@ -1,5 +1,5 @@
 import {Configuration, OpenAIApi} from "openai";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import store from "./store";
 
 export function openAIApi(): OpenAIApi {
@@ -30,14 +30,14 @@ export function useDarkMode(): boolean {
       setIsDarkMode(event.matches);
     }
 
-    const darkModeMediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeMediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
 
     setIsDarkMode(darkModeMediaQueryList.matches);
 
-    darkModeMediaQueryList.addEventListener('change', handleDarkModeChange);
+    darkModeMediaQueryList.addEventListener("change", handleDarkModeChange);
 
     return () => {
-      darkModeMediaQueryList.removeEventListener('change', handleDarkModeChange);
+      darkModeMediaQueryList.removeEventListener("change", handleDarkModeChange);
     }
   }, []);
 
@@ -53,7 +53,7 @@ interface OpenAIModel {
 }
 
 export const defaultOpenAIModel: OpenAIModel = {
-  model: 'gpt-3.5-turbo',
+  model: "gpt-3.5-turbo",
   maxTokens: 4096,
   extraCharsPerMessage: 16,
 } as const;

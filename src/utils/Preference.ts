@@ -25,12 +25,12 @@ export default class Preference<T> {
     if (storeValue === null) {
       value = this.defaultValue;
     } else {
-      if (typeof this.defaultValue === 'string') {
+      if (typeof this.defaultValue === "string") {
         value = storeValue as T;
-      } else if (typeof this.defaultValue === 'number') {
+      } else if (typeof this.defaultValue === "number") {
         value = Number(storeValue) as T;
-      } else if (typeof this.defaultValue === 'boolean') {
-        value = (storeValue === 'true') as T;
+      } else if (typeof this.defaultValue === "boolean") {
+        value = (storeValue === "true") as T;
       } else if (Array.isArray(this.defaultValue)) {
         value = JSON.parse(storeValue) as T;
       } else {
@@ -52,11 +52,11 @@ export default class Preference<T> {
     this.cacheValue = value;
     this.cached = true;
     let storeValue: string;
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       storeValue = value;
-    } else if (typeof value === 'number') {
+    } else if (typeof value === "number") {
       storeValue = value.toString();
-    } else if (typeof value === 'boolean') {
+    } else if (typeof value === "boolean") {
       storeValue = value.toString();
     } else {
       storeValue = JSON.stringify(value);

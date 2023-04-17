@@ -53,7 +53,7 @@ export default function ConversationList(props: ConversationListProps) {
           return (
             <Box
               sx={{
-                height: '225px',
+                height: "225px",
               }}
             />
           )

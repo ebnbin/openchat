@@ -20,8 +20,8 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
     <Card
       elevation={1}
       sx={{
-        borderRadius: '0px',
-        marginBottom: '16px',
+        borderRadius: "0px",
+        marginBottom: "16px",
       }}
     >
       <ConversationMessageItem
@@ -41,18 +41,18 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
       >
         <Box
           sx={{
-            height: '44px',
+            height: "44px",
             maxWidth: contentWidth,
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'row',
-            paddingX: isNotSmallPage ? '32px' : '16px',
-            paddingBottom: '12px',
-            alignItems: 'center',
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: "row",
+            paddingX: isNotSmallPage ? "32px" : "16px",
+            paddingBottom: "12px",
+            alignItems: "center",
           }}
         >
           <Typography
-            variant={'caption'}
+            variant={"caption"}
             color={theme.palette.text.disabled}
           >
             {`${new Date(props.conversationEntity.id).toLocaleString()}`}
@@ -63,16 +63,16 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
             }}
           />
           <Button
-            variant={'text'}
-            size={'small'}
-            color={'error'}
+            variant={"text"}
+            size={"small"}
+            color={"error"}
             startIcon={<BookmarkRemoveRounded />}
             onClick={() => props.unlikeConversationEntity(props.conversationEntity)}
             sx={{
-              textTransform: 'none',
+              textTransform: "none",
             }}
           >
-            {'Remove'}
+            {"Remove"}
           </Button>
         </Box>
       </Box>

@@ -140,10 +140,10 @@ export default function HomePage(props: HomePageProps) {
         >
           <Box
             sx={{
-              margin: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              margin: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
             <Logo/>
@@ -174,10 +174,10 @@ export default function HomePage(props: HomePageProps) {
       setHeight(window.innerHeight);
     }
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -197,15 +197,15 @@ export default function HomePage(props: HomePageProps) {
         sx={{
           width: width,
           height: height,
-          display: 'flex',
-          flexDirection: 'row',
+          display: "flex",
+          flexDirection: "row",
         }}
       >
         <Box
           sx={{
             flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <HomeAppBar
@@ -218,9 +218,9 @@ export default function HomePage(props: HomePageProps) {
           />
           <Box
             style={{
-              width: '100%',
+              width: "100%",
               flexGrow: 1,
-              overflow: 'auto',
+              overflow: "auto",
             }}
           >
             {contentPage()}

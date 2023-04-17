@@ -37,17 +37,17 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     const currentSize = chat.icon_text_size;
     let nextSize;
     switch (currentSize) {
-      case 'small':
-        nextSize = 'medium';
+      case "small":
+        nextSize = "medium";
         break;
-      case 'medium':
-        nextSize = 'large';
+      case "medium":
+        nextSize = "large";
         break;
-      case 'large':
-        nextSize = 'small';
+      case "large":
+        nextSize = "small";
         break;
       default:
-        nextSize = 'medium';
+        nextSize = "medium";
         break;
     }
     setChat({
@@ -58,14 +58,14 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
 
   const iconTextSizeValue = (iconTextSize: string): string => {
     switch (iconTextSize) {
-      case 'small':
-        return '16px';
-      case 'medium':
-        return '24px';
-      case 'large':
-        return '32px';
+      case "small":
+        return "16px";
+      case "medium":
+        return "24px";
+      case "large":
+        return "32px";
       default:
-        return '24px';
+        return "24px";
     }
   }
 
@@ -134,7 +134,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     props.handleDialogClose();
   }
 
-  const [chatInfo, setChatInfo] = useState('')
+  const [chatInfo, setChatInfo] = useState("")
 
   useEffect(() => {
     let info = `Model: ${defaultOpenAIModel.model} (${defaultOpenAIModel.maxTokens} tokens)`;
@@ -152,31 +152,31 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       onClose={handleCancelClick}
     >
       <DialogTitle>
-        {props.isNew ? 'New Chat Settings' : 'Chat Settings'}
+        {props.isNew ? "New Chat Settings" : "Chat Settings"}
       </DialogTitle>
       <DialogContent
         dividers={true}
       >
         <SettingsItem
-          title={'Title'}
+          title={"Title"}
         >
           <TextField
-            variant={'outlined'}
-            size={'small'}
+            variant={"outlined"}
+            size={"small"}
             fullWidth={true}
-            placeholder={'New chat'}
+            placeholder={"New chat"}
             value={chat.title}
             onChange={handleTitleChange}
           />
         </SettingsItem>
         <SettingsItem
-          title={'Icon'}
+          title={"Icon"}
         >
           <Box
-            display={'flex'}
-            flexDirection={'row'}
+            display={"flex"}
+            flexDirection={"row"}
             sx={{
-              marginBottom: '8px',
+              marginBottom: "8px",
             }}
           >
             <ChatIcon
@@ -185,22 +185,22 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
               iconColor={chat.icon_color}
             />
             <TextField
-              variant={'outlined'}
-              size={'small'}
+              variant={"outlined"}
+              size={"small"}
               fullWidth={true}
-              placeholder={'Icon text'}
+              placeholder={"Icon text"}
               value={chat.icon_text}
               onChange={handleIconTextChange}
               sx={{
                 flexGrow: 1,
-                marginX: '8px'
+                marginX: "8px"
               }}
             />
             <IconButton
               onClick={handleIconTextSizeClick}
               sx={{
-                width: '40px',
-                height: '40px',
+                width: "40px",
+                height: "40px",
               }}
             >
               <FormatSizeRounded
@@ -217,7 +217,7 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           </Box>
         </SettingsItem>
         <SettingsItem
-          title={'Context threshold'}
+          title={"Context threshold"}
           description={`Conversation histories that can be remembered as context for the next conversation\nCurrent value: ${(chat.context_threshold * 100).toFixed(0)}% of maximum tokens (about ${(defaultOpenAIModel.maxTokens * chat.context_threshold / 4 * 3).toFixed(0)} words)`}
         >
           <Slider
@@ -230,31 +230,31 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           />
         </SettingsItem>
         <SettingsItem
-          title={'System prompt'}
-          description={'The system prompt helps set the behavior of the assistant'}
+          title={"System prompt"}
+          description={"The system prompt helps set the behavior of the assistant"}
         >
           <TextField
-            variant={'outlined'}
-            size={'small'}
+            variant={"outlined"}
+            size={"small"}
             fullWidth={true}
             multiline={true}
             maxRows={8}
-            placeholder={'You are a helpful assistant.'}
+            placeholder={"You are a helpful assistant."}
             value={chat.system_message}
             onChange={handleSystemMessageChange}
           />
         </SettingsItem>
         <SettingsItem
-          title={'User message template'}
-          description={'Template for each user message. {{message}} represents the input message'}
+          title={"User message template"}
+          description={"Template for each user message. {{message}} represents the input message"}
         >
           <TextField
-            variant={'outlined'}
-            size={'small'}
+            variant={"outlined"}
+            size={"small"}
             fullWidth={true}
             multiline={true}
             maxRows={8}
-            placeholder={'```javascript\n{{message}}\n```'}
+            placeholder={"```javascript\n{{message}}\n```"}
             value={chat.user_message_template}
             onChange={handleUserMessageTemplateChange}
           />
@@ -265,9 +265,9 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
         {props.isNew ? undefined : (
           <SettingsItem>
             <Button
-              variant={'outlined'}
-              size={'small'}
-              color={'error'}
+              variant={"outlined"}
+              size={"small"}
+              color={"error"}
               fullWidth={true}
               startIcon={<DeleteRounded />}
               onClick={handleDeleteClick}
@@ -281,12 +281,12 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
         <Button
           onClick={handleCancelClick}
         >
-          {'Cancel'}
+          {"Cancel"}
         </Button>
         <Button
           onClick={handleSaveClick}
         >
-          {'Save'}
+          {"Save"}
         </Button>
       </DialogActions>
     </Dialog>

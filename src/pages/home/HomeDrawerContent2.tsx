@@ -104,31 +104,31 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
   return (
     <Box
       sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Box
         sx={{
-          display: updatingPins ? 'none' : 'flex',
-          flexDirection: 'column',
+          display: updatingPins ? "none" : "flex",
+          flexDirection: "column",
           flexGrow: 0,
         }}
       >
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            height: '56px',
-            paddingX: '4px',
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            height: "56px",
+            paddingX: "4px",
           }}
         >
           <Chip
-            variant={'outlined'}
-            color={'primary'}
-            label={'New chat'}
+            variant={"outlined"}
+            color={"primary"}
+            label={"New chat"}
             icon={<AddRounded/>}
             onClick={() => {
               props.handleNewChatClick();
@@ -136,7 +136,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             }}
             sx={{
               fontSize: theme.typography.body2.fontSize,
-              marginX: '16px',
+              marginX: "16px",
               flexGrow: 1,
             }}
           />
@@ -145,10 +145,10 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
               props.handleLikesClick();
               handlePopoverClose();
             }}
-            color={props.selectedContentId === contentLikes ? 'primary' : 'default'}
+            color={props.selectedContentId === contentLikes ? "primary" : "default"}
             sx={{
-              width: '48px',
-              height: '48px',
+              width: "48px",
+              height: "48px",
             }}
           >
             <BookmarksRounded/>
@@ -156,8 +156,8 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           <IconButton
             onClick={() => setUpdatingPins(true)}
             sx={{
-              width: '48px',
-              height: '48px',
+              width: "48px",
+              height: "48px",
             }}
           >
             <DashboardCustomizeRounded/>
@@ -166,30 +166,30 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
       </Box>
       <Box
         sx={{
-          alignItems: 'center',
-          display: updatingPins ? 'flex' : 'none',
-          flexDirection: 'row',
-          height: '56px',
-          paddingX: '4px',
+          alignItems: "center",
+          display: updatingPins ? "flex" : "none",
+          flexDirection: "row",
+          height: "56px",
+          paddingX: "4px",
         }}
       >
         <Typography
-          textAlign={'center'}
-          variant={'body2'}
+          textAlign={"center"}
+          variant={"body2"}
           color={theme.palette.primary.main}
           sx={{
             flexGrow: 1,
           }}
         >
-          {'Customize your pins'}
+          {"Customize your pins"}
         </Typography>
         <IconButton
           onClick={cancelPinTimestamps}
           sx={{
-            width: '48px',
-            height: '48px',
-            padding: '0px',
-            marginX: '0px',
+            width: "48px",
+            height: "48px",
+            padding: "0px",
+            marginX: "0px",
           }}
         >
           <CloseRounded/>
@@ -197,10 +197,10 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
         <IconButton
           onClick={savePinTimestamps}
           sx={{
-            width: '48px',
-            height: '48px',
-            padding: '0px',
-            marginX: '0px',
+            width: "48px",
+            height: "48px",
+            padding: "0px",
+            marginX: "0px",
           }}
         >
           <DoneRounded/>
@@ -210,11 +210,11 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
       <List
         sx={{
           flexGrow: 1,
-          overflow: 'auto',
-          padding: '0px',
-          // minWidth: '300px',
-          // '&::-webkit-scrollbar': {
-          //   display: 'none',
+          overflow: "auto",
+          padding: "0px",
+          // minWidth: "300px",
+          // "&::-webkit-scrollbar": {
+          //   display: "none",
           // },
         }}
       >
@@ -222,9 +222,9 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           <Box
             key={index}
             sx={{
-              // width: '300px',
-              display: 'flex',
-              flexDirection: 'row',
+              // width: "300px",
+              display: "flex",
+              flexDirection: "row",
             }}
           >
             {row.map((chat, index) => (
@@ -234,30 +234,30 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
                 selected={chat.id === props.selectedContentId}
                 sx={{
                   color: theme.palette.text.primary,
-                  display: 'flex',
-                  flexDirection: 'column',
+                  display: "flex",
+                  flexDirection: "column",
                   flexGrow: 1,
-                  maxWidth: '100px',
-                  height: '100px',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textTransform: 'none',
+                  maxWidth: "100px",
+                  height: "100px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textTransform: "none",
                 }}
               >
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
                   }}
                 >
                   <Box
                     sx={{
-                      width: '80px',
-                      display: 'flex',
-                      justifyContent: 'center',
+                      width: "80px",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
                   >
                     <ChatIcon
@@ -268,29 +268,29 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
                   </Box>
                   <Box
                     sx={{
-                      width: '80px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginTop: '4px',
+                      width: "80px",
+                      height: "32px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginTop: "4px",
                     }}
                   >
                     <Typography
-                      variant={'caption'}
-                      align={'center'}
+                      variant={"caption"}
+                      align={"center"}
                       sx={{
-                        width: '100%',
-                        display: '-webkit-box',
-                        overflow: 'hidden',
-                        WebkitBoxOrient: 'vertical',
+                        width: "100%",
+                        display: "-webkit-box",
+                        overflow: "hidden",
+                        WebkitBoxOrient: "vertical",
                         WebkitLineClamp: 2,
-                        textOverflow: 'ellipsis',
+                        textOverflow: "ellipsis",
                         lineHeight: 1.2,
-                        fontWeight: props.selectedContentId === chat.id ? 'bold' : 'normal',
+                        fontWeight: props.selectedContentId === chat.id ? "bold" : "normal",
                       }}
                     >
-                      {chat.title === '' ? 'New chat' : chat.title}
+                      {chat.title === "" ? "New chat" : chat.title}
                     </Typography>
                   </Box>
                 </Box>
@@ -302,41 +302,41 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
                   disabled={true}
                   sx={{
                     color: theme.palette.text.primary,
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: "flex",
+                    flexDirection: "column",
                     flexGrow: 3 - row.length,
-                    maxWidth: '100px',
-                    height: '100px',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    textTransform: 'none',
+                    maxWidth: "100px",
+                    height: "100px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textTransform: "none",
                   }}
                 >
                   <Box
                     sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '100%',
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
                     }}
                   >
                     <Box
                       sx={{
-                        width: '80px',
-                        display: 'flex',
-                        justifyContent: 'center',
+                        width: "80px",
+                        display: "flex",
+                        justifyContent: "center",
                       }}
                     >
                     </Box>
                     <Box
                       sx={{
-                        width: '80px',
-                        height: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: '4px',
+                        width: "80px",
+                        height: "32px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginTop: "4px",
                       }}
                     >
                     </Box>
@@ -348,7 +348,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
         ))}
         <Divider
           sx={{
-            display: pinnedChats().length === 0 ? 'none' : 'block',
+            display: pinnedChats().length === 0 ? "none" : "block",
           }}
         />
         {unpinnedChats().map((chat: Chat) => (
@@ -356,7 +356,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             key={chat.id}
             disablePadding={true}
             sx={{
-              // minWidth: '300px',
+              // minWidth: "300px",
             }}
           >
             <ListItemButton
@@ -371,10 +371,10 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
                 />
               </ListItemIcon>
               <ListItemText
-                primary={chat.title === '' ? 'New chat' : chat.title}
+                primary={chat.title === "" ? "New chat" : chat.title}
                 primaryTypographyProps={{
                   noWrap: props.selectedContentId !== chat.id,
-                  fontWeight: props.selectedContentId === chat.id ? 'bold' : undefined,
+                  fontWeight: props.selectedContentId === chat.id ? "bold" : undefined,
                 }}
               />
             </ListItemButton>
@@ -385,7 +385,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
       <ListItem
         disablePadding={true}
         sx={{
-          display: updatingPins ? 'none' : 'flex',
+          display: updatingPins ? "none" : "flex",
           flexShrink: 0,
         }}
       >
@@ -395,12 +395,12 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           <ListItemIcon>
             <SettingsRounded
               sx={{
-                marginLeft: '8px',
+                marginLeft: "8px",
               }}
             />
           </ListItemIcon>
           <ListItemText
-            primary={'Settings'}
+            primary={"Settings"}
           />
         </ListItemButton>
       </ListItem>

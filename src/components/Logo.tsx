@@ -4,35 +4,35 @@ import {Container, Link, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 
 export default function Logo() {
-  const color = '#7f7f7f7f';
+  const color = "#7f7f7f7f";
   return (
     <Container>
       <Box
         sx={{
-          width: '100%',
+          width: "100%",
         }}
       >
         <img
           src={logo}
-          alt={'logo'}
+          alt={"logo"}
           style={{
-            width: '192px',
-            height: '192px',
+            width: "192px",
+            height: "192px",
           }}
         />
       </Box>
       <Box
         sx={{
-          width: '100%',
-          textAlign: 'center',
+          width: "100%",
+          textAlign: "center",
         }}
       >
         <Typography
-          variant={'h4'}
+          variant={"h4"}
           color={color}
           sx={{
-            fontWeight: 'bold',
-            userSelect: 'none',
+            fontWeight: "bold",
+            userSelect: "none",
           }}
         >
           OpenChat
@@ -40,26 +40,26 @@ export default function Logo() {
       </Box>
       <Box
         sx={{
-          width: '100%',
-          textAlign: 'center',
+          width: "100%",
+          textAlign: "center",
         }}
       >
         <Typography
-          variant={'overline'}
+          variant={"overline"}
           color={color}
           sx={{
-            fontSize: '10px',
+            fontSize: "10px",
           }}
         >
           Powered by&nbsp;
         </Typography>
         <Link
-          variant={'overline'}
+          variant={"overline"}
           color={color}
-          href={'https://platform.openai.com/'}
-          target={'_blank'}
+          href={"https://platform.openai.com/"}
+          target={"_blank"}
           sx={{
-            fontSize: '10px',
+            fontSize: "10px",
           }}
         >
           OpenAI

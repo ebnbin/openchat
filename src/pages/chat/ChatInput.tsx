@@ -15,7 +15,7 @@ export default function ChatInput(props: ChatInputProps) {
   const { isLoading, handleRequest } = props
 
   const [composition, setComposition] = useState(false)
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState("")
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value)
@@ -23,12 +23,12 @@ export default function ChatInput(props: ChatInputProps) {
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (store.sendOnEnter.get()) {
-      if (event.key === 'Enter' && !event.shiftKey && !composition) {
+      if (event.key === "Enter" && !event.shiftKey && !composition) {
         event.preventDefault()
         handleSendClick()
       }
     } else {
-      if (event.key === 'Enter' && event.metaKey && !composition) {
+      if (event.key === "Enter" && event.metaKey && !composition) {
         event.preventDefault()
         handleSendClick()
       }
@@ -36,15 +36,15 @@ export default function ChatInput(props: ChatInputProps) {
   }
 
   function canRequest(): boolean {
-    return input !== '' && !isLoading
+    return input !== "" && !isLoading
   }
 
   const handleSendClick = () => {
-    if (store.openAIApiKey.get() === '') {
+    if (store.openAIApiKey.get() === "") {
       setSnackbarOpen(true)
     } else if (canRequest()) {
       const currInput = input
-      setInput('')
+      setInput("")
       handleRequest(currInput)
     }
   }
@@ -56,20 +56,20 @@ export default function ChatInput(props: ChatInputProps) {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Box
         sx={{
-          display: props.showScrollToButton ? 'flex' : 'none',
-          justifyContent: 'flex-end',
+          display: props.showScrollToButton ? "flex" : "none",
+          justifyContent: "flex-end",
         }}
       >
         <IconButton
           onClick={props.handleScrollToBottom}
           sx={{
-            marginBottom: '8px',
+            marginBottom: "8px",
           }}
         >
           <ExpandCircleDownRounded/>
@@ -78,19 +78,19 @@ export default function ChatInput(props: ChatInputProps) {
       <Card
         elevation={4}
         sx={{
-          marginX: isNotSmallPage ? '16px' : '0px',
-          padding: '16px',
-          borderRadius: '0px',
-          borderTopLeftRadius: '8px',
-          borderTopRightRadius: '8px',
+          marginX: isNotSmallPage ? "16px" : "0px",
+          padding: "16px",
+          borderRadius: "0px",
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
         }}
       >
         <TextField
-          variant={'standard'}
+          variant={"standard"}
           fullWidth={true}
           multiline={true}
           maxRows={8}
-          placeholder={'Send a message...'}
+          placeholder={"Send a message..."}
           value={input}
           autoFocus={true}
           onChange={handleInputChange}
@@ -100,14 +100,14 @@ export default function ChatInput(props: ChatInputProps) {
           InputProps={{
             endAdornment: (
               <InputAdornment
-                position={'end'}
+                position={"end"}
                 sx={{
-                  alignItems: 'end',
-                  alignSelf: 'end',
+                  alignItems: "end",
+                  alignSelf: "end",
                 }}
               >
                 <IconButton
-                  size={'small'}
+                  size={"small"}
                   disabled={!canRequest()}
                   onClick={handleSendClick}
                 >
@@ -119,18 +119,18 @@ export default function ChatInput(props: ChatInputProps) {
         />
       </Card>
       <Snackbar
-        anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
+        anchorOrigin={ { vertical: "bottom", horizontal: "center" } }
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
       >
         <Alert
-          severity={'error'}
+          severity={"error"}
           sx={{
-            width: '100%'
+            width: "100%"
           }}
         >
-          {'OpenAI API key is not set'}
+          {"OpenAI API key is not set"}
         </Alert>
       </Snackbar>
     </Box>

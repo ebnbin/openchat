@@ -33,7 +33,7 @@ export default function HomeAppBar(props: HomeAppBarProps) {
         <ListItemIcon>
           <BookmarksRounded
             sx={{
-              marginLeft: '8px',
+              marginLeft: "8px",
             }}
           />
         </ListItemIcon>
@@ -53,21 +53,21 @@ export default function HomeAppBar(props: HomeAppBarProps) {
 
   const title = () => {
     if (props.contentId === contentNewChat) {
-      return 'OpenChat';
+      return "OpenChat";
     }
     if (props.contentId === contentLikes) {
-      return 'Save list';
+      return "Save list";
     }
     const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
-    if (chat.title === '') {
-      return 'New chat';
+    if (chat.title === "") {
+      return "New chat";
     }
     return chat.title;
   }
 
   const chatSettingsVisibility = () => {
     if (props.contentId === contentLikes) {
-      return 'hidden';
+      return "hidden";
     }
     return undefined;
   }
@@ -82,34 +82,34 @@ export default function HomeAppBar(props: HomeAppBarProps) {
   return (
     <Box
       sx={{
-        height: '56px',
+        height: "56px",
         flexShrink: 0,
       }}
     >
       <AppBar
-        position={'sticky'}
-        color={'default'}
+        position={"sticky"}
+        color={"default"}
         elevation={4}
       >
         <Toolbar
-          variant={'dense'}
+          variant={"dense"}
         >
           {icon()}
           <Typography
-            variant={'h6'}
+            variant={"h6"}
             noWrap={true}
           >
             {title()}
           </Typography>
           <Box
             sx={{
-              height: '56px',
+              height: "56px",
               flexGrow: 1,
             }}
           />
           <IconButton
-            edge={isWidePage ? 'end' : undefined}
-            color={'inherit'}
+            edge={isWidePage ? "end" : undefined}
+            color={"inherit"}
             onClick={props.selectedContentId === contentNewChat ? props.handleNewChatSettingsDialogOpen : handleChatSettingsOnClick}
             sx={{
               visibility: chatSettingsVisibility(),
@@ -118,11 +118,11 @@ export default function HomeAppBar(props: HomeAppBarProps) {
             <EditRounded/>
           </IconButton>
           <IconButton
-            edge={'end'}
-            color={'inherit'}
+            edge={"end"}
+            color={"inherit"}
             onClick={() => props.setDrawerOpen(true)}
             sx={{
-              display: isWidePage ? 'none' : undefined,
+              display: isWidePage ? "none" : undefined,
             }}
           >
             <MenuRounded/>

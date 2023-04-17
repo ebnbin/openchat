@@ -14,30 +14,30 @@ export default function ChatIcon(props: ChatIconProps) {
 
   const fontSize = () => {
     switch (props.iconTextSize) {
-      case 'small':
-        return '10px';
-      case 'medium':
-        return '20px';
-      case 'large':
-        return '30px';
+      case "small":
+        return "10px";
+      case "medium":
+        return "20px";
+      case "large":
+        return "30px";
       default:
-        return '20px';
+        return "20px";
     }
   }
   const bgColor = colorValue(theme, props.iconColor);
-  const textColor = bgColor === 'transparent' ? theme.palette.getContrastText(theme.palette.background.default) : theme.palette.getContrastText(bgColor);
+  const textColor = bgColor === "transparent" ? theme.palette.getContrastText(theme.palette.background.default) : theme.palette.getContrastText(bgColor);
 
   return (
     <Avatar
-      variant={'rounded'}
+      variant={"rounded"}
       sx={{
         fontSize: fontSize(),
-        textAlign: 'center',
-        color: props.iconText === '' && props.iconColor === '' ? theme.palette.text.primary : textColor,
+        textAlign: "center",
+        color: props.iconText === "" && props.iconColor === "" ? theme.palette.text.primary : textColor,
         bgcolor: bgColor,
       }}
     >
-      {props.iconText === '' ? <ChatRounded/> : props.iconText}
+      {props.iconText === "" ? <ChatRounded/> : props.iconText}
     </Avatar>
   )
 }
