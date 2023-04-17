@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import store from "../../util/store";
 import {Chat} from "../../util/data";
-import SettingsItem from "../../component/SettingsItem";
+import SettingsItem from "../../components/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";
 

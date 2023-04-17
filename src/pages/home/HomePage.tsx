@@ -7,7 +7,7 @@ import * as React from "react";
 import {Chat} from "../../util/data";
 import {useEffect, useState} from "react";
 import store from "../../util/store";
-import Logo from "../../component/Logo";
+import Logo from "../../components/Logo";
 import LikesPage from "../likes/LikesPage";
 import {useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../util/util";

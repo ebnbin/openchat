@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import AppPage from "./business/app/AppPage";
+import AppPage from "./pages/app/AppPage";
 import store from "./util/store";
 
 export default function App() {

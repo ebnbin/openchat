@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
-import ChatIcon from "../../component/ChatIcon";
+import ChatIcon from "../../components/ChatIcon";
 import ListItem from "@mui/material/ListItem";
 import {contentLikes} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";

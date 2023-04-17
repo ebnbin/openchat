@@ -7,11 +7,11 @@ import {
   TextField
 } from "@mui/material";
 import {defaultOpenAIModel} from "../../util/util";
-import SettingsItem from "../../component/SettingsItem";
+import SettingsItem from "../../components/SettingsItem";
 import {DeleteRounded, FormatSizeRounded} from "@mui/icons-material";
 import Box from "@mui/material/Box";
-import ColorPicker from "../../component/ColorPicker";
-import ChatIcon from "../../component/ChatIcon";
+import ColorPicker from "../../components/ColorPicker";
+import ChatIcon from "../../components/ChatIcon";
 
 interface ChatSettingsDialogProps {
   chat: Chat;

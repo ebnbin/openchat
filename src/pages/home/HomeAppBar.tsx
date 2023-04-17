@@ -10,7 +10,7 @@ import {Chat} from "../../util/data";
 import {widePageWidth} from "../../util/util";
 import {contentLikes, contentNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ChatIcon from "../../component/ChatIcon";
+import ChatIcon from "../../components/ChatIcon";
 
 interface HomeAppBarProps {
   chats: Chat[],
