@@ -1,4 +1,4 @@
-import {Avatar, Button, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
+import {Avatar, Button, Chip, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {
   ContentCopyRounded,
   FaceRounded
@@ -22,6 +22,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
   const { conversationEntity, updateConversationEntityNoStore, isUser } = props;
 
   const message = isUser ? conversationEntity.userMessage : conversationEntity.assistantMessage;
+  const finishReason = isUser ? 'stop' : conversationEntity.finishReason;
   const markdown = isUser ? conversationEntity.userMessageMarkdown : conversationEntity.assistantMessageMarkdown;
   const context = props.conversationEntity.type !== ConversationEntityType.Default
   const isLoading = !isUser && conversationEntity.type === ConversationEntityType.Requesting;
@@ -41,6 +42,38 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
   }
 
   const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
+
+  const finishReasonChips = () => {
+    if (finishReason === 'stop') {
+      return undefined
+    }
+    if (finishReason === 'length') {
+      return (
+        <Chip
+          label={'Incomplete model output due to max_tokens parameter or token limit'}
+        />
+      )
+    }
+    if (finishReason === 'content_filter') {
+      return (
+        <Chip
+          label={'Omitted content due to a flag from our content filters'}
+        />
+      )
+    }
+    if (finishReason === 'null') {
+      return (
+        <Chip
+          label={'API response still in progress or incomplete'}
+        />
+      )
+    }
+    return (
+      <Chip
+        label={'Request abort or error'}
+      />
+    )
+  }
 
   return (
     <Box
@@ -98,7 +131,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               flexGrow: 1,
             }}
           />
-          {isLoading ? undefined : (
+          {isLoading || message === '' ? undefined : (
             <Button
               variant={'text'}
               size={'small'}
@@ -154,6 +187,9 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               </Typography>
             )
           )}
+        </Box>
+        <Box>
+          {isLoading ? undefined : finishReasonChips()}
         </Box>
       </Box>
     </Box>
