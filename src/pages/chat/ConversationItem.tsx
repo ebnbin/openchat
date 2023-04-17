@@ -1,6 +1,6 @@
-import ConversationMessageItem from "./ConversationMessageItem";
+import ConversationMessageItem from "../conversation/ConversationMessageItem";
 import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
-import {contentWidth} from "../chat/ChatPage";
+import {contentWidth} from "./ChatPage";
 import {
   BookmarkAddedRounded,
   BookmarkBorderRounded,

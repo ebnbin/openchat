@@ -3,7 +3,7 @@ import {contentWidth} from "../chat/ChatPage";
 import {BookmarkRemoveRounded} from "@mui/icons-material";
 import React from "react";
 import ConversationMessageItem from "../conversation/ConversationMessageItem";
-import {ConversationEntity} from "../conversation/ConversationList";
+import {ConversationEntity} from "../chat/ConversationList";
 
 interface LikesConversationItemProps {
   conversationEntity: ConversationEntity;

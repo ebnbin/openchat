@@ -1,7 +1,7 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation} from "../../utils/data";
-import ConversationList, {ConversationEntity, ConversationEntityType} from "../conversation/ConversationList";
+import ConversationList, {ConversationEntity, ConversationEntityType} from "./ConversationList";
 import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../utils/util";
 import store from "../../utils/store";

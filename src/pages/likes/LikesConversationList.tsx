@@ -2,7 +2,7 @@ import {Box} from "@mui/material";
 import React from "react";
 import {Virtuoso} from "react-virtuoso";
 import LikesConversationItem from "./LikesConversationItem";
-import {ConversationEntity} from "../conversation/ConversationList";
+import {ConversationEntity} from "../chat/ConversationList";
 
 interface LikesConversationListProps {
   conversationEntities: ConversationEntity[];

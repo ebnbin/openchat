@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import HomeDrawer from "./HomeDrawer";
 import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
-import {ChatSettingsDialog} from "../chat/ChatSettingsDialog";
+import {ChatSettingsDialog} from "../chatsettings/ChatSettingsDialog";
 import * as React from "react";
 import {Chat} from "../../utils/data";
 import {useEffect, useState} from "react";
