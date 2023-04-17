@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import store from "../../utils/store";
-import {Conversation} from "../../utils/data";
+import {Conversation} from "../../utils/types";
 import {ConversationEntity, ConversationEntityType} from "../chat/ConversationList";
 import LikesConversationList from "./LikesConversationList";
 
@@ -13,7 +13,7 @@ function conversationsToConversationEntities(conversations: Conversation[]): Con
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
       finishReason: conversation.finish_reason,
-      likeTimestamp: conversation.like_timestamp,
+      likeTimestamp: conversation.save_timestamp,
       userMessageMarkdown: true,
       assistantMessageMarkdown: true,
       type: ConversationEntityType.Context, // TODO
@@ -44,7 +44,7 @@ export default function LikesPage() {
       store.updateConversationsDeleteConversationAsync(conversationEntity.id);
     } else {
       store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
-        like_timestamp: 0,
+        save_timestamp: 0,
       });
     }
   }

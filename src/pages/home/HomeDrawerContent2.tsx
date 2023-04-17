@@ -12,7 +12,7 @@ import ListItem from "@mui/material/ListItem";
 import {contentLikes} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import {Chat} from "../../utils/data";
+import {Chat} from "../../utils/types";
 import React, {useEffect, useState} from "react";
 import store from "../../utils/store";
 

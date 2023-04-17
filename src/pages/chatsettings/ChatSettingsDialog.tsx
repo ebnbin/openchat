@@ -1,4 +1,4 @@
-import {Chat} from "../../utils/data";
+import {Chat} from "../../utils/types";
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {
   Button, Dialog, DialogActions,

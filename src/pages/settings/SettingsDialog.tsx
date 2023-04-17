@@ -12,7 +12,7 @@ import {
   OutlinedInput
 } from "@mui/material";
 import store from "../../utils/store";
-import {Chat} from "../../utils/data";
+import {Chat} from "../../utils/types";
 import SettingsItem from "../../components/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";

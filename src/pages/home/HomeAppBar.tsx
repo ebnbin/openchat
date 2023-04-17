@@ -6,7 +6,7 @@ import {BookmarksRounded, EditRounded, MenuRounded} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useMediaQuery} from "@mui/material";
-import {Chat} from "../../utils/data";
+import {Chat} from "../../utils/types";
 import {widePageWidth} from "../../utils/util";
 import {contentLikes, contentNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";

@@ -1,4 +1,4 @@
-import {Chat, Conversation, Data, Usage} from "./data";
+import {Chat, Conversation, Data, Usage} from "./types";
 import {del, get, set, update} from "idb-keyval";
 import Preference from "./Preference";
 
@@ -84,7 +84,9 @@ class Store {
       context_threshold: 0.7,
       system_message: '',
       user_message_template: '',
+      temperature: 1,
       update_timestamp: timestamp,
+      conversation_count: 0,
       char_count: 0,
       token_count: 0,
     };
@@ -97,7 +99,7 @@ class Store {
       user_message: '',
       assistant_message: '',
       finish_reason: '',
-      like_timestamp: 0,
+      save_timestamp: 0,
       ...conversation,
     };
   }
@@ -164,8 +166,8 @@ class Store {
   getLikesConversationIdsAsync(): Promise<Conversation[]> {
     return get<Conversation[]>('conversations')
       .then((conversations) => conversations || [])
-      .then((conversations) => conversations.filter((conversation) => conversation.like_timestamp !== 0))
-      .then((conversations) => conversations.sort((a, b) => b.like_timestamp - a.like_timestamp));
+      .then((conversations) => conversations.filter((conversation) => conversation.save_timestamp !== 0))
+      .then((conversations) => conversations.sort((a, b) => b.save_timestamp - a.save_timestamp));
   }
 
   getConversationsAsync(chatId: number): Promise<Conversation[]> {

@@ -1,6 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, Conversation} from "../../utils/data";
+import {Chat, Conversation} from "../../utils/types";
 import ConversationList, {ConversationEntity, ConversationEntityType} from "./ConversationList";
 import ChatInput from "./ChatInput";
 import {defaultOpenAIModel, openAIApi} from "../../utils/util";
@@ -21,7 +21,7 @@ function conversationsToConversationEntities(conversations: Conversation[]): Con
       userMessage: conversation.user_message,
       assistantMessage: conversation.assistant_message,
       finishReason: conversation.finish_reason,
-      likeTimestamp: conversation.like_timestamp,
+      likeTimestamp: conversation.save_timestamp,
       userMessageMarkdown: true,
       assistantMessageMarkdown: true,
       type: ConversationEntityType.Default,
@@ -69,7 +69,7 @@ function getRequestingConversationEntity(conversation: Conversation): Conversati
     userMessage: conversation.user_message,
     assistantMessage: conversation.assistant_message,
     finishReason: conversation.finish_reason,
-    likeTimestamp: conversation.like_timestamp,
+    likeTimestamp: conversation.save_timestamp,
     userMessageMarkdown: true,
     assistantMessageMarkdown: true,
     type: ConversationEntityType.Requesting,
@@ -218,7 +218,7 @@ export default function ChatPage(props: ChatProps) {
       });
     });
     store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
-      like_timestamp: conversationEntity.likeTimestamp,
+      save_timestamp: conversationEntity.likeTimestamp,
     })
   }
 
