@@ -44,6 +44,8 @@ export function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 export const widePageWidth = 1200;
+export const narrowPageWidth = 600;
+export const maxContentWidth = 900;
 
 interface OpenAIModel {
   model: string,

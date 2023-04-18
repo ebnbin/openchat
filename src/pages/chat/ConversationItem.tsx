@@ -1,6 +1,5 @@
-import ConversationMessageItem from "../conversation/ConversationMessageItem";
+import MessageItem from "../conversation/MessageItem";
 import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
-import {contentWidth} from "./ChatPage";
 import {
   BookmarkAddedRounded,
   BookmarkBorderRounded,
@@ -8,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import React, {RefObject} from "react";
 import {Conversation} from "../../utils/types";
+import {maxContentWidth, narrowPageWidth} from "../../utils/utils";
 
 export interface ConversationEntity {
   conversation: Conversation,
@@ -25,6 +25,8 @@ interface ConversationItemProps {
 export default function ConversationItem(props: ConversationItemProps) {
   const theme = useTheme();
 
+  const isNarrowPage = !useMediaQuery(`(min-width:${narrowPageWidth}px)`)
+
   const handleLikeClick = () => {
     props.updateConversationEntityLike({
       ...props.conversationEntity,
@@ -35,8 +37,6 @@ export default function ConversationItem(props: ConversationItemProps) {
     });
   }
 
-  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
-
   return (
     <Card
       elevation={1}
@@ -45,11 +45,11 @@ export default function ConversationItem(props: ConversationItemProps) {
         marginBottom: "1px",
       }}
     >
-      <ConversationMessageItem
+      <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={true}
       />
-      <ConversationMessageItem
+      <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={false}
         controller={props.conversationEntity.isRequesting ? props.controller : undefined}
@@ -62,11 +62,11 @@ export default function ConversationItem(props: ConversationItemProps) {
         <Box
           sx={{
             height: "44px",
-            maxWidth: contentWidth,
+            maxWidth: maxContentWidth,
             margin: "0 auto",
             display: "flex",
             flexDirection: "row",
-            paddingX: isNotSmallPage ? "32px" : "16px",
+            paddingX: isNarrowPage ? "16px" : "32px",
             paddingBottom: "12px",
             alignItems: "center",
           }}

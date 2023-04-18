@@ -5,35 +5,28 @@ import {
 } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import React, {RefObject, useState} from "react";
-import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../components/Markdown";
-import {copy} from "../../utils/utils";
+import {copy, maxContentWidth, narrowPageWidth} from "../../utils/utils";
 import chatGPTLogo from "../../assets/chatgpt_logo.png";
 import {ConversationEntity} from "../chat/ConversationItem";
 
-interface ConversationMessageItemProps {
+interface MessageItemProps {
   conversationEntity: ConversationEntity,
   isUser: boolean,
   controller?: RefObject<AbortController | null>;
 }
 
-export default function ConversationMessageItem(props: ConversationMessageItemProps) {
-  const { conversationEntity, isUser } = props;
+export default function MessageItem(props: MessageItemProps) {
+  const theme = useTheme();
+
+  const isNarrowPage = !useMediaQuery(`(min-width:${narrowPageWidth}px)`)
 
   const [markdown, setMarkdown] = useState(true);
 
-  const message = isUser ? conversationEntity.conversation.user_message : conversationEntity.conversation.assistant_message;
-  const finishReason = isUser ? "stop" : conversationEntity.conversation.finish_reason;
+  const message = props.isUser ? props.conversationEntity.conversation.user_message : props.conversationEntity.conversation.assistant_message;
+  const finishReason = props.isUser ? "stop" : props.conversationEntity.conversation.finish_reason;
   const context = props.conversationEntity.context
-  const isLoading = !isUser && conversationEntity.isRequesting;
-
-  const theme = useTheme();
-
-  const handleCopyClick = (text: string) => {
-    copy(text);
-  }
-
-  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
+  const isLoading = !props.isUser && props.conversationEntity.isRequesting;
 
   const finishReasonChips = () => {
     if (finishReason === "stop") {
@@ -70,16 +63,16 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
   return (
     <Box
       sx={{
-        bgcolor: isUser ? undefined : theme.palette.action.hover,
+        bgcolor: props.isUser ? undefined : theme.palette.action.hover,
       }}
     >
       <Box
         sx={{
-          maxWidth: contentWidth,
+          maxWidth: maxContentWidth,
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          paddingX: isNotSmallPage ? "32px" : "16px",
+          paddingX: isNarrowPage ? "16px" : "32px",
         }}
       >
         <Box
@@ -92,16 +85,16 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
           }}
         >
           <Avatar
-            variant={isUser ? "circular" : "rounded"}
+            variant={props.isUser ? "circular" : "rounded"}
             onClick={isLoading ? undefined : () => setMarkdown(!markdown)}
             sx={{
               width: "24px",
               height: "24px",
               marginRight: "8px",
-              bgcolor: context ? (isUser ? theme.palette.primary.main : "#74aa9c") : theme.palette.action.disabled,
+              bgcolor: context ? (props.isUser ? theme.palette.primary.main : "#74aa9c") : theme.palette.action.disabled,
             }}
           >
-            {isUser ? <FaceRounded/> : (
+            {props.isUser ? <FaceRounded/> : (
               <img
                 src={chatGPTLogo}
                 width={"24px"}
@@ -116,7 +109,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               fontWeight: "bold",
             }}
           >
-            {isUser ? "You" : "ChatGPT"}
+            {props.isUser ? "You" : "ChatGPT"}
           </Typography>
           <Box
             sx={{
@@ -129,7 +122,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
               size={"small"}
               color={"info"}
               startIcon={<ContentCopyRounded />}
-              onClick={() => handleCopyClick(message)}
+              onClick={() => copy(message)}
               sx={{
                 textTransform: "none",
               }}

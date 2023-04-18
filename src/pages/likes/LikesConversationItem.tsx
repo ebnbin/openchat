@@ -1,9 +1,9 @@
 import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
-import {contentWidth} from "../chat/ChatPage";
 import {BookmarkRemoveRounded} from "@mui/icons-material";
 import React from "react";
-import ConversationMessageItem from "../conversation/ConversationMessageItem";
+import MessageItem from "../conversation/MessageItem";
 import {ConversationEntity} from "../chat/ConversationItem";
+import {maxContentWidth} from "../../utils/utils";
 
 interface LikesConversationItemProps {
   conversationEntity: ConversationEntity;
@@ -23,11 +23,11 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
         marginBottom: "16px",
       }}
     >
-      <ConversationMessageItem
+      <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={true}
       />
-      <ConversationMessageItem
+      <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={false}
       />
@@ -39,7 +39,7 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
         <Box
           sx={{
             height: "44px",
-            maxWidth: contentWidth,
+            maxWidth: maxContentWidth,
             margin: "0 auto",
             display: "flex",
             flexDirection: "row",

@@ -3,6 +3,7 @@ import {Alert, Card, IconButton, InputAdornment, Snackbar, TextField, useMediaQu
 import {ExpandCircleDownRounded, SendRounded} from "@mui/icons-material";
 import store from "../utils/store";
 import Box from "@mui/material/Box";
+import {narrowPageWidth} from "../utils/utils";
 
 interface InputCardProps {
   isRequesting: boolean;
@@ -13,7 +14,7 @@ interface InputCardProps {
 }
 
 export default function InputCard(props: InputCardProps) {
-  const isNarrowPage = !useMediaQuery(`(min-width:600px)`)
+  const isNarrowPage = !useMediaQuery(`(min-width:${narrowPageWidth}px)`)
 
   const [composition, setComposition] = useState(false)
   const [input, setInput] = useState("")
