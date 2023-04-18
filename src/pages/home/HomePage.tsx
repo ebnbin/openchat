@@ -4,7 +4,7 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chatsettings/ChatSettingsDialog";
 import * as React from "react";
-import {Chat} from "../../utils/types";
+import {Chat, Theme} from "../../utils/types";
 import {useEffect, useState} from "react";
 import store from "../../utils/store";
 import Logo from "../../components/Logo";
@@ -18,14 +18,14 @@ export const contentLikes = -1;
 
 interface HomePageProps {
   theme: string;
-  setTheme: (theme: string) => void;
+  setTheme: (theme: Theme) => void;
 }
 
 export default function HomePage(props: HomePageProps) {
   const [chats, _setChats] = useState<Chat[]>([])
 
   useEffect(() => {
-    store.getChatsAsync()
+    store.getChats()
       .then((chats) => {
         _setChats(chats)
         _setSelectedChatId(startupPage(chats))
@@ -33,37 +33,26 @@ export default function HomePage(props: HomePageProps) {
   }, []);
 
   const createChat = (chat: Chat) => {
-    _setChats((chats) => [...chats, chat]);
-    store.updateChatsCreateChatAsync(chat);
+    store.updateChatsCreateChat(chat, [chats, _setChats]);
     updateSelectedChatId(chat.id)
   }
 
   const updateChat = (chatId: number, chat: Partial<Chat>) => {
-    _setChats((chats) => chats.map((foundChat) => {
-      if (foundChat.id === chatId) {
-        return {
-          ...foundChat,
-          ...chat,
-        }
-      }
-      return foundChat
-    }));
-    store.updateChatsUpdateChatAsync(chatId, chat);
+    store.updateChatsUpdateChat(chatId, chat, [chats, _setChats]);
   }
 
   const deleteChat = (chat: Chat) => {
     toNewChatPage()
-    _setChats((chats) => chats.filter((foundChat) => foundChat.id !== chat.id));
-    store.updateChatsDeleteChatAsync(chat.id);
+    store.updateChatsDeleteChat(chat.id, [chats, _setChats]);
     store.updateConversationsDeleteConversationsAsync(chat.id);
   }
 
   const startupPage = (chats: Chat[]) => {
-    const reopen = store.reopenChat.get();
+    const reopen = store.reopenPage.get();
     if (!reopen) {
       return contentNewChat;
     }
-    const latestId = store.selectedPageId.get();
+    const latestId = store.reopenPageId.get();
     if (latestId === contentNewChat || latestId === contentLikes) {
       return latestId;
     }
@@ -77,7 +66,7 @@ export default function HomePage(props: HomePageProps) {
 
   const updateSelectedChatId = (chatId: number) => {
     _setSelectedChatId(chatId)
-    store.selectedPageId.set(chatId)
+    store.reopenPageId.set(chatId)
   }
 
   const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);

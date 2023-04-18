@@ -183,7 +183,7 @@ export default function ChatPage(props: ChatProps) {
   const [conversationEntitiesNoContext, setConversationEntitiesNoContext] = useState<ConversationEntity[]>([]);
 
   useEffect(() => {
-    store.getConversationsAsync(props.chat.id)
+    store.getConversations(props.chat.id)
       .then((conversations) => {
         const conversationEntitiesNoContext = conversationsToConversationEntities(conversations)
         setConversationEntitiesNoContext(conversationEntitiesNoContext)
@@ -244,10 +244,7 @@ export default function ChatPage(props: ChatProps) {
     }
 
 
-    const requestingConversation = store.newConversation({
-      chat_id: props.chat.id,
-      user_message: message,
-    })
+    const requestingConversation = store.newConversation(props.chat.id, message);
     store.updateConversationsCreateConversationAsync(requestingConversation);
     props.updateChat(props.chat.id, {
       update_timestamp: requestingConversation.id,

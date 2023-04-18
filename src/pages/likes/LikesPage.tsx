@@ -19,7 +19,7 @@ export default function LikesPage() {
   const [conversationEntities, _setConversationEntities] = useState<ConversationEntity[]>([]);
 
   useEffect(() => {
-    store.getLikesConversationIdsAsync()
+    store.getSavedConversations()
       .then((conversations) => {
         const conversationEntities = conversationsToConversationEntities(conversations)
         _setConversationEntities(conversationEntities)

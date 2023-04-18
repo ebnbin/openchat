@@ -1,3 +1,5 @@
+export type Theme = "system" | "light" | "dark";
+
 export type IconTextSize = "small" | "medium" | "large";
 
 export const ICON_COLORS = ["", "red", "pink", "purple", "deepPurple", "indigo", "blue", "lightBlue", "cyan", "teal",

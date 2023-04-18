@@ -41,7 +41,7 @@ export default function InputCard(props: InputCardProps) {
     if (!canRequest) {
       return;
     }
-    if (store.openAIApiKey.get() === "") {
+    if (store.openAIAPIKey.get() === "") {
       setSnackbarOpen(true)
       return
     }

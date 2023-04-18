@@ -12,30 +12,30 @@ import {
   OutlinedInput
 } from "@mui/material";
 import store from "../../utils/store";
-import {Chat} from "../../utils/types";
+import {Chat, Theme} from "../../utils/types";
 import SettingsItem from "../../components/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";
 
 interface SettingsDialogProps {
   theme: string;
-  setTheme: (theme: string) => void;
+  setTheme: (theme: Theme) => void;
   chats: Chat[];
   dialogOpen: boolean
   handleDialogClose: () => void
 }
 
 export function SettingsDialog(props: SettingsDialogProps) {
-  const [openAIApiKey, _setOpenAIApiKey] = useState(store.openAIApiKey.get())
+  const [openAIApiKey, _setOpenAIApiKey] = useState(store.openAIAPIKey.get())
   const [githubToken, _setGithubToken] = useState(store.githubToken.get())
   const [githubGistId, _setGithubGistId] = useState(store.githubGistId.get())
-  const [reopenChat, _setReopenChat] = useState(store.reopenChat.get())
+  const [reopenChat, _setReopenChat] = useState(store.reopenPage.get())
   const [sendOnEnter, _setSendOnEnter] = useState(store.sendOnEnter.get())
   const [darkThemeForCodeBlock, _setDarkThemeForCodeBlock] = useState(store.darkThemeForCodeBlock.get())
 
   const setOpenAIApiKey = (openAIApiKey: string) => {
     _setOpenAIApiKey(openAIApiKey)
-    store.openAIApiKey.set(openAIApiKey)
+    store.openAIAPIKey.set(openAIApiKey)
   }
 
   const setGithubToken = (githubToken: string) => {
@@ -50,7 +50,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
 
   const setReopenChat = (reopenChat: boolean) => {
     _setReopenChat(reopenChat)
-    store.reopenChat.set(reopenChat)
+    store.reopenPage.set(reopenChat)
   }
 
   const setSendOnEnter = (sendOnEnter: boolean) => {

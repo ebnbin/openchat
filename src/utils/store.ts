@@ -1,48 +1,156 @@
-import {Chat, Conversation, Data, Usage} from "./types";
+import {Chat, Conversation, Data, Theme, Usage} from "./types";
 import {del, get, set, update} from "idb-keyval";
 import Preference from "./Preference";
+import {Dispatch, SetStateAction} from "react";
 
 class Store {
-  private readonly usage: Preference<Usage> = new Preference<Usage>("usage", {
-    token_count: 0,
+  readonly version: Preference<number> = new Preference("version", 0);
+  readonly theme: Preference<Theme> = new Preference("theme", "system");
+  readonly darkThemeForCodeBlock: Preference<boolean> = new Preference("dark_theme_for_code_block", false);
+  readonly sendOnEnter: Preference<boolean> = new Preference("send_on_enter", true);
+  readonly reopenPage: Preference<boolean> = new Preference("reopen_page", false);
+  readonly reopenPageId: Preference<number> = new Preference("reopen_page_id", 0);
+  readonly openAIAPIKey: Preference<string> = new Preference("openai_api_key", "");
+  readonly githubToken: Preference<string> = new Preference("github_token", "");
+  readonly githubGistId: Preference<string> = new Preference("github_gist_id", "");
+  readonly usage: Preference<Usage> = new Preference("usage", {
     conversation_count: 0,
+    token_count: 0,
   } as Usage);
+  readonly pinChats: Preference<number[]> = new Preference("pin_chats", []);
 
-  private readonly version: Preference<number> = new Preference<number>("version", 0);
-  readonly theme: Preference<string> = new Preference<string>("theme", "system");
-  readonly darkThemeForCodeBlock: Preference<boolean> = new Preference<boolean>("dark_theme_for_code_block", false);
-  readonly openAIApiKey: Preference<string> = new Preference<string>("openai_api_key", "");
-  readonly githubToken: Preference<string> = new Preference<string>("github_token", "");
-  readonly githubGistId: Preference<string> = new Preference<string>("github_gist_id", "");
-  readonly reopenChat: Preference<boolean> = new Preference<boolean>("reopen_chat", false);
-  readonly selectedPageId: Preference<number> = new Preference<number>("selected_page_id", 0);
-  readonly sendOnEnter: Preference<boolean> = new Preference<boolean>("send_on_enter", true);
-  readonly pinChats: Preference<number[]> = new Preference<number[]>("pin_chats", []);
+  //*******************************************************************************************************************
 
   async migrate() {
     const currentVersion = 502; // 0.5.2
     const storedVersion = this.version.get();
-    if (storedVersion < 400) {
-      localStorage.clear();
-    }
-    if (storedVersion < 500) {
-      await update<Chat[]>("chats", (chats) => {
-        if (!chats) {
-          return [];
-        }
-        return chats.map((chat) => {
-          // chat.pin_timestamp = 0;
-          return chat;
-        });
-      });
-    }
+    // TODO
     if (storedVersion < currentVersion) {
       this.version.set(currentVersion);
     }
   }
 
+  //*******************************************************************************************************************
+
+  newChat(): Chat {
+    const timestamp = Date.now();
+    return {
+      id: timestamp,
+      update_timestamp: timestamp,
+      title: "",
+      icon_text: "",
+      icon_text_size: "medium",
+      icon_color: "",
+      system_message: "",
+      user_message_template: "",
+      temperature: 1,
+      context_threshold: 0.6,
+      conversation_count: 0,
+      char_count: 0,
+      token_count: 0,
+    } as Chat;
+  }
+
+  newConversation(chatId: number, userMessage: string): Conversation {
+    return {
+      id: Date.now(),
+      chat_id: chatId,
+      user_message: userMessage,
+      assistant_message: "",
+      finish_reason: "",
+      save_timestamp: 0,
+    };
+  }
+
+  //*******************************************************************************************************************
+
+  getChats(): Promise<Chat[]> {
+    return get<Chat[]>("chats")
+      .then((chats) => chats || []);
+  }
+
+  updateChatsCreateChat(chat: Chat, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
+    if (state) {
+      state[1]((chats) => {
+        return [...chats, chat]
+      });
+    }
+
+    update<Chat[]>("chats", (chats) => {
+      return chats ? [...chats, chat] : [chat];
+    }).finally();
+  }
+
+  updateChatsUpdateChat(chatId: number, chat: Partial<Chat>, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
+    if (state) {
+      state[1]((chats) => {
+        return chats.map((foundChat) => {
+          if (foundChat.id === chatId) {
+            return {
+              ...foundChat,
+              ...chat,
+            };
+          }
+          return foundChat;
+        });
+      });
+    }
+
+    update<Chat[]>("chats", (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.map((foundChat) => {
+        if (foundChat.id === chatId) {
+          return {
+            ...foundChat,
+            ...chat,
+          };
+        }
+        return foundChat;
+      });
+    }).finally();
+  }
+
+  updateChatsDeleteChat(chatId: number, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
+    if (state) {
+      state[1]((chats) => {
+        return chats.filter((foundChat) => foundChat.id !== chatId);
+      });
+    }
+
+    update<Chat[]>("chats", (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.filter((foundChat) => foundChat.id !== chatId);
+    }).finally();
+  }
+
+  //*******************************************************************************************************************
+
+  getConversations(chatId?: number): Promise<Conversation[]> {
+    return get<Conversation[]>("conversations")
+      .then((conversations) => conversations || [])
+      .then((conversations) => {
+        if (chatId) {
+          return conversations.filter((conversation) => conversation.chat_id === chatId);
+        }
+        return conversations;
+      });
+  }
+
+  getSavedConversations(): Promise<Conversation[]> {
+    return this.getConversations()
+      .then((conversations) => conversations.filter((conversation) => conversation.save_timestamp !== 0))
+      .then((conversations) => conversations.sort((a, b) => b.save_timestamp - a.save_timestamp));
+  }
+
+  //*******************************************************************************************************************
+  //*******************************************************************************************************************
+
   getDataAsync(): Promise<Data> {
-    return Promise.all([this.getChatsAsync(), this.getAllConversationsAsync()])
+    return Promise.all([this.getChats(), this.getConversations()])
       .then(([chats, conversations]) => {
         return {
           version: this.version.get(),
@@ -62,109 +170,6 @@ class Store {
   }
 
   //*******************************************************************************************************************
-
-  newChat(): Chat {
-    const timestamp = Date.now();
-    return {
-      id: timestamp,
-      title: "",
-      icon_text: "",
-      icon_text_size: "medium",
-      icon_color: "",
-      context_threshold: 0.7,
-      system_message: "",
-      user_message_template: "",
-      temperature: 1,
-      update_timestamp: timestamp,
-      conversation_count: 0,
-      char_count: 0,
-      token_count: 0,
-    };
-  }
-
-  newConversation(conversation: Partial<Conversation>): Conversation {
-    return {
-      id: Date.now(),
-      chat_id: 0,
-      user_message: "",
-      assistant_message: "",
-      finish_reason: "",
-      save_timestamp: 0,
-      ...conversation,
-    };
-  }
-
-  //*******************************************************************************************************************
-
-  getChatsAsync(): Promise<Chat[]> {
-    return get<Chat[]>("chats").then((chats) => chats || []);
-  }
-
-  updateChatsCreateChatAsync(chat: Chat) {
-    update<Chat[]>("chats", (chats) => {
-      return chats ? [...chats, chat] : [chat];
-    }).finally();
-  }
-
-  updateChatsUpdateChatAsync(chatId: number, chat: Partial<Chat>) {
-    update<Chat[]>("chats", (chats) => {
-      if (!chats) {
-        return [];
-      }
-      return chats.map((foundChat) => {
-        if (foundChat.id === chatId) {
-          return {
-            ...foundChat,
-            ...chat,
-          };
-        }
-        return foundChat;
-      });
-    }).finally();
-  }
-
-  updateChatsDeleteChatAsync(chatId: number) {
-    update<Chat[]>("chats", (chats) => {
-      if (!chats) {
-        return [];
-      }
-      return chats.filter((foundChat) => foundChat.id !== chatId);
-    }).finally();
-  }
-
-  updateChatsAsync(chat: ((id: number) => Partial<Chat>)) {
-    update<Chat[]>("chats", (chats) => {
-      if (!chats) {
-        return [];
-      }
-      return chats.map((foundChat) => {
-        return {
-          ...foundChat,
-          ...chat(foundChat.id),
-        };
-      });
-    }).finally();
-  }
-
-  //*******************************************************************************************************************
-
-  getAllConversationsAsync(): Promise<Conversation[]> {
-    return get<Conversation[]>("conversations")
-      .then((conversations) => conversations || []);
-  }
-
-  getLikesConversationIdsAsync(): Promise<Conversation[]> {
-    return get<Conversation[]>("conversations")
-      .then((conversations) => conversations || [])
-      .then((conversations) => conversations.filter((conversation) => conversation.save_timestamp !== 0 && conversation.save_timestamp !== undefined))
-      .then((conversations) => conversations.sort((a, b) => b.save_timestamp - a.save_timestamp));
-  }
-
-  getConversationsAsync(chatId: number): Promise<Conversation[]> {
-    return get<Conversation[]>("conversations")
-      .then((conversations) => conversations || [])
-      .then((conversations) => conversations.filter((conversation) => conversation.chat_id === chatId));
-  }
 
   updateConversationsCreateConversationAsync(conversation: Conversation) {
     update<Conversation[]>("conversations", (conversations) => {

@@ -4,7 +4,7 @@ import store from "./store";
 
 export function openAIApi(): OpenAIApi {
   const configuration = new Configuration({
-    apiKey: store.openAIApiKey.get(),
+    apiKey: store.openAIAPIKey.get(),
   });
   return new OpenAIApi(configuration);
 }

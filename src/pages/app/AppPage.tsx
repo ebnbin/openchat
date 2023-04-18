@@ -3,9 +3,10 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../utils/utils";
 import HomePage from "../home/HomePage";
-import {blue, blueGrey, deepOrange, grey, orange, red} from "@mui/material/colors";
+import {blue, blueGrey, grey, orange, red} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";
 import store from "../../utils/store";
+import {Theme} from "../../utils/types";
 
 const DataTimestampContext = createContext<any>(null);
 
@@ -71,9 +72,9 @@ export default function AppPage() {
     }
   }
 
-  const [storeTheme, _setStoreTheme] = useState(store.theme.get())
+  const [storeTheme, _setStoreTheme] = useState<Theme>(store.theme.get())
 
-  const setStoreTheme = (theme: string) => {
+  const setStoreTheme = (theme: Theme) => {
     _setStoreTheme(theme)
     store.theme.set(theme)
   }
