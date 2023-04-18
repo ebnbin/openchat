@@ -1,4 +1,4 @@
-import ChatRole from "../../components/ChatRole";
+import MessageRole from "../../components/MessageRole";
 import Box from "@mui/material/Box";
 import {Button} from "@mui/material";
 import {ContentCopyRounded} from "@mui/icons-material";
@@ -32,7 +32,7 @@ export default function MessageItemHeader(props: MessageItemHeaderProps) {
         paddingTop: "12px",
       }}
     >
-      <ChatRole
+      <MessageRole
         isUser={props.isUser}
         context={props.context}
         handleClick={handleUserRoleClick}

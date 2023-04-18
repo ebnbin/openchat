@@ -4,13 +4,13 @@ import {FaceRounded} from "@mui/icons-material";
 import chatGPTLogo from "../assets/chatgpt_logo.png";
 import React from "react";
 
-interface ChatRoleProps {
+interface MessageRoleProps {
   isUser: boolean;
   context: boolean;
   handleClick: () => void;
 }
 
-export default function ChatRole(props: ChatRoleProps) {
+export default function MessageRole(props: MessageRoleProps) {
   const theme = useTheme();
 
   return (
