@@ -2,6 +2,8 @@ import {Box} from "@mui/material";
 import React, {RefObject} from "react";
 import ConversationItem, {ConversationEntity} from "./ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
+import ChatConversationItemFooter from "../conversation/ChatConversationItemFooter";
+import {Conversation} from "../../utils/types";
 
 interface ConversationListProps {
   conversationEntities: ConversationEntity[];
@@ -14,6 +16,16 @@ interface ConversationListProps {
 
 export default function ConversationList(props: ConversationListProps) {
   const { conversationEntities, deleteConversationEntity } = props;
+
+  const handleLikeClick = (conversationEntity: ConversationEntity) => {
+    props.updateConversationEntityLike({
+      ...conversationEntity,
+      conversation: {
+        ...conversationEntity.conversation,
+        save_timestamp: conversationEntity.conversation.save_timestamp === 0 ? Date.now() : 0,
+      } as Conversation,
+    });
+  }
 
   return (
     <Virtuoso
@@ -36,10 +48,14 @@ export default function ConversationList(props: ConversationListProps) {
           return (
             <ConversationItem
               conversationEntity={conversationEntity}
-              updateConversationEntityLike={props.updateConversationEntityLike}
-              deleteConversationEntity={deleteConversationEntity}
-              controller={props.controller}
-            />
+              abortController={props.controller}
+            >
+              <ChatConversationItemFooter
+                conversationEntity={conversationEntity}
+                handleSaveClick={() => handleLikeClick(conversationEntity)}
+                handleDeleteClick={() => deleteConversationEntity(conversationEntity)}
+              />
+            </ConversationItem>
           );
         }
       }}

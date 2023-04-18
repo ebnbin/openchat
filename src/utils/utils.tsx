@@ -43,6 +43,16 @@ export function chunk<T>(arr: T[], size: number): T[][] {
   return chunkedArr;
 }
 
+export function dateTimeString(timestamp: number): string {
+  return new Date(timestamp).toLocaleString(undefined, {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
+}
+
 export const widePageWidth = 1200;
 export const narrowPageWidth = 600;
 export const maxContentWidth = 900;
