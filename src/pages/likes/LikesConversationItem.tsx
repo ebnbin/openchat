@@ -7,7 +7,6 @@ import {ConversationEntity} from "../chat/ConversationList";
 
 interface LikesConversationItemProps {
   conversationEntity: ConversationEntity;
-  updateConversationEntity: (conversationEntity: ConversationEntity) => void;
   unlikeConversationEntity: (conversationEntity: ConversationEntity) => void;
 }
 
@@ -26,12 +25,10 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
     >
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntityNoStore={props.updateConversationEntity}
         isUser={true}
       />
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntityNoStore={props.updateConversationEntity}
         isUser={false}
       />
       <Box
@@ -55,7 +52,7 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
             variant={"caption"}
             color={theme.palette.text.disabled}
           >
-            {`${new Date(props.conversationEntity.id).toLocaleString()}`}
+            {`${new Date(props.conversationEntity.conversation.id).toLocaleString()}`}
           </Typography>
           <Box
             sx={{

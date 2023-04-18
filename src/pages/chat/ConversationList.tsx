@@ -1,31 +1,19 @@
-import {Box, Button} from "@mui/material";
+import {Box} from "@mui/material";
 import React, {RefObject} from "react";
 import ConversationItem from "./ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
-
-export enum ConversationEntityType {
-  Default,
-  Context,
-  Requesting,
-}
+import {Conversation} from "../../utils/types";
 
 export interface ConversationEntity {
-  id: number;
-  chatId: number;
-  userMessage: string;
-  assistantMessage: string;
-  finishReason: string;
-  likeTimestamp: number;
-  userMessageMarkdown: boolean,
-  assistantMessageMarkdown: boolean,
-  type: ConversationEntityType;
+  conversation: Conversation,
+  context: boolean,
+  isRequesting: boolean,
 }
 
 //*********************************************************************************************************************
 
 interface ConversationListProps {
   conversationEntities: ConversationEntity[];
-  updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
@@ -34,12 +22,7 @@ interface ConversationListProps {
 }
 
 export default function ConversationList(props: ConversationListProps) {
-  const { conversationEntities, updateConversationEntitiesNoStore, deleteConversationEntity } = props;
-
-  const updateConversationEntityNoStore = (conversationEntity: ConversationEntity) => {
-    updateConversationEntitiesNoStore(conversationEntities.map((c) =>
-      c.id === conversationEntity.id ? conversationEntity : c));
-  }
+  const { conversationEntities, deleteConversationEntity } = props;
 
   return (
     <Virtuoso
@@ -62,7 +45,6 @@ export default function ConversationList(props: ConversationListProps) {
           return (
             <ConversationItem
               conversationEntity={conversationEntity}
-              updateConversationEntityNoStore={updateConversationEntityNoStore}
               updateConversationEntityLike={props.updateConversationEntityLike}
               deleteConversationEntity={deleteConversationEntity}
               controller={props.controller}

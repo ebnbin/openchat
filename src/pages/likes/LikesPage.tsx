@@ -2,21 +2,15 @@ import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import store from "../../utils/store";
 import {Conversation} from "../../utils/types";
-import {ConversationEntity, ConversationEntityType} from "../chat/ConversationList";
+import {ConversationEntity} from "../chat/ConversationList";
 import LikesConversationList from "./LikesConversationList";
 
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
   return conversations.map((conversation) => {
     return {
-      id: conversation.id,
-      chatId: conversation.chat_id,
-      userMessage: conversation.user_message,
-      assistantMessage: conversation.assistant_message,
-      finishReason: conversation.finish_reason,
-      likeTimestamp: conversation.save_timestamp,
-      userMessageMarkdown: true,
-      assistantMessageMarkdown: true,
-      type: ConversationEntityType.Context, // TODO
+      conversation: conversation,
+      context: true,
+      isRequesting: false,
     } as ConversationEntity;
   });
 }
@@ -38,12 +32,12 @@ export default function LikesPage() {
 
   const unlikeConversationEntity = (conversationEntity: ConversationEntity) => {
     _setConversationEntities((conversationEntities) => {
-      return conversationEntities.filter((c) => c.id !== conversationEntity.id);
+      return conversationEntities.filter((c) => c.conversation.id !== conversationEntity.conversation.id);
     });
-    if (conversationEntity.chatId === 0) {
-      store.updateConversationsDeleteConversationAsync(conversationEntity.id);
+    if (conversationEntity.conversation.chat_id === 0) {
+      store.updateConversationsDeleteConversationAsync(conversationEntity.conversation.id);
     } else {
-      store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
+      store.updateConversationsUpdateConversationAsync(conversationEntity.conversation.id, {
         save_timestamp: 0,
       });
     }

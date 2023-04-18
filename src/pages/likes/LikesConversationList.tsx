@@ -11,11 +11,6 @@ interface LikesConversationListProps {
 }
 
 export default function LikesConversationList(props: LikesConversationListProps) {
-  const updateConversationEntity = (conversationEntity: ConversationEntity) => {
-    props.updateConversationEntitiesNoStore(props.conversationEntities.map((c) =>
-      c.id === conversationEntity.id ? conversationEntity : c));
-  }
-
   return (
     <Virtuoso
       data={[...props.conversationEntities, 0]}
@@ -34,7 +29,6 @@ export default function LikesConversationList(props: LikesConversationListProps)
           return (
             <LikesConversationItem
               conversationEntity={conversationEntity}
-              updateConversationEntity={updateConversationEntity}
               unlikeConversationEntity={props.unlikeConversationEntity}
             />
           );

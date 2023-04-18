@@ -4,38 +4,30 @@ import {
   FaceRounded
 } from "@mui/icons-material";
 import Box from "@mui/material/Box";
-import React, {RefObject} from "react";
+import React, {RefObject, useState} from "react";
 import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {copy} from "../../utils/utils";
 import chatGPTLogo from "../../assets/chatgpt_logo.png";
-import {ConversationEntity, ConversationEntityType} from "../chat/ConversationList";
+import {ConversationEntity} from "../chat/ConversationList";
 
 interface ConversationMessageItemProps {
   conversationEntity: ConversationEntity,
-  updateConversationEntityNoStore: (conversationEntity: ConversationEntity) => void,
   isUser: boolean,
   controller?: RefObject<AbortController | null>;
 }
 
 export default function ConversationMessageItem(props: ConversationMessageItemProps) {
-  const { conversationEntity, updateConversationEntityNoStore, isUser } = props;
+  const { conversationEntity, isUser } = props;
 
-  const message = isUser ? conversationEntity.userMessage : conversationEntity.assistantMessage;
-  const finishReason = isUser ? "stop" : conversationEntity.finishReason;
-  const markdown = isUser ? conversationEntity.userMessageMarkdown : conversationEntity.assistantMessageMarkdown;
-  const context = props.conversationEntity.type !== ConversationEntityType.Default
-  const isLoading = !isUser && conversationEntity.type === ConversationEntityType.Requesting;
+  const [markdown, setMarkdown] = useState(true);
+
+  const message = isUser ? conversationEntity.conversation.user_message : conversationEntity.conversation.assistant_message;
+  const finishReason = isUser ? "stop" : conversationEntity.conversation.finish_reason;
+  const context = props.conversationEntity.context
+  const isLoading = !isUser && conversationEntity.isRequesting;
 
   const theme = useTheme();
-
-  const handleMarkdownClick = () => {
-    updateConversationEntityNoStore({
-      ...conversationEntity,
-      userMessageMarkdown: isUser ? !markdown : conversationEntity.userMessageMarkdown,
-      assistantMessageMarkdown: isUser ? conversationEntity.assistantMessageMarkdown : !markdown,
-    });
-  }
 
   const handleCopyClick = (text: string) => {
     copy(text);
@@ -61,7 +53,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
         />
       )
     }
-    if (finishReason === "null") {
+    if (finishReason === "") {
       return (
         <Chip
           label={"API response still in progress or incomplete"}
@@ -101,7 +93,7 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
         >
           <Avatar
             variant={isUser ? "circular" : "rounded"}
-            onClick={isLoading ? undefined : handleMarkdownClick}
+            onClick={isLoading ? undefined : () => setMarkdown(!markdown)}
             sx={{
               width: "24px",
               height: "24px",

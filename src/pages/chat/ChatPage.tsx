@@ -1,7 +1,7 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation, FinishReason} from "../../utils/types";
-import ConversationList, {ConversationEntity, ConversationEntityType} from "./ConversationList";
+import ConversationList, {ConversationEntity} from "./ConversationList";
 import InputCard from "../../components/InputCard";
 import {defaultOpenAIModel, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
@@ -16,15 +16,9 @@ export const contentWidth = 900
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
   return conversations.map((conversation) => {
     return {
-      id: conversation.id,
-      chatId: conversation.chat_id,
-      userMessage: conversation.user_message,
-      assistantMessage: conversation.assistant_message,
-      finishReason: conversation.finish_reason,
-      likeTimestamp: conversation.save_timestamp,
-      userMessageMarkdown: true,
-      assistantMessageMarkdown: true,
-      type: ConversationEntityType.Default,
+      conversation: conversation,
+      context: false,
+      isRequesting: false,
     } as ConversationEntity;
   });
 }
@@ -46,17 +40,17 @@ function updateConversationEntitiesContext(
       if (usedTokens > maxTokens) {
         context = false;
       } else {
-        const tokens = (conversationEntity.userMessage.length + conversationEntity.assistantMessage.length
+        const tokens = (conversationEntity.conversation.user_message.length + conversationEntity.conversation.assistant_message.length
           + 2 * defaultOpenAIModel.extraCharsPerMessage) * getTokensPerChar(chat);
         usedTokens += tokens;
         context = usedTokens <= maxTokens;
       }
-      const type = conversationEntity.type === ConversationEntityType.Requesting
-        ? ConversationEntityType.Requesting
-        : (context ? ConversationEntityType.Context : ConversationEntityType.Default);
+      if (conversationEntity.isRequesting) {
+        context = true;
+      }
       return {
         ...conversationEntity,
-        type: type,
+        context: context,
       } as ConversationEntity;
     })
     .reverse();
@@ -64,15 +58,9 @@ function updateConversationEntitiesContext(
 
 function getRequestingConversationEntity(conversation: Conversation): ConversationEntity {
   return {
-    id: conversation.id,
-    chatId: conversation.chat_id,
-    userMessage: conversation.user_message,
-    assistantMessage: conversation.assistant_message,
-    finishReason: conversation.finish_reason,
-    likeTimestamp: conversation.save_timestamp,
-    userMessageMarkdown: true,
-    assistantMessageMarkdown: true,
-    type: ConversationEntityType.Requesting,
+    conversation: conversation,
+    context: true,
+    isRequesting: true,
   } as ConversationEntity;
 }
 
@@ -90,19 +78,19 @@ function getRequestingMessages(
     );
   }
   requestingConversationEntities
-    .filter((conversationEntity) => conversationEntity.type !== ConversationEntityType.Default)
+    .filter((conversationEntity) => conversationEntity.context)
     .forEach((conversationEntity) => {
       result.push(
         {
           role: ChatCompletionRequestMessageRoleEnum.User,
-          content: conversationEntity.userMessage,
+          content: conversationEntity.conversation.user_message,
         } as ChatCompletionRequestMessage,
       );
-      if (conversationEntity.type !== ConversationEntityType.Requesting) {
+      if (!conversationEntity.isRequesting) {
         result.push(
           {
             role: ChatCompletionRequestMessageRoleEnum.Assistant,
-            content: conversationEntity.assistantMessage,
+            content: conversationEntity.conversation.assistant_message,
           } as ChatCompletionRequestMessage,
         );
       }
@@ -159,13 +147,16 @@ function getResponseConversationEntitiesNoContext(
   return conversationEntities.map((conversationEntity) => {
     return {
       ...conversationEntity,
-      assistantMessage: conversationEntity.type === ConversationEntityType.Requesting
-        ? responseMessageContent
-        : conversationEntity.assistantMessage,
-      finishReason: conversationEntity.type === ConversationEntityType.Requesting
-        ? (response.choices[0].finish_reason ?? "")
-        : conversationEntity.finishReason,
-      type: ConversationEntityType.Default,
+      conversation: {
+        ...conversationEntity.conversation,
+        assistant_message: conversationEntity.isRequesting
+          ? responseMessageContent
+          : conversationEntity.conversation.assistant_message,
+        finish_reason: conversationEntity.isRequesting
+          ? (response.choices[0].finish_reason ?? "")
+          : conversationEntity.conversation.finish_reason,
+      } as Conversation,
+      isRequesting: false,
     };
   });
 }
@@ -176,7 +167,7 @@ function getErrorConversationEntitiesNoContext(
   return conversationEntities.map((conversationEntity) => {
     return {
       ...conversationEntity,
-      type: ConversationEntityType.Default,
+      // type: ConversationEntityType.Default,
     };
   });
 }
@@ -208,17 +199,20 @@ export default function ChatPage(props: ChatProps) {
   const updateConversationEntityLike = (conversationEntity: ConversationEntity) => {
     setConversationEntities((conversationEntities) => {
       return conversationEntities.map((c) => {
-        if (c.id === conversationEntity.id) {
+        if (c.conversation.id === conversationEntity.conversation.id) {
           return {
             ...c,
-            likeTimestamp: conversationEntity.likeTimestamp,
-          };
+            conversation: {
+              ...c.conversation,
+              save_timestamp: conversationEntity.conversation.save_timestamp,
+            } as Conversation,
+          } as ConversationEntity;
         }
         return c;
       });
     });
-    store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
-      save_timestamp: conversationEntity.likeTimestamp,
+    store.updateConversationsUpdateConversationAsync(conversationEntity.conversation.id, {
+      save_timestamp: conversationEntity.conversation.save_timestamp,
     })
   }
 
@@ -228,18 +222,18 @@ export default function ChatPage(props: ChatProps) {
   }, [props.chat, conversationEntitiesNoContext]);
 
   useLayoutEffect(() => {
-    if (conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting) {
+    if (conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].isRequesting) {
       scrollToBottom(true);
     }
   }, [conversationEntities]);
 
   const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
-    const nextConversationEntities = conversationEntities.filter((entity) => entity.id !== conversationEntity.id)
+    const nextConversationEntities = conversationEntities.filter((entity) => entity.conversation.id !== conversationEntity.conversation.id)
     setConversationEntitiesNoContext(nextConversationEntities)
-    if (conversationEntity.likeTimestamp === 0) {
-      store.updateConversationsDeleteConversationAsync(conversationEntity.id);
+    if (conversationEntity.conversation.save_timestamp === 0) {
+      store.updateConversationsDeleteConversationAsync(conversationEntity.conversation.id);
     } else {
-      store.updateConversationsUpdateConversationAsync(conversationEntity.id, {
+      store.updateConversationsUpdateConversationAsync(conversationEntity.conversation.id, {
         chat_id: 0,
       });
     }
@@ -338,7 +332,6 @@ export default function ChatPage(props: ChatProps) {
       >
         <ConversationList
           conversationEntities={conversationEntities}
-          updateConversationEntitiesNoStore={setConversationEntities}
           updateConversationEntityLike={updateConversationEntityLike}
           deleteConversationEntity={handleDeleteConversationClick}
           virtuosoRef={virtuosoRef}
@@ -373,7 +366,7 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <InputCard
-            isRequesting={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting}
+            isRequesting={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].isRequesting}
             messageTemplate={props.chat.user_message_template}
             onRequest={handleRequest}
             showScrollToButton={showScrollToBottom}

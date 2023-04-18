@@ -7,11 +7,11 @@ import {
   DeleteRounded
 } from "@mui/icons-material";
 import React, {RefObject} from "react";
-import {ConversationEntity, ConversationEntityType} from "./ConversationList";
+import {ConversationEntity} from "./ConversationList";
+import {Conversation} from "../../utils/types";
 
 interface ConversationItemProps {
   conversationEntity: ConversationEntity;
-  updateConversationEntityNoStore: (conversationEntity: ConversationEntity) => void;
   updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   controller: RefObject<AbortController | null>;
@@ -23,7 +23,10 @@ export default function ConversationItem(props: ConversationItemProps) {
   const handleLikeClick = () => {
     props.updateConversationEntityLike({
       ...props.conversationEntity,
-      likeTimestamp: props.conversationEntity.likeTimestamp === 0 ? Date.now() : 0,
+      conversation: {
+        ...props.conversationEntity.conversation,
+        save_timestamp: props.conversationEntity.conversation.save_timestamp === 0 ? Date.now() : 0,
+      } as Conversation,
     });
   }
 
@@ -39,14 +42,12 @@ export default function ConversationItem(props: ConversationItemProps) {
     >
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntityNoStore={props.updateConversationEntityNoStore}
         isUser={true}
       />
       <ConversationMessageItem
         conversationEntity={props.conversationEntity}
-        updateConversationEntityNoStore={props.updateConversationEntityNoStore}
         isUser={false}
-        controller={props.conversationEntity.type === ConversationEntityType.Requesting ? props.controller : undefined}
+        controller={props.conversationEntity.isRequesting ? props.controller : undefined}
       />
       <Box
         sx={{
@@ -69,7 +70,7 @@ export default function ConversationItem(props: ConversationItemProps) {
             variant={"caption"}
             color={theme.palette.text.disabled}
           >
-            {`${new Date(props.conversationEntity.id).toLocaleString()}`}
+            {`${new Date(props.conversationEntity.conversation.id).toLocaleString()}`}
           </Typography>
           <Box
             sx={{
@@ -80,14 +81,14 @@ export default function ConversationItem(props: ConversationItemProps) {
             variant={"text"}
             size={"small"}
             color={"info"}
-            startIcon={props.conversationEntity.likeTimestamp === 0 ? <BookmarkBorderRounded /> : <BookmarkAddedRounded />}
+            startIcon={props.conversationEntity.conversation.save_timestamp === 0 ? <BookmarkBorderRounded /> : <BookmarkAddedRounded />}
             onClick={handleLikeClick}
             sx={{
               textTransform: "none",
-              visibility: props.conversationEntity.type !== ConversationEntityType.Requesting ? "visible" : "hidden",
+              visibility: !props.conversationEntity.isRequesting ? "visible" : "hidden",
             }}
           >
-            {props.conversationEntity.likeTimestamp === 0 ? "Save" : "Saved"}
+            {props.conversationEntity.conversation.save_timestamp === 0 ? "Save" : "Saved"}
           </Button>
           <Button
             variant={"text"}
@@ -97,7 +98,7 @@ export default function ConversationItem(props: ConversationItemProps) {
             onClick={() => props.deleteConversationEntity(props.conversationEntity)}
             sx={{
               textTransform: "none",
-              visibility: props.conversationEntity.type !== ConversationEntityType.Requesting ? "visible" : "hidden",
+              visibility: !props.conversationEntity.isRequesting ? "visible" : "hidden",
             }}
           >
             {"Delete"}
