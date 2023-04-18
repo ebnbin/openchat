@@ -1,7 +1,7 @@
 import {Box} from "@mui/material";
 import React from "react";
 import {Virtuoso} from "react-virtuoso";
-import ConversationItem, {ConversationEntity} from "../chat/ConversationItem";
+import ConversationItem, {ConversationEntity} from "../conversation/ConversationItem";
 import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
 interface LikesConversationListProps {

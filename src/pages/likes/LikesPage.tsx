@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import store from "../../utils/store";
 import {Conversation} from "../../utils/types";
 import LikesConversationList from "./LikesConversationList";
-import {ConversationEntity} from "../chat/ConversationItem";
+import {ConversationEntity} from "../conversation/ConversationItem";
 
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
   return conversations.map((conversation) => {

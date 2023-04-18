@@ -2,7 +2,7 @@ import {Box, Button, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {dateTimeString, maxContentWidth, narrowPageWidth} from "../../utils/utils";
 import {BookmarkAddedRounded, BookmarkBorderRounded, BookmarkRemoveRounded, DeleteRounded} from "@mui/icons-material";
 import React from "react";
-import {ConversationEntity} from "../chat/ConversationItem";
+import {ConversationEntity} from "./ConversationItem";
 
 interface ConversationItemFooterProps {
   conversationEntity: ConversationEntity;

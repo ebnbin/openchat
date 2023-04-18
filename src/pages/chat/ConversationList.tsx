@@ -1,6 +1,6 @@
 import {Box} from "@mui/material";
 import React, {RefObject} from "react";
-import ConversationItem, {ConversationEntity} from "./ConversationItem";
+import ConversationItem, {ConversationEntity} from "../conversation/ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
 import {Conversation} from "../../utils/types";
 import ConversationItemFooter from "../conversation/ConversationItemFooter";

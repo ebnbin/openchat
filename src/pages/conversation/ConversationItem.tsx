@@ -1,4 +1,4 @@
-import MessageItem from "../conversation/MessageItem";
+import MessageItem from "./MessageItem";
 import {Card} from "@mui/material";
 import React, {RefObject} from "react";
 import {Conversation} from "../../utils/types";
@@ -22,7 +22,7 @@ export default function ConversationItem(props: ConversationItemProps) {
       elevation={1}
       sx={{
         borderRadius: "0px",
-        marginBottom: props.isSave ? "16px" : "1px",
+        marginBottom: props.isSave ? "16px" : "2px",
       }}
     >
       <MessageItem

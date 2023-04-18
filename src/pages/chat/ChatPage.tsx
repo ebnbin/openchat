@@ -8,7 +8,7 @@ import store from "../../utils/store";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {VirtuosoHandle} from "react-virtuoso";
-import {ConversationEntity} from "./ConversationItem";
+import {ConversationEntity} from "../conversation/ConversationItem";
 
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
   return conversations.map((conversation) => {

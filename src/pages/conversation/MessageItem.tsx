@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import React, {useState} from "react";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {maxContentWidth, narrowPageWidth} from "../../utils/utils";
-import {ConversationEntity} from "../chat/ConversationItem";
+import {ConversationEntity} from "./ConversationItem";
 import FinishReasonChip from "../../components/FinishReasonChip";
 import MessageItemHeader from "./MessageItemHeader";
 
