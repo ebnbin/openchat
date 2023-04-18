@@ -1,14 +1,11 @@
-import {Avatar, Button, Chip, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
-import {
-  ContentCopyRounded,
-  FaceRounded
-} from "@mui/icons-material";
+import {Button, Chip, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
 import React, {RefObject, useState} from "react";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {copy, maxContentWidth, narrowPageWidth} from "../../utils/utils";
-import chatGPTLogo from "../../assets/chatgpt_logo.png";
 import {ConversationEntity} from "../chat/ConversationItem";
+import ChatRole from "../../components/ChatRole";
+import {ContentCopyRounded} from "@mui/icons-material";
 
 interface MessageItemProps {
   conversationEntity: ConversationEntity,
@@ -60,6 +57,13 @@ export default function MessageItem(props: MessageItemProps) {
     )
   }
 
+  const handleUserRoleClick = () => {
+    if (isLoading) {
+      return;
+    }
+    setMarkdown(!markdown);
+  }
+
   return (
     <Box
       sx={{
@@ -84,33 +88,11 @@ export default function MessageItem(props: MessageItemProps) {
             paddingTop: "12px",
           }}
         >
-          <Avatar
-            variant={props.isUser ? "circular" : "rounded"}
-            onClick={isLoading ? undefined : () => setMarkdown(!markdown)}
-            sx={{
-              width: "24px",
-              height: "24px",
-              marginRight: "8px",
-              bgcolor: context ? (props.isUser ? theme.palette.primary.main : "#74aa9c") : theme.palette.action.disabled,
-            }}
-          >
-            {props.isUser ? <FaceRounded/> : (
-              <img
-                src={chatGPTLogo}
-                width={"24px"}
-                height={"24px"}
-              />
-            )}
-          </Avatar>
-          <Typography
-            variant={"caption"}
-            color={context ? theme.palette.text.primary : theme.palette.text.disabled}
-            sx={{
-              fontWeight: "bold",
-            }}
-          >
-            {props.isUser ? "You" : "ChatGPT"}
-          </Typography>
+          <ChatRole
+            isUser={props.isUser}
+            context={context}
+            handleClick={handleUserRoleClick}
+          />
           <Box
             sx={{
               flexGrow: 1,
@@ -121,7 +103,7 @@ export default function MessageItem(props: MessageItemProps) {
               variant={"text"}
               size={"small"}
               color={"info"}
-              startIcon={<ContentCopyRounded />}
+              startIcon={<ContentCopyRounded/>}
               onClick={() => copy(message)}
               sx={{
                 textTransform: "none",
