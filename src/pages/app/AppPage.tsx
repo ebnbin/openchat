@@ -13,6 +13,44 @@ export const useDataTimestamp = () => {
   return useContext(DataTimestampContext)
 }
 
+export const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: blue["A100"],
+    },
+    info: {
+      main: blueGrey["A100"],
+    },
+    error: {
+      main: red["A100"],
+    },
+    background: {
+      default: blueGrey[900],
+      paper: blueGrey[900],
+    },
+  },
+})
+
+export const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+    primary: {
+      main: blue[700],
+    },
+    info: {
+      main: blueGrey[700],
+    },
+    error: {
+      main: red[700],
+    },
+    background: {
+      default: grey[50],
+      paper: grey[50],
+    },
+  },
+})
+
 export default function AppPage() {
   const [dataTimestamp, setDataTimestamp] = useState({ data: Date.now() })
 
@@ -36,41 +74,7 @@ export default function AppPage() {
 
   const isSystemDarkMode = useDarkMode()
   const isDarkMode = themeMode(storeTheme, isSystemDarkMode) === "dark"
-  const theme = isDarkMode ? createTheme({
-    palette: {
-      mode: "dark",
-      primary: {
-        main: blue["A100"],
-      },
-      info: {
-        main: blueGrey["A100"],
-      },
-      error: {
-        main: red["A100"],
-      },
-      background: {
-        default: blueGrey[900],
-        paper: blueGrey[900],
-      },
-    },
-  }) : createTheme({
-    palette: {
-      mode: "light",
-      primary: {
-        main: blue[700],
-      },
-      info: {
-        main: blueGrey[700],
-      },
-      error: {
-        main: red[700],
-      },
-      background: {
-        default: grey[50],
-        paper: grey[50],
-      },
-    },
-  })
+  const theme = isDarkMode ? darkTheme : lightTheme
 
   return (
     <DataTimestampContext.Provider

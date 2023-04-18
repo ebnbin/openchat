@@ -37,8 +37,8 @@ export default function ConversationMessageItem(props: ConversationMessageItemPr
     });
   }
 
-  const handleCopyClick = async (text: string) => {
-    await copy(text, null);
+  const handleCopyClick = (text: string) => {
+    copy(text);
   }
 
   const isNotSmallPage = useMediaQuery(`(min-width:600px)`)

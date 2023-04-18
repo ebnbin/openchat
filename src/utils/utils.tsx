@@ -9,17 +9,8 @@ export function openAIApi(): OpenAIApi {
   return new OpenAIApi(configuration);
 }
 
-export async function copy(text: string, callback: ((success: boolean) => void) | null): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(text);
-    if (callback) {
-      callback(true);
-    }
-  } catch (error) {
-    if (callback) {
-      callback(false);
-    }
-  }
+export function copy(text: string) {
+  navigator.clipboard.writeText(text).finally();
 }
 
 export function useDarkMode(): boolean {
