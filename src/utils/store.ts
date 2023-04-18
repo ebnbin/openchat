@@ -189,13 +189,37 @@ class Store {
     }).finally();
   }
 
-  updateConversationsDeleteConversation(conversationId: number, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
+  updateConversationsRemoveSavedConversation(conversation: Conversation, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
     if (state) {
-      state[1]((conversations) => {
-        return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
-      });
+      this.internalUpdateConversationsDeleteConversationState(conversation.id, state);
     }
 
+    if (conversation.chat_id === 0) {
+      this.internalUpdateConversationsDeleteConversation(conversation.id);
+    } else {
+      this.updateConversationsUpdateConversation(conversation.id, { save_timestamp: 0 });
+    }
+  }
+
+  updateConversationsDeleteConversation(conversation: Conversation, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
+    if (state) {
+      this.internalUpdateConversationsDeleteConversationState(conversation.id, state);
+    }
+
+    if (conversation.save_timestamp === 0) {
+      this.internalUpdateConversationsDeleteConversation(conversation.id);
+    } else {
+      this.updateConversationsUpdateConversation(conversation.id, { chat_id: 0 });
+    }
+  }
+
+  private internalUpdateConversationsDeleteConversationState(conversationId: number, state: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
+    state[1]((conversations) => {
+      return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
+    });
+  }
+
+  private internalUpdateConversationsDeleteConversation(conversationId: number) {
     update<Conversation[]>("conversations", (conversations) => {
       if (!conversations) {
         return [];
@@ -204,10 +228,18 @@ class Store {
     }).finally();
   }
 
-  //*******************************************************************************************************************
+  updateConversationsDeleteConversations(chatId: number) {
+    update<Conversation[]>("conversations", (conversations) => {
+      if (!conversations) {
+        return [];
+      }
+      return conversations.filter((foundConversation) => foundConversation.chat_id !== chatId || foundConversation.save_timestamp !== 0);
+    }).finally();
+  }
+
   //*******************************************************************************************************************
 
-  getDataAsync(): Promise<Data> {
+  backupData(): Promise<Data> {
     return Promise.all([this.getChats(), this.getConversations()])
       .then(([chats, conversations]) => {
         return {
@@ -219,7 +251,7 @@ class Store {
       });
   }
 
-  setData(data: Data): Promise<void> {
+  restoreData(data: Data): Promise<void> {
     return Promise.all([
       set("chats", data.chats),
       set("conversations", data.conversations),
@@ -227,62 +259,12 @@ class Store {
     });
   }
 
-  //*******************************************************************************************************************
-
-  updateConversationsUpdateConversationAsync(conversationId: number, conversation: Partial<Conversation>) {
-    update<Conversation[]>("conversations", (conversations) => {
-      if (!conversations) {
-        return [];
-      }
-      return conversations.map((foundConversation) => {
-        if (foundConversation.id === conversationId) {
-          return {
-            ...foundConversation,
-            ...conversation,
-          };
-        }
-        return foundConversation;
-      });
-    }).finally();
-  }
-
-  updateConversationsDeleteConversationAsync(conversationId: number) {
-    update<Conversation[]>("conversations", (conversations) => {
-      if (!conversations) {
-        return [];
-      }
-      return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
-    }).finally();
-  }
-
-  updateConversationsDeleteConversationsAsync(chatId: number) {
-    update<Conversation[]>("conversations", (conversations) => {
-      if (!conversations) {
-        return [];
-      }
-      return conversations.filter((foundConversation) => foundConversation.chat_id !== chatId);
-    }).finally();
-  }
-
-  //*******************************************************************************************************************
-
-  getUsage(): Usage {
-    return this.usage.get();
-  }
-
-  increaseUsage(usage: Partial<Usage>) {
-    const prev = this.usage.get();
-    this.usage.set({
-      token_count: prev.token_count + (usage.token_count ?? 0),
-      conversation_count: prev.conversation_count + (usage.conversation_count ?? 0),
-    } as Usage);
-  }
-
-  //*******************************************************************************************************************
-
-  deleteAllData() {
-    del("chats").finally();
-    del("conversations").finally();
+  deleteData(): Promise<void> {
+    return Promise.all([
+      del("chats"),
+      del("conversations"),
+    ]).then(() => {
+    });
   }
 }
 

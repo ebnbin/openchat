@@ -6,7 +6,6 @@ import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
 interface LikesConversationListProps {
   conversationEntities: ConversationEntity[];
-  updateConversationEntitiesNoStore: (conversationEntities: ConversationEntity[]) => void;
   unlikeConversationEntity: (conversationEntity: ConversationEntity) => void;
 }
 

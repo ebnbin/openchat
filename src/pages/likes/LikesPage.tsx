@@ -16,31 +16,23 @@ function conversationsToConversationEntities(conversations: Conversation[]): Con
 }
 
 export default function LikesPage() {
-  const [conversationEntities, _setConversationEntities] = useState<ConversationEntity[]>([]);
+  const [conversations, _setConversations] = useState<Conversation[]>([]);
+
+  const conversationEntities = conversationsToConversationEntities(conversations);
 
   useEffect(() => {
     store.getSavedConversations()
       .then((conversations) => {
-        const conversationEntities = conversationsToConversationEntities(conversations)
-        _setConversationEntities(conversationEntities)
+        _setConversations(conversations);
       });
   }, []);
 
-  const updateConversationEntitiesNoStore = (conversationEntities: ConversationEntity[]) => {
-    _setConversationEntities(conversationEntities);
+  const removeSavedConversation = (conversation: Conversation) => {
+    store.updateConversationsRemoveSavedConversation(conversation, [conversations, _setConversations]);
   }
 
   const unlikeConversationEntity = (conversationEntity: ConversationEntity) => {
-    _setConversationEntities((conversationEntities) => {
-      return conversationEntities.filter((c) => c.conversation.id !== conversationEntity.conversation.id);
-    });
-    if (conversationEntity.conversation.chat_id === 0) {
-      store.updateConversationsDeleteConversationAsync(conversationEntity.conversation.id);
-    } else {
-      store.updateConversationsUpdateConversationAsync(conversationEntity.conversation.id, {
-        save_timestamp: 0,
-      });
-    }
+    removeSavedConversation(conversationEntity.conversation);
   }
 
   return (
@@ -63,7 +55,6 @@ export default function LikesPage() {
       >
         <LikesConversationList
           conversationEntities={conversationEntities}
-          updateConversationEntitiesNoStore={updateConversationEntitiesNoStore}
           unlikeConversationEntity={unlikeConversationEntity}
         />
       </Box>

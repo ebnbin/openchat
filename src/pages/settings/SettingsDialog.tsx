@@ -64,14 +64,14 @@ export function SettingsDialog(props: SettingsDialogProps) {
   }
 
   const usageText = () => {
-    const usage = store.getUsage()
+    const usage = store.usage.get()
     return `Tokens: ${usage.token_count}\nConversation count: ${usage.conversation_count}\nEstimated price: ${(usage.token_count / 1000 * 0.002).toFixed(2)}`
   }
 
   const { dataTimestamp, setDataTimestamp } = useDataTimestamp();
 
   const gistBackup = () => {
-    store.getDataAsync()
+    store.backupData()
       .then(data => {
         fetch(`https://api.github.com/gists/${githubGistId}`, {
           method: "PATCH",
@@ -104,7 +104,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
     })
       .then((response) => response.json())
       .then((data) => data.files["openchat_data.json"].content)
-      .then((content) => store.setData(JSON.parse(content)))
+      .then((content) => store.restoreData(JSON.parse(content)))
       .then(() => {
         setDataTimestamp({ data: Date.now() })
         handleDialogClose2();
@@ -115,9 +115,11 @@ export function SettingsDialog(props: SettingsDialogProps) {
 
   const handleDeleteAllDataClick = () => {
     if (window.confirm("Are you sure you want to delete all your data?")) {
-      store.deleteAllData();
-      handleDialogClose2();
-      setDataTimestamp({ data: Date.now() })
+      store.deleteData()
+        .then(() => {
+          handleDialogClose2();
+          setDataTimestamp({ data: Date.now() })
+        });
     }
   }
 

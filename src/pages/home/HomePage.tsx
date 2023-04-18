@@ -44,7 +44,7 @@ export default function HomePage(props: HomePageProps) {
   const deleteChat = (chat: Chat) => {
     toNewChatPage()
     store.updateChatsDeleteChat(chat.id, [chats, _setChats]);
-    store.updateConversationsDeleteConversationsAsync(chat.id);
+    store.updateConversationsDeleteConversations(chat.id);
   }
 
   const startupPage = (chats: Chat[]) => {

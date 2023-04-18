@@ -103,9 +103,9 @@ function handleResponseUpdateChat(
     .map((message) => message.content)
     .concat(responseMessageContent)
     .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
-  store.increaseUsage({
-    token_count: responseTotalTokens,
-    conversation_count: 1,
+  store.usage.set({
+    token_count: store.usage.get().token_count + responseTotalTokens,
+    conversation_count: store.usage.get().conversation_count + 1,
   })
   updateChat(chat.id, {
     token_count: chat.token_count + responseTotalTokens,
@@ -135,15 +135,7 @@ export default function ChatPage(props: ChatProps) {
   }
 
   const deleteConversation = (conversation: Conversation) => {
-    _setConversations((conversations) => conversations.filter((foundConversation) => foundConversation.id !== conversation.id));
-
-    if (conversation.save_timestamp === 0) {
-      store.updateConversationsDeleteConversation(conversation.id);
-    } else {
-      store.updateConversationsUpdateConversation(conversation.id, {
-        chat_id: 0,
-      });
-    }
+    store.updateConversationsDeleteConversation(conversation, [conversations, _setConversations]);
   }
 
   const [requestingConversationId, setRequestingConversationId] = useState(0);
