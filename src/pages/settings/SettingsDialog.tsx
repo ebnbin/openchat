@@ -31,6 +31,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const [githubGistId, _setGithubGistId] = useState(store.githubGistId.get())
   const [reopenChat, _setReopenChat] = useState(store.reopenChat.get())
   const [sendOnEnter, _setSendOnEnter] = useState(store.sendOnEnter.get())
+  const [darkThemeForCodeBlock, _setDarkThemeForCodeBlock] = useState(store.darkThemeForCodeBlock.get())
 
   const setOpenAIApiKey = (openAIApiKey: string) => {
     _setOpenAIApiKey(openAIApiKey)
@@ -55,6 +56,11 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const setSendOnEnter = (sendOnEnter: boolean) => {
     _setSendOnEnter(sendOnEnter)
     store.sendOnEnter.set(sendOnEnter)
+  }
+
+  const setDarkThemeForCodeBlock = (darkThemeForCode: boolean) => {
+    _setDarkThemeForCodeBlock(darkThemeForCode)
+    store.darkThemeForCodeBlock.set(darkThemeForCode)
   }
 
   const usageText = () => {
@@ -170,6 +176,13 @@ export function SettingsDialog(props: SettingsDialogProps) {
               {"Dark"}
             </Button>
           </ButtonGroup>
+          <FormControlLabel
+            control={<Checkbox
+              checked={darkThemeForCodeBlock}
+              onChange={(event) => setDarkThemeForCodeBlock(event.target.checked)}
+            />}
+            label="Dark theme for code block"
+          />
         </SettingsItem>
         <SettingsItem
           title={"Send message"}

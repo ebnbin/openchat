@@ -10,6 +10,7 @@ class Store {
 
   private readonly version: Preference<number> = new Preference<number>("version", 0);
   readonly theme: Preference<string> = new Preference<string>("theme", "system");
+  readonly darkThemeForCodeBlock: Preference<boolean> = new Preference<boolean>("dark_theme_for_code_block", false);
   readonly openAIApiKey: Preference<string> = new Preference<string>("openai_api_key", "");
   readonly githubToken: Preference<string> = new Preference<string>("github_token", "");
   readonly githubGistId: Preference<string> = new Preference<string>("github_gist_id", "");

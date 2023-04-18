@@ -4,6 +4,7 @@ import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import React from "react";
 import {oneDark, oneLight} from "react-syntax-highlighter/dist/esm/styles/prism";
 import {copy} from "../utils/utils";
+import store from "../utils/store";
 
 interface MarkdownCodeProps {
   props: any;
@@ -15,7 +16,7 @@ export default function MarkdownCode(props: MarkdownCodeProps) {
 
   const defaultLanguage = /language-(\w+)/.exec(props.props.className ?? "")?.[1] ?? "";
   const code = String(props.props.children).replace(/\n$/, "");
-  const style = theme.palette.mode === "dark" ? oneDark : oneLight;
+  const style = theme.palette.mode === "dark" || store.darkThemeForCodeBlock.get() ? oneDark : oneLight;
 
   const [language, setLanguage] = React.useState(defaultLanguage);
 

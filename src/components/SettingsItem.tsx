@@ -48,6 +48,8 @@ export default function SettingsItem(props: SettingsItemProps) {
         props.children === undefined ? undefined : (
           <Box
             sx={{
+              display: "flex",
+              flexDirection: "column",
               marginY: "4px",
             }}
           >
