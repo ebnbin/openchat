@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import store from "../../utils/store";
 import {Conversation} from "../../utils/types";
-import {ConversationEntity} from "../chat/ConversationList";
 import LikesConversationList from "./LikesConversationList";
+import {ConversationEntity} from "../chat/ConversationItem";
 
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
   return conversations.map((conversation) => {

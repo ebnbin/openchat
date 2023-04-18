@@ -1,16 +1,7 @@
 import {Box} from "@mui/material";
 import React, {RefObject} from "react";
-import ConversationItem from "./ConversationItem";
+import ConversationItem, {ConversationEntity} from "./ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
-import {Conversation} from "../../utils/types";
-
-export interface ConversationEntity {
-  conversation: Conversation,
-  context: boolean,
-  isRequesting: boolean,
-}
-
-//*********************************************************************************************************************
 
 interface ConversationListProps {
   conversationEntities: ConversationEntity[];

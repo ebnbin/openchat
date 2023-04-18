@@ -7,8 +7,13 @@ import {
   DeleteRounded
 } from "@mui/icons-material";
 import React, {RefObject} from "react";
-import {ConversationEntity} from "./ConversationList";
 import {Conversation} from "../../utils/types";
+
+export interface ConversationEntity {
+  conversation: Conversation,
+  context: boolean,
+  isRequesting: boolean,
+}
 
 interface ConversationItemProps {
   conversationEntity: ConversationEntity;

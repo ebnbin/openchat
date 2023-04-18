@@ -1,13 +1,14 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation, FinishReason} from "../../utils/types";
-import ConversationList, {ConversationEntity} from "./ConversationList";
+import ConversationList from "./ConversationList";
 import InputCard from "../../components/InputCard";
 import {defaultOpenAIModel, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {VirtuosoHandle} from "react-virtuoso";
+import {ConversationEntity} from "./ConversationItem";
 
 export const contentWidth = 900
 

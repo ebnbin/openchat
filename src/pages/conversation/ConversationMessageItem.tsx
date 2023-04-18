@@ -9,7 +9,7 @@ import {contentWidth} from "../chat/ChatPage";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {copy} from "../../utils/utils";
 import chatGPTLogo from "../../assets/chatgpt_logo.png";
-import {ConversationEntity} from "../chat/ConversationList";
+import {ConversationEntity} from "../chat/ConversationItem";
 
 interface ConversationMessageItemProps {
   conversationEntity: ConversationEntity,
