@@ -3,7 +3,7 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../utils/utils";
 import HomePage from "../home/HomePage";
-import {blue, blueGrey, grey, red} from "@mui/material/colors";
+import {blue, blueGrey, deepOrange, grey, orange, red} from "@mui/material/colors";
 import {createContext, useContext, useState} from "react";
 import store from "../../utils/store";
 
@@ -25,6 +25,9 @@ export const darkTheme = createTheme({
     error: {
       main: red["A100"],
     },
+    warning: {
+      main: orange["A100"],
+    },
     background: {
       default: blueGrey[900],
       paper: blueGrey[900],
@@ -43,6 +46,9 @@ export const lightTheme = createTheme({
     },
     error: {
       main: red[700],
+    },
+    warning: {
+      main: orange["700"],
     },
     background: {
       default: grey[50],

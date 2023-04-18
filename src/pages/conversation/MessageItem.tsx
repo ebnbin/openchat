@@ -1,16 +1,17 @@
-import {Button, Chip, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
+import {Button, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
-import React, {RefObject, useState} from "react";
+import React, {useState} from "react";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {copy, maxContentWidth, narrowPageWidth} from "../../utils/utils";
 import {ConversationEntity} from "../chat/ConversationItem";
 import ChatRole from "../../components/ChatRole";
 import {ContentCopyRounded} from "@mui/icons-material";
+import FinishReasonChip from "../../components/FinishReasonChip";
 
 interface MessageItemProps {
   conversationEntity: ConversationEntity,
   isUser: boolean,
-  controller?: RefObject<AbortController | null>;
+  abortRequest?: () => void,
 }
 
 export default function MessageItem(props: MessageItemProps) {
@@ -23,42 +24,10 @@ export default function MessageItem(props: MessageItemProps) {
   const message = props.isUser ? props.conversationEntity.conversation.user_message : props.conversationEntity.conversation.assistant_message;
   const finishReason = props.isUser ? "stop" : props.conversationEntity.conversation.finish_reason;
   const context = props.conversationEntity.context
-  const isLoading = !props.isUser && props.conversationEntity.isRequesting;
-
-  const finishReasonChips = () => {
-    if (finishReason === "stop") {
-      return undefined
-    }
-    if (finishReason === "length") {
-      return (
-        <Chip
-          label={"Incomplete model output due to max_tokens parameter or token limit"}
-        />
-      )
-    }
-    if (finishReason === "content_filter") {
-      return (
-        <Chip
-          label={"Omitted content due to a flag from our content filters"}
-        />
-      )
-    }
-    if (finishReason === "") {
-      return (
-        <Chip
-          label={"API response still in progress or incomplete"}
-        />
-      )
-    }
-    return (
-      <Chip
-        label={"Request abort or error"}
-      />
-    )
-  }
+  const isRequesting = !props.isUser && props.conversationEntity.isRequesting;
 
   const handleUserRoleClick = () => {
-    if (isLoading) {
+    if (isRequesting) {
       return;
     }
     setMarkdown(!markdown);
@@ -81,11 +50,11 @@ export default function MessageItem(props: MessageItemProps) {
       >
         <Box
           sx={{
-            height: "44px",
+            height: "32px",
             display: "flex",
             flexDirection: "row",
-            placeItems: "center",
-            paddingTop: "12px",
+            alignItems: "center",
+            marginTop: "12px",
           }}
         >
           <ChatRole
@@ -98,7 +67,7 @@ export default function MessageItem(props: MessageItemProps) {
               flexGrow: 1,
             }}
           />
-          {isLoading || message === "" ? undefined : (
+          {isRequesting || message === "" ? undefined : (
             <Button
               variant={"text"}
               size={"small"}
@@ -114,7 +83,7 @@ export default function MessageItem(props: MessageItemProps) {
           )}
         </Box>
         <Box>
-          {isLoading ? (
+          {isRequesting ? (
             <Box
               sx={{
                 height: "56px",
@@ -126,16 +95,18 @@ export default function MessageItem(props: MessageItemProps) {
                 size={"32px"}
               />
               <Button
-                variant={"text"}
-                color={"error"}
-                sx={{
-                  marginLeft: "8px",
-                }}
+                variant={"outlined"}
+                color={"info"}
+                size={"small"}
                 onClick={() => {
-                  props.controller?.current?.abort()
+                  props.abortRequest?.();
+                }}
+                sx={{
+                  marginLeft: "16px",
+                  textTransform: "none",
                 }}
               >
-                {"Cancel request"}
+                {"Stop generating"}
               </Button>
             </Box>
           ) : (
@@ -144,19 +115,32 @@ export default function MessageItem(props: MessageItemProps) {
                 content={message}
               />
             ) : (
-              <Typography
+              <Box
                 sx={{
-                  paddingY: "16px",
-                  whiteSpace: "pre-wrap",
+                  minHeight: "56px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
                 }}
               >
-                {message}
-              </Typography>
+                <Typography
+                  sx={{
+                    paddingY: "16px",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {message}
+                </Typography>
+              </Box>
             )
           )}
         </Box>
         <Box>
-          {isLoading ? undefined : finishReasonChips()}
+          {isRequesting ? undefined : (
+            <FinishReasonChip
+              finishReason={finishReason}
+            />
+          )}
         </Box>
       </Box>
     </Box>

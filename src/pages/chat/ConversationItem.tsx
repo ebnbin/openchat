@@ -52,7 +52,10 @@ export default function ConversationItem(props: ConversationItemProps) {
       <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={false}
-        controller={props.conversationEntity.isRequesting ? props.controller : undefined}
+        abortRequest={() => {
+          if (props.conversationEntity.isRequesting) {
+            props.controller?.current?.abort();
+        }}}
       />
       <Box
         sx={{

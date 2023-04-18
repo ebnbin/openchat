@@ -164,7 +164,7 @@ function getErrorConversationEntitiesNoContext(
   return conversationEntities.map((conversationEntity) => {
     return {
       ...conversationEntity,
-      // type: ConversationEntityType.Default,
+      isRequesting: false,
     };
   });
 }

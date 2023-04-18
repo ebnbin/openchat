@@ -156,7 +156,7 @@ class Store {
   getLikesConversationIdsAsync(): Promise<Conversation[]> {
     return get<Conversation[]>("conversations")
       .then((conversations) => conversations || [])
-      .then((conversations) => conversations.filter((conversation) => conversation.save_timestamp !== 0))
+      .then((conversations) => conversations.filter((conversation) => conversation.save_timestamp !== 0 && conversation.save_timestamp !== undefined))
       .then((conversations) => conversations.sort((a, b) => b.save_timestamp - a.save_timestamp));
   }
 
