@@ -8,7 +8,7 @@ import remarkGfm from "remark-gfm";
 import MarkdownCode from "./MarkdownCode";
 
 interface MarkdownProps {
-  content: string,
+  content: string;
 }
 
 function Markdown(props: MarkdownProps) {

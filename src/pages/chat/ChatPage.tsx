@@ -2,7 +2,7 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation, FinishReason} from "../../utils/types";
 import ConversationList, {ConversationEntity, ConversationEntityType} from "./ConversationList";
-import ChatInput from "./ChatInput";
+import InputCard from "./InputCard";
 import {defaultOpenAIModel, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
@@ -247,18 +247,15 @@ export default function ChatPage(props: ChatProps) {
 
   const controllerRef = useRef<AbortController | null>(null);
 
-  const handleRequest = (input: string) => {
+  const handleRequest = (message: string) => {
     if (props.createChat !== undefined) {
       props.createChat(props.chat);
     }
 
 
-    const formattedInput = props.chat.user_message_template.includes("{{message}}")
-      ? props.chat.user_message_template.replaceAll("{{message}}", input)
-      : input;
     const requestingConversation = store.newConversation({
       chat_id: props.chat.id,
-      user_message: formattedInput,
+      user_message: message,
     })
     store.updateConversationsCreateConversationAsync(requestingConversation);
     props.updateChat(props.chat.id, {
@@ -375,11 +372,12 @@ export default function ChatPage(props: ChatProps) {
             margin: "0 auto",
           }}
         >
-          <ChatInput
-            isLoading={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting}
-            handleRequest={handleRequest}
+          <InputCard
+            isRequesting={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].type === ConversationEntityType.Requesting}
+            messageTemplate={props.chat.user_message_template}
+            onRequest={handleRequest}
             showScrollToButton={showScrollToBottom}
-            handleScrollToBottom={() => {
+            scrollToBottom={() => {
               scrollToBottom(true);
             }}
           />

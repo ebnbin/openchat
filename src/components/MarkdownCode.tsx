@@ -47,7 +47,7 @@ export default function MarkdownCode(props: MarkdownCodeProps) {
             size={"small"}
             value={language}
             onChange={(event) => setLanguage(event.target.value)}
-            disableUnderline
+            disableUnderline={true}
             sx={{
               fontSize: theme.typography.subtitle2.fontSize,
             }}
