@@ -1,9 +1,8 @@
-import {Box, Button, Card, Typography, useMediaQuery, useTheme} from "@mui/material";
-import {BookmarkRemoveRounded} from "@mui/icons-material";
+import {Card} from "@mui/material";
 import React from "react";
 import MessageItem from "../conversation/MessageItem";
 import {ConversationEntity} from "../chat/ConversationItem";
-import {maxContentWidth} from "../../utils/utils";
+import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
 interface LikesConversationItemProps {
   conversationEntity: ConversationEntity;
@@ -11,10 +10,6 @@ interface LikesConversationItemProps {
 }
 
 export default function LikesConversationItem(props: LikesConversationItemProps) {
-  const theme = useTheme();
-
-  const isNotSmallPage = useMediaQuery(`(min-width:600px)`)
-
   return (
     <Card
       elevation={1}
@@ -31,48 +26,11 @@ export default function LikesConversationItem(props: LikesConversationItemProps)
         conversationEntity={props.conversationEntity}
         isUser={false}
       />
-      <Box
-        sx={{
-          bgcolor: theme.palette.action.hover,
-        }}
-      >
-        <Box
-          sx={{
-            height: "44px",
-            maxWidth: maxContentWidth,
-            margin: "0 auto",
-            display: "flex",
-            flexDirection: "row",
-            paddingX: isNotSmallPage ? "32px" : "16px",
-            paddingBottom: "12px",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            variant={"caption"}
-            color={theme.palette.text.disabled}
-          >
-            {`${new Date(props.conversationEntity.conversation.id).toLocaleString()}`}
-          </Typography>
-          <Box
-            sx={{
-              flexGrow: 1,
-            }}
-          />
-          <Button
-            variant={"text"}
-            size={"small"}
-            color={"error"}
-            startIcon={<BookmarkRemoveRounded />}
-            onClick={() => props.unlikeConversationEntity(props.conversationEntity)}
-            sx={{
-              textTransform: "none",
-            }}
-          >
-            {"Remove"}
-          </Button>
-        </Box>
-      </Box>
+      <ConversationItemFooter
+        conversationEntity={props.conversationEntity}
+        isSave={true}
+        handleRemoveClick={() => props.unlikeConversationEntity(props.conversationEntity)}
+      />
     </Card>
   );
 }

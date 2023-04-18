@@ -2,8 +2,8 @@ import {Box} from "@mui/material";
 import React, {RefObject} from "react";
 import ConversationItem, {ConversationEntity} from "./ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
-import ChatConversationItemFooter from "../conversation/ChatConversationItemFooter";
 import {Conversation} from "../../utils/types";
+import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
 interface ConversationListProps {
   conversationEntities: ConversationEntity[];
@@ -50,8 +50,9 @@ export default function ConversationList(props: ConversationListProps) {
               conversationEntity={conversationEntity}
               abortController={props.controller}
             >
-              <ChatConversationItemFooter
+              <ConversationItemFooter
                 conversationEntity={conversationEntity}
+                isSave={false}
                 handleSaveClick={() => handleLikeClick(conversationEntity)}
                 handleDeleteClick={() => deleteConversationEntity(conversationEntity)}
               />
