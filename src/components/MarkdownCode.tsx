@@ -54,6 +54,7 @@ export default function MarkdownCode(props: MarkdownCodeProps) {
           >
             {["", ...SyntaxHighlighter.supportedLanguages].map((language) => (
               <MenuItem
+                key={language}
                 value={language}
                 sx={{
                   height: "32px",

@@ -17,62 +17,55 @@ function Markdown(props: MarkdownProps) {
     <Box
       sx={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
       }}
     >
-      <Box
-        sx={{
-          width: "0px",
-          flexGrow: 1,
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          "a": (props) => {
+            return (
+              <a
+                {...props}
+                target={"_blank"}
+                style={{
+                  color: theme.palette.text.primary,
+                  fontWeight: "bold",
+                }}
+              />
+            );
+          },
+          "code": ({inline, ...props}) => {
+            return inline ? (
+              <code
+                {...props}
+                style={{
+                  fontWeight: "bold",
+                }}
+              >
+                {props.children}
+              </code>
+            ) : (
+              <MarkdownCode
+                props={props}
+              />
+            );
+          },
+          "img": (props) => {
+            return (
+              <img
+                {...props}
+                style={{
+                  maxWidth: "100%",
+                }}
+              />
+            )
+          },
         }}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeKatex]}
-          components={{
-            "a": (props) => {
-              return (
-                <a
-                  {...props}
-                  target={"_blank"}
-                  style={{
-                    color: theme.palette.text.primary,
-                    fontWeight: "bold",
-                  }}
-                />
-              );
-            },
-            "code": ({inline, ...props}) => {
-              return inline ? (
-                <code
-                  {...props}
-                  style={{
-                    fontWeight: "bold",
-                  }}
-                >
-                  {props.children}
-                </code>
-              ) : (
-                <MarkdownCode
-                  props={props}
-                />
-              );
-            },
-            "img": (props) => {
-              return (
-                <img
-                  {...props}
-                  style={{
-                    maxWidth: "100%",
-                  }}
-                />
-              )
-            },
-          }}
-        >
-          {props.content}
-        </ReactMarkdown>
-      </Box>
+        {props.content}
+      </ReactMarkdown>
     </Box>
   );
 }
