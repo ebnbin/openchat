@@ -2,11 +2,10 @@ import {Button, CircularProgress, Typography, useMediaQuery, useTheme} from "@mu
 import Box from "@mui/material/Box";
 import React, {useState} from "react";
 import ChatMarkdownMessage from "../../components/Markdown";
-import {copy, maxContentWidth, narrowPageWidth} from "../../utils/utils";
+import {maxContentWidth, narrowPageWidth} from "../../utils/utils";
 import {ConversationEntity} from "../chat/ConversationItem";
-import ChatRole from "../../components/ChatRole";
-import {ContentCopyRounded} from "@mui/icons-material";
 import FinishReasonChip from "../../components/FinishReasonChip";
+import MessageItemHeader from "./MessageItemHeader";
 
 interface MessageItemProps {
   conversationEntity: ConversationEntity,
@@ -26,13 +25,6 @@ export default function MessageItem(props: MessageItemProps) {
   const context = props.conversationEntity.context
   const isRequesting = !props.isUser && props.conversationEntity.isRequesting;
 
-  const handleUserRoleClick = () => {
-    if (isRequesting) {
-      return;
-    }
-    setMarkdown(!markdown);
-  }
-
   return (
     <Box
       sx={{
@@ -48,93 +40,65 @@ export default function MessageItem(props: MessageItemProps) {
           paddingX: isNarrowPage ? "16px" : "32px",
         }}
       >
-        <Box
-          sx={{
-            height: "32px",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: "12px",
-          }}
-        >
-          <ChatRole
-            isUser={props.isUser}
-            context={context}
-            handleClick={handleUserRoleClick}
-          />
+        <MessageItemHeader
+          isUser={props.isUser}
+          message={message}
+          context={context}
+          isRequesting={isRequesting}
+          markdown={markdown}
+          setMarkdown={setMarkdown}
+        />
+        {isRequesting ? (
           <Box
             sx={{
-              flexGrow: 1,
+              height: "56px",
+              display: "flex",
+              alignItems: "center",
             }}
-          />
-          {isRequesting || message === "" ? undefined : (
+          >
+            <CircularProgress
+              size={"32px"}
+            />
             <Button
-              variant={"text"}
-              size={"small"}
+              variant={"outlined"}
               color={"info"}
-              startIcon={<ContentCopyRounded/>}
-              onClick={() => copy(message)}
+              size={"small"}
+              onClick={() => {
+                props.abortRequest?.();
+              }}
               sx={{
+                marginLeft: "16px",
                 textTransform: "none",
               }}
             >
-              {"Copy"}
+              {"Stop generating"}
             </Button>
-          )}
-        </Box>
-        <Box>
-          {isRequesting ? (
+          </Box>
+        ) : (
+          markdown ? (
+            <ChatMarkdownMessage
+              content={message}
+            />
+          ) : (
             <Box
               sx={{
-                height: "56px",
+                minHeight: "56px",
                 display: "flex",
-                alignItems: "center",
+                flexDirection: "column",
+                justifyContent: "center",
               }}
             >
-              <CircularProgress
-                size={"32px"}
-              />
-              <Button
-                variant={"outlined"}
-                color={"info"}
-                size={"small"}
-                onClick={() => {
-                  props.abortRequest?.();
-                }}
+              <Typography
                 sx={{
-                  marginLeft: "16px",
-                  textTransform: "none",
+                  paddingY: "16px",
+                  whiteSpace: "pre-wrap",
                 }}
               >
-                {"Stop generating"}
-              </Button>
+                {message}
+              </Typography>
             </Box>
-          ) : (
-            markdown ? (
-              <ChatMarkdownMessage
-                content={message}
-              />
-            ) : (
-              <Box
-                sx={{
-                  minHeight: "56px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography
-                  sx={{
-                    paddingY: "16px",
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {message}
-                </Typography>
-              </Box>
-            )
-          )}
-        </Box>
+          )
+        )}
         <Box>
           {isRequesting ? undefined : (
             <FinishReasonChip
