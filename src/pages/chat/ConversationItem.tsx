@@ -11,7 +11,8 @@ export interface ConversationEntity {
 
 interface ConversationItemProps {
   conversationEntity: ConversationEntity;
-  abortController: RefObject<AbortController | null>;
+  isSave: boolean;
+  abortController?: RefObject<AbortController | null>;
   children: React.ReactNode;
 }
 
@@ -21,7 +22,7 @@ export default function ConversationItem(props: ConversationItemProps) {
       elevation={1}
       sx={{
         borderRadius: "0px",
-        marginBottom: "1px",
+        marginBottom: props.isSave ? "16px" : "1px",
       }}
     >
       <MessageItem
@@ -31,10 +32,7 @@ export default function ConversationItem(props: ConversationItemProps) {
       <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={false}
-        abortRequest={() => {
-          if (props.conversationEntity.isRequesting) {
-            props.abortController?.current?.abort();
-        }}}
+        abortController={props.abortController}
       />
       {props.children}
     </Card>

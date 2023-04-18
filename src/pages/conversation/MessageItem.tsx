@@ -10,7 +10,7 @@ import MessageItemHeader from "./MessageItemHeader";
 interface MessageItemProps {
   conversationEntity: ConversationEntity,
   isUser: boolean,
-  abortRequest?: () => void,
+  abortController?: React.RefObject<AbortController | null>,
 }
 
 export default function MessageItem(props: MessageItemProps) {
@@ -64,7 +64,7 @@ export default function MessageItem(props: MessageItemProps) {
               color={"info"}
               size={"small"}
               onClick={() => {
-                props.abortRequest?.();
+                props.abortController?.current?.abort();
               }}
               sx={{
                 marginLeft: "16px",

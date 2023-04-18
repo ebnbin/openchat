@@ -1,8 +1,8 @@
 import {Box} from "@mui/material";
 import React from "react";
 import {Virtuoso} from "react-virtuoso";
-import LikesConversationItem from "./LikesConversationItem";
-import {ConversationEntity} from "../chat/ConversationItem";
+import ConversationItem, {ConversationEntity} from "../chat/ConversationItem";
+import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
 interface LikesConversationListProps {
   conversationEntities: ConversationEntity[];
@@ -27,10 +27,16 @@ export default function LikesConversationList(props: LikesConversationListProps)
         } else {
           const conversationEntity = item as ConversationEntity;
           return (
-            <LikesConversationItem
+            <ConversationItem
               conversationEntity={conversationEntity}
-              unlikeConversationEntity={props.unlikeConversationEntity}
-            />
+              isSave={true}
+            >
+              <ConversationItemFooter
+                conversationEntity={conversationEntity}
+                isSave={true}
+                handleRemoveClick={() => props.unlikeConversationEntity(conversationEntity)}
+              />
+            </ConversationItem>
           );
         }
       }}
