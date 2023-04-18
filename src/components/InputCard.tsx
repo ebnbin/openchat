@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Alert, Card, IconButton, InputAdornment, Snackbar, TextField, useMediaQuery} from "@mui/material";
 import {ExpandCircleDownRounded, SendRounded} from "@mui/icons-material";
-import store from "../../utils/store";
+import store from "../utils/store";
 import Box from "@mui/material/Box";
 
 interface InputCardProps {
