@@ -2,12 +2,11 @@ import {Box} from "@mui/material";
 import React, {RefObject} from "react";
 import ConversationItem, {ConversationEntity} from "../conversation/ConversationItem";
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
-import {Conversation} from "../../utils/types";
 import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
 interface ConversationListProps {
   conversationEntities: ConversationEntity[];
-  updateConversationEntityLike: (conversationEntity: ConversationEntity) => void;
+  updateConversationEntitySave: (conversationId: number, saveTimestamp: number) => void;
   deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
   atBottomStateChange: (atBottom: boolean) => void;
@@ -18,13 +17,8 @@ export default function ConversationList(props: ConversationListProps) {
   const { conversationEntities, deleteConversationEntity } = props;
 
   const handleLikeClick = (conversationEntity: ConversationEntity) => {
-    props.updateConversationEntityLike({
-      ...conversationEntity,
-      conversation: {
-        ...conversationEntity.conversation,
-        save_timestamp: conversationEntity.conversation.save_timestamp === 0 ? Date.now() : 0,
-      } as Conversation,
-    });
+    props.updateConversationEntitySave(conversationEntity.conversation.id,
+      conversationEntity.conversation.save_timestamp === 0 ? Date.now() : 0);
   }
 
   return (

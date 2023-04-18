@@ -72,7 +72,7 @@ class Store {
   updateChatsCreateChat(chat: Chat, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
     if (state) {
       state[1]((chats) => {
-        return [...chats, chat]
+        return [...chats, chat];
       });
     }
 
@@ -146,6 +146,64 @@ class Store {
       .then((conversations) => conversations.sort((a, b) => b.save_timestamp - a.save_timestamp));
   }
 
+  updateConversationsCreateConversation(conversation: Conversation, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
+    if (state) {
+      state[1]((conversations) => {
+        return [...conversations, conversation];
+      });
+    }
+
+    update<Conversation[]>("conversations", (conversations) => {
+      return conversations ? [...conversations, conversation] : [conversation];
+    }).finally();
+  }
+
+  updateConversationsUpdateConversation(conversationId: number, conversation: Partial<Conversation>, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
+    if (state) {
+      state[1]((conversations) => {
+        return conversations.map((foundConversation) => {
+          if (foundConversation.id === conversationId) {
+            return {
+              ...foundConversation,
+              ...conversation,
+            };
+          }
+          return foundConversation;
+        });
+      });
+    }
+
+    update<Conversation[]>("conversations", (conversations) => {
+      if (!conversations) {
+        return [];
+      }
+      return conversations.map((foundConversation) => {
+        if (foundConversation.id === conversationId) {
+          return {
+            ...foundConversation,
+            ...conversation,
+          };
+        }
+        return foundConversation;
+      });
+    }).finally();
+  }
+
+  updateConversationsDeleteConversation(conversationId: number, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
+    if (state) {
+      state[1]((conversations) => {
+        return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
+      });
+    }
+
+    update<Conversation[]>("conversations", (conversations) => {
+      if (!conversations) {
+        return [];
+      }
+      return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
+    }).finally();
+  }
+
   //*******************************************************************************************************************
   //*******************************************************************************************************************
 
@@ -170,12 +228,6 @@ class Store {
   }
 
   //*******************************************************************************************************************
-
-  updateConversationsCreateConversationAsync(conversation: Conversation) {
-    update<Conversation[]>("conversations", (conversations) => {
-      return conversations ? [...conversations, conversation] : [conversation];
-    }).finally();
-  }
 
   updateConversationsUpdateConversationAsync(conversationId: number, conversation: Partial<Conversation>) {
     update<Conversation[]>("conversations", (conversations) => {
