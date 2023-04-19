@@ -55,7 +55,6 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               setSelectedContentId={handleItemClick}
               handleNewChatClick={props.handleNewChatClick}
               handleLikesClick={props.handleLikesClick}
-              handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
               handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
               isPopover={false}
             />
@@ -89,7 +88,6 @@ export default function HomeDrawer(props: HomeDrawerProps) {
                 setSelectedContentId={handleItemClick}
                 handleNewChatClick={props.handleNewChatClick}
                 handleLikesClick={props.handleLikesClick}
-                handleNewChatSettingsDialogOpen={props.handleNewChatSettingsDialogOpen}
                 handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
                 isPopover={false}
               />

@@ -5,9 +5,7 @@ import {
   DashboardCustomizeRounded, DoneRounded,
   SettingsRounded
 } from "@mui/icons-material";
-import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
-import ChatIcon from "../../components/ChatIcon";
 import ListItem from "@mui/material/ListItem";
 import {pageSaveList} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -15,7 +13,7 @@ import ListItemText from "@mui/material/ListItemText";
 import {Chat} from "../../utils/types";
 import React, {useEffect, useState} from "react";
 import store from "../../utils/store";
-import {chunk} from "../../utils/utils";
+import HomeDrawerContentChatList from "./HomeDrawerContentChatList";
 
 interface HomeDrawerContent2Props {
   chats: Chat[];
@@ -24,7 +22,6 @@ interface HomeDrawerContent2Props {
   setSelectedContentId: (selectedContentId: number) => void,
   handleNewChatClick: () => void,
   handleLikesClick: () => void,
-  handleNewChatSettingsDialogOpen: () => void,
   handleSettingsDialogOpen: () => void,
   isPopover: boolean,
 }
@@ -39,23 +36,6 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
   useEffect(() => {
     _setPinChats(store.pinChats.get());
   }, []);
-
-  const pinnedChats = () => {
-    const chats = ([...pinChats]
-      .map((chatId) => {
-        return props.chats.find((chat) => chat.id === chatId);
-      })
-      .filter((chat) => chat !== undefined)) as Chat[]
-    return chunk(chats, 3)
-  }
-
-  const unpinnedChats = () => {
-    return [...props.chats]
-      .filter((chat) => !pinChats.includes(chat.id))
-      .sort((a, b) => {
-        return b.update_timestamp - a.update_timestamp;
-      });
-  }
 
   const handlePinedItemClick = (chatId: number) => {
     if (updatingPins) {
@@ -200,180 +180,28 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
         </IconButton>
       </Box>
       <Divider/>
-      <List
+      <Box
         sx={{
           flexGrow: 1,
-          overflow: "auto",
-          padding: "0px",
-          // minWidth: "300px",
-          // "&::-webkit-scrollbar": {
-          //   display: "none",
-          // },
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "auto",
         }}
       >
-        {pinnedChats().map((row, index) => (
-          <Box
-            key={index}
-            sx={{
-              // width: "300px",
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            {row.map((chat, index) => (
-              <ListItemButton
-                key={index}
-                onClick={() => handlePinedItemClick(chat.id)}
-                selected={chat.id === props.selectedContentId}
-                sx={{
-                  color: theme.palette.text.primary,
-                  display: "flex",
-                  flexDirection: "column",
-                  flexGrow: 1,
-                  maxWidth: "100px",
-                  height: "100px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textTransform: "none",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "100%",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: "80px",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <ChatIcon
-                      iconText={chat.icon_text}
-                      iconTextSize={chat.icon_text_size}
-                      iconColor={chat.icon_color}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      width: "80px",
-                      height: "32px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginTop: "4px",
-                    }}
-                  >
-                    <Typography
-                      variant={"caption"}
-                      align={"center"}
-                      sx={{
-                        width: "100%",
-                        display: "-webkit-box",
-                        overflow: "hidden",
-                        WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 2,
-                        textOverflow: "ellipsis",
-                        lineHeight: 1.2,
-                        fontWeight: props.selectedContentId === chat.id ? "bold" : "normal",
-                      }}
-                    >
-                      {chat.title === "" ? "New chat" : chat.title}
-                    </Typography>
-                  </Box>
-                </Box>
-              </ListItemButton>
-            ))}
-            {
-              row.length < 3 ? (
-                <ListItemButton
-                  disabled={true}
-                  sx={{
-                    color: theme.palette.text.primary,
-                    display: "flex",
-                    flexDirection: "column",
-                    flexGrow: 3 - row.length,
-                    maxWidth: "100px",
-                    height: "100px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    textTransform: "none",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100%",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: "80px",
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                    </Box>
-                    <Box
-                      sx={{
-                        width: "80px",
-                        height: "32px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginTop: "4px",
-                      }}
-                    >
-                    </Box>
-                  </Box>
-                </ListItemButton>
-              ) : undefined
+        <HomeDrawerContentChatList
+          chats={props.chats}
+          pinChats={pinChats}
+          pageId={props.selectedContentId}
+          handleItemClick={(chatId, pinned) => {
+            if (pinned) {
+              handlePinedItemClick(chatId);
+            } else {
+              handleUnpinedItemClick(chatId);
             }
-          </Box>
-        ))}
-        <Divider
-          sx={{
-            display: pinnedChats().length === 0 ? "none" : "block",
           }}
+          pinMode={updatingPins}
         />
-        {unpinnedChats().map((chat: Chat) => (
-          <ListItem
-            key={chat.id}
-            disablePadding={true}
-            sx={{
-              // minWidth: "300px",
-            }}
-          >
-            <ListItemButton
-              onClick={() => handleUnpinedItemClick(chat.id)}
-              selected={props.selectedContentId === chat.id}
-            >
-              <ListItemIcon>
-                <ChatIcon
-                  iconText={chat.icon_text}
-                  iconTextSize={chat.icon_text_size}
-                  iconColor={chat.icon_color}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary={chat.title === "" ? "New chat" : chat.title}
-                primaryTypographyProps={{
-                  noWrap: props.selectedContentId !== chat.id,
-                  fontWeight: props.selectedContentId === chat.id ? "bold" : undefined,
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      </Box>
       <Divider/>
       <ListItem
         disablePadding={true}
