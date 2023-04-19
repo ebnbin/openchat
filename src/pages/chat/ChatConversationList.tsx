@@ -10,7 +10,7 @@ interface ChatConversationListProps {
   atBottomStateChange: (atBottom: boolean) => void;
   handleSaveClick: (conversationEntity: ConversationEntity) => void;
   handleDeleteClick: (conversationEntity: ConversationEntity) => void;
-  abortController: RefObject<AbortController | null>;
+  abortControllerRef: RefObject<AbortController | null>;
 }
 
 export default function ChatConversationList(props: ChatConversationListProps) {
@@ -36,7 +36,7 @@ export default function ChatConversationList(props: ChatConversationListProps) {
             <ConversationItem
               conversationEntity={conversationEntity}
               isSave={false}
-              abortController={props.abortController}
+              abortControllerRef={props.abortControllerRef}
             >
               <ConversationItemFooter
                 conversationEntity={conversationEntity}

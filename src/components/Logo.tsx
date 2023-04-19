@@ -6,7 +6,11 @@ import Box from "@mui/material/Box";
 export default function Logo() {
   const color = "#7f7f7f7f";
   return (
-    <Container>
+    <Container
+      sx={{
+        userSelect: "none",
+      }}
+    >
       <Box
         sx={{
           width: "100%",
@@ -32,7 +36,6 @@ export default function Logo() {
           color={color}
           sx={{
             fontWeight: "bold",
-            userSelect: "none",
           }}
         >
           {"OpenChat"}

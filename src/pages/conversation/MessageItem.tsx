@@ -1,6 +1,6 @@
 import {Button, CircularProgress, Typography, useMediaQuery, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
-import React, {useState} from "react";
+import React, {RefObject, useState} from "react";
 import ChatMarkdownMessage from "../../components/Markdown";
 import {maxContentWidth, narrowPageWidth} from "../../utils/utils";
 import {ConversationEntity} from "./ConversationItem";
@@ -10,7 +10,7 @@ import MessageItemHeader from "./MessageItemHeader";
 interface MessageItemProps {
   conversationEntity: ConversationEntity,
   isUser: boolean,
-  abortController?: React.RefObject<AbortController | null>,
+  abortControllerRef?: RefObject<AbortController | null>,
 }
 
 export default function MessageItem(props: MessageItemProps) {
@@ -64,7 +64,7 @@ export default function MessageItem(props: MessageItemProps) {
               color={"info"}
               size={"small"}
               onClick={() => {
-                props.abortController?.current?.abort();
+                props.abortControllerRef?.current?.abort();
               }}
               sx={{
                 marginLeft: "16px",

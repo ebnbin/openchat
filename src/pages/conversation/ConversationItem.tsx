@@ -12,7 +12,7 @@ export interface ConversationEntity {
 interface ConversationItemProps {
   conversationEntity: ConversationEntity;
   isSave: boolean;
-  abortController?: RefObject<AbortController | null>;
+  abortControllerRef?: RefObject<AbortController | null>;
   children: React.ReactNode;
 }
 
@@ -32,7 +32,7 @@ export default function ConversationItem(props: ConversationItemProps) {
       <MessageItem
         conversationEntity={props.conversationEntity}
         isUser={false}
-        abortController={props.abortController}
+        abortControllerRef={props.abortControllerRef}
       />
       {props.children}
     </Card>

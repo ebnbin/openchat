@@ -60,11 +60,13 @@ export const maxContentWidth = 900;
 interface OpenAIModel {
   model: string,
   maxTokens: number,
+  tokensPerChar: number,
   extraCharsPerMessage: number,
 }
 
 export const defaultOpenAIModel: OpenAIModel = {
   model: "gpt-3.5-turbo",
   maxTokens: 4096,
+  tokensPerChar: 0.25,
   extraCharsPerMessage: 16,
 } as const;

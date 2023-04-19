@@ -1,11 +1,11 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, Conversation, FinishReason} from "../../utils/types";
+import {Chat, Conversation, FinishReason, Usage} from "../../utils/types";
 import ChatConversationList from "./ChatConversationList";
 import InputCard from "../../components/InputCard";
 import {defaultOpenAIModel, maxContentWidth, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
-import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum} from "openai";
+import {ChatCompletionRequestMessage} from "openai";
 import {CreateChatCompletionResponse} from "openai/api";
 import {VirtuosoHandle} from "react-virtuoso";
 import {ConversationEntity} from "../conversation/ConversationItem";
@@ -16,9 +16,10 @@ function updateConversationEntities(
   requestingConversationId: number,
 ): ConversationEntity[] {
   const maxTokens = defaultOpenAIModel.maxTokens * chat.context_threshold;
+  const tokensPerChar = chat.char_count === 0 ? defaultOpenAIModel.tokensPerChar : chat.token_count / chat.char_count;
   let usedTokens = 0;
   if (chat.system_message !== "") {
-    usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * getTokensPerChar(chat);
+    usedTokens += (chat.system_message.length + defaultOpenAIModel.extraCharsPerMessage) * tokensPerChar;
   }
   return [...conversations]
     .reverse()
@@ -28,7 +29,7 @@ function updateConversationEntities(
         context = false;
       } else {
         const tokens = (conversation.user_message.length + conversation.assistant_message.length
-          + 2 * defaultOpenAIModel.extraCharsPerMessage) * getTokensPerChar(chat);
+          + 2 * defaultOpenAIModel.extraCharsPerMessage) * tokensPerChar;
         usedTokens += tokens;
         context = usedTokens <= maxTokens;
       }
@@ -50,82 +51,57 @@ function getRequestingMessages(
   conversationEntities: ConversationEntity[],
   requestingConversation: Conversation,
 ): ChatCompletionRequestMessage[] {
-  const result: ChatCompletionRequestMessage[] = []
+  const result: ChatCompletionRequestMessage[] = [];
   if (chat.system_message !== "") {
-    result.push(
-      {
-        role: ChatCompletionRequestMessageRoleEnum.System,
-        content: chat.system_message,
-      } as ChatCompletionRequestMessage,
-    );
+    result.push({
+      role: "system",
+      content: chat.system_message,
+    } as ChatCompletionRequestMessage);
   }
   conversationEntities
     .filter((conversationEntity) => conversationEntity.context)
     .forEach((conversationEntity) => {
-      result.push(
-        {
-          role: ChatCompletionRequestMessageRoleEnum.User,
-          content: conversationEntity.conversation.user_message,
-        } as ChatCompletionRequestMessage,
-      );
-      // if (!conversationEntity.isRequesting) {
-        result.push(
-          {
-            role: ChatCompletionRequestMessageRoleEnum.Assistant,
-            content: conversationEntity.conversation.assistant_message,
-          } as ChatCompletionRequestMessage,
-        );
-      // }
+      result.push({
+        role: "user",
+        content: conversationEntity.conversation.user_message,
+      } as ChatCompletionRequestMessage);
+      result.push({
+        role: "assistant",
+        content: conversationEntity.conversation.assistant_message,
+      } as ChatCompletionRequestMessage);
     });
   result.push({
-    role: ChatCompletionRequestMessageRoleEnum.User,
+    role: "user",
     content: requestingConversation.user_message,
-  } as ChatCompletionRequestMessage)
+  } as ChatCompletionRequestMessage);
   return result;
 }
 
-function getTokensPerChar(chat: Chat): number {
-  if (chat.char_count === 0) {
-    return 0.25;
-  }
-  return chat.token_count / chat.char_count;
+function getCharCount(requestingMessages: ChatCompletionRequestMessage[], responseMessageContent: string): number {
+  return [
+    ...requestingMessages.map((message) => message.content),
+    responseMessageContent,
+  ]
+    .reduce((acc, message) => acc + (message.length + defaultOpenAIModel.extraCharsPerMessage), 0);
 }
-
-function handleResponseUpdateChat(
-  chat: Chat,
-  updateChat: (chatId: number, chat: Partial<Chat>) => void,
-  requestingMessages: ChatCompletionRequestMessage[],
-  response: CreateChatCompletionResponse,
-) {
-  const responseMessageContent = response.choices[0].message!!.content;
-  const responseTotalTokens = response.usage!!.total_tokens
-  const charCount = requestingMessages
-    .map((message) => message.content)
-    .concat(responseMessageContent)
-    .reduce((acc, message) => acc + message.length + defaultOpenAIModel.extraCharsPerMessage, 0)
-  store.usage.set({
-    token_count: store.usage.get().token_count + responseTotalTokens,
-    conversation_count: store.usage.get().conversation_count + 1,
-  })
-  updateChat(chat.id, {
-    conversation_count: chat.conversation_count + 1,
-    token_count: chat.token_count + responseTotalTokens,
-    char_count: chat.char_count + charCount,
-  })
-}
-
-//*********************************************************************************************************************
-//*********************************************************************************************************************
 
 interface ChatProps {
   chat: Chat,
   updateChat: (chatId: number, chat: Partial<Chat>) => void,
-  createChat?: (chat: Chat) => void, // For new chat
-  children?: React.ReactNode; // For new chat
+  createChat?: (chat: Chat) => void, // New chat
+  children?: React.ReactNode; // New chat welcome page
 }
 
 export default function ChatPage(props: ChatProps) {
   const [conversations, _setConversations] = useState<Conversation[]>([]);
+
+  useEffect(() => {
+    store.getConversations(props.chat.id)
+      .then((conversations) => {
+        _setConversations(conversations);
+        scrollToBottom(false);
+      });
+  }, [props.chat.id]);
 
   const createConversation = (conversation: Conversation) => {
     store.updateConversationsCreateConversation(conversation, [conversations, _setConversations]);
@@ -141,86 +117,10 @@ export default function ChatPage(props: ChatProps) {
 
   const [requestingConversationId, setRequestingConversationId] = useState(0);
 
-  useEffect(() => {
-    store.getConversations(props.chat.id)
-      .then((conversations) => {
-        _setConversations(conversations);
-        scrollToBottom(false);
-      });
-  }, [props.chat.id]);
+  const conversationEntities = updateConversationEntities(props.chat, conversations, requestingConversationId);
 
-  const [conversationEntities, setConversationEntities] = useState<ConversationEntity[]>([]);
-
-  useEffect(() => {
-    const conversationEntities = updateConversationEntities(props.chat, conversations, requestingConversationId);
-    setConversationEntities(conversationEntities);
-  }, [props.chat, conversations, requestingConversationId]);
-
-  useLayoutEffect(() => {
-    if (conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].isRequesting) {
-      scrollToBottom(true);
-    }
-  }, [conversationEntities]);
-
-  const controllerRef = useRef<AbortController | null>(null);
-
-  const handleRequest = (message: string) => {
-    if (props.createChat !== undefined) {
-      props.createChat(props.chat);
-    }
-
-
-    const requestingConversation = store.newConversation(props.chat.id, message);
-
-    createConversation(requestingConversation);
-
-    props.updateChat(props.chat.id, {
-      update_timestamp: requestingConversation.id,
-    });
-    const requestingMessages = getRequestingMessages(props.chat, conversationEntities, requestingConversation);
-
-    setRequestingConversationId(requestingConversation.id);
-
-    if (controllerRef.current) {
-      controllerRef.current.abort();
-    }
-    controllerRef.current = new AbortController();
-
-    openAIApi()
-      .createChatCompletion({
-        model: defaultOpenAIModel.model,
-        messages: requestingMessages,
-        temperature: props.chat.temperature,
-      }, {
-        signal: controllerRef.current.signal,
-      })
-      .then((response) => {
-        handleResponseUpdateChat(props.chat, props.updateChat, requestingMessages, response.data);
-
-        const responseData: CreateChatCompletionResponse = response.data;
-        const responseMessageContent = responseData.choices[0].message!!.content;
-
-        const conversationPartial: Partial<Conversation> = {
-          assistant_message: responseMessageContent,
-          finish_reason: (responseData.choices[0].finish_reason ?? "") as FinishReason,
-        }
-
-        updateConversation(requestingConversation.id, conversationPartial);
-
-        setRequestingConversationId(0);
-      })
-      .catch(() => {
-        setRequestingConversationId(0);
-      })
-  }
-
-  useEffect(() => {
-    return () => {
-      if (controllerRef.current) {
-        controllerRef.current.abort();
-      }
-    }
-  }, []);
+  //*******************************************************************************************************************
+  // Scroll to bottom
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
 
@@ -229,10 +129,85 @@ export default function ChatPage(props: ChatProps) {
       index: "LAST",
       behavior: smooth ? "smooth" : undefined,
       align: "end",
-    })
+    });
   }
 
+  useLayoutEffect(() => {
+    if (requestingConversationId !== 0) {
+      scrollToBottom(true);
+    }
+  }, [requestingConversationId]);
+
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+  //*******************************************************************************************************************
+  // Request
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    }
+  }, []);
+
+  const onRequest = (message: string) => {
+    // Create new chat
+    props.createChat?.(props.chat);
+
+    const currentConversationEntities = conversationEntities;
+    const requestingConversation = store.newConversation(props.chat.id, message);
+    const requestingMessages = getRequestingMessages(props.chat, currentConversationEntities, requestingConversation);
+
+    props.updateChat(props.chat.id, {
+      conversation_count: props.chat.conversation_count + 1,
+      update_timestamp: requestingConversation.id,
+    });
+    store.usage.set({
+      ...store.usage.get(),
+      conversation_count: store.usage.get().conversation_count + 1,
+    } as Usage);
+    setRequestingConversationId(requestingConversation.id);
+    createConversation(requestingConversation);
+
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = new AbortController();
+
+    openAIApi()
+      .createChatCompletion({
+        model: defaultOpenAIModel.model,
+        messages: requestingMessages,
+        temperature: props.chat.temperature,
+      }, {
+        signal: abortControllerRef.current.signal,
+      })
+      .then((response) => {
+        const responseData: CreateChatCompletionResponse = response.data;
+        const responseTotalTokens = responseData.usage?.total_tokens ?? 0;
+        const responseFinishReason = (responseData.choices[0].finish_reason ?? "") as FinishReason;
+        const responseMessageContent = responseData.choices[0].message?.content ?? "";
+        const charCount = getCharCount(requestingMessages, responseMessageContent);
+
+        props.updateChat(props.chat.id, {
+          char_count: props.chat.char_count + charCount,
+          token_count: props.chat.token_count + responseTotalTokens,
+        });
+        store.usage.set({
+          ...store.usage.get(),
+          token_count: store.usage.get().token_count + responseTotalTokens,
+        } as Usage);
+        setRequestingConversationId(0);
+        updateConversation(requestingConversation.id, {
+          assistant_message: responseMessageContent,
+          finish_reason: responseFinishReason,
+        });
+      })
+      .catch(() => {
+        setRequestingConversationId(0);
+      });
+  }
+
+  //*******************************************************************************************************************
 
   return (
     <Box
@@ -248,9 +223,8 @@ export default function ChatPage(props: ChatProps) {
         sx={{
           width: "100%",
           flexGrow: 1,
-          padding: "0px",
-          overflow: "auto",
-          display: props.children !== undefined ? "none" : "block",
+          display: props.children === undefined ? "flex" : "none",
+          flexDirection: "column",
         }}
       >
         <ChatConversationList
@@ -267,7 +241,7 @@ export default function ChatPage(props: ChatProps) {
           handleDeleteClick={(conversationEntity) => {
             deleteConversation(conversationEntity.conversation);
           }}
-          abortController={controllerRef}
+          abortControllerRef={abortControllerRef}
         />
       </Box>
       <Box
@@ -295,9 +269,9 @@ export default function ChatPage(props: ChatProps) {
           }}
         >
           <InputCard
-            isRequesting={conversationEntities.length > 0 && conversationEntities[conversationEntities.length - 1].isRequesting}
+            isRequesting={requestingConversationId !== 0}
             messageTemplate={props.chat.user_message_template}
-            onRequest={handleRequest}
+            onRequest={onRequest}
             showScrollToButton={showScrollToBottom}
             scrollToBottom={() => {
               scrollToBottom(true);
@@ -306,5 +280,5 @@ export default function ChatPage(props: ChatProps) {
         </Box>
       </Box>
     </Box>
-  )
+  );
 }
