@@ -12,14 +12,14 @@ import store from "../../utils/store";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-export default function SettingsItemOpenAIAPI() {
-  const [openAIAPIKey, _setOpenAIAPIKey] = useState(store.openAIAPIKey.get())
+export default function SettingsItemOpenAIApi() {
+  const [openAIApiKey, _setOpenAIApiKey] = useState(store.openAIApiKey.get())
   const [visibility, setVisibility] = React.useState(false);
   const [showUsage, setShowUsage] = useState(false)
 
   const setOpenAIApiKey = (openAIApiKey: string) => {
-    _setOpenAIAPIKey(openAIApiKey)
-    store.openAIAPIKey.set(openAIApiKey)
+    _setOpenAIApiKey(openAIApiKey)
+    store.openAIApiKey.set(openAIApiKey)
   }
 
   const usage = store.usage.get();
@@ -37,7 +37,7 @@ export default function SettingsItemOpenAIAPI() {
         size={"small"}
         fullWidth={true}
         placeholder={"sk-************************************************"}
-        value={openAIAPIKey}
+        value={openAIApiKey}
         onChange={(event) => setOpenAIApiKey(event.target.value)}
         type={visibility ? "text" : "password"}
         InputProps={{

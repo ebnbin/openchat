@@ -10,7 +10,7 @@ import {Theme} from "../../utils/types";
 import SettingsItemTheme from "./SettingsItemTheme";
 import SettingsItemSendOnEnter from "./SettingsItemSendOnEnter";
 import SettingsItemReopenPage from "./SettingsItemReopenPage";
-import SettingsItemOpenAIAPI from "./SettingsItemOpenAIAPI";
+import SettingsItemOpenAIApi from "./SettingsItemOpenAIApi";
 import SettingsItemBackupAndRestore from "./SettingsItemBackupAndRestore";
 import SettingsItemClearData from "./SettingsItemClearData";
 
@@ -40,7 +40,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
         />
         <SettingsItemSendOnEnter/>
         <SettingsItemReopenPage/>
-        <SettingsItemOpenAIAPI/>
+        <SettingsItemOpenAIApi/>
         <SettingsItemBackupAndRestore
           handleDialogClose={props.handleDialogClose}
         />

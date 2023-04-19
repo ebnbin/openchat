@@ -10,7 +10,7 @@ class Store {
   readonly sendOnEnter: Preference<boolean> = new Preference("send_on_enter", true);
   readonly reopenPage: Preference<boolean> = new Preference("reopen_page", false);
   readonly reopenPageId: Preference<number> = new Preference("reopen_page_id", 0);
-  readonly openAIAPIKey: Preference<string> = new Preference("openai_api_key", "");
+  readonly openAIApiKey: Preference<string> = new Preference("openai_api_key", "");
   readonly githubToken: Preference<string> = new Preference("github_token", "");
   readonly githubGistId: Preference<string> = new Preference("github_gist_id", "");
   readonly usage: Preference<Usage> = new Preference("usage", {

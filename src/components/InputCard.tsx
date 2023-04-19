@@ -42,7 +42,7 @@ export default function InputCard(props: InputCardProps) {
     if (!canRequest) {
       return;
     }
-    if (store.openAIAPIKey.get() === "") {
+    if (store.openAIApiKey.get() === "") {
       setToastOpen(true)
       return
     }

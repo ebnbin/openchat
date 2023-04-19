@@ -3,7 +3,7 @@ import store from "./store";
 
 export function openAIApi(): OpenAIApi {
   const configuration = new Configuration({
-    apiKey: store.openAIAPIKey.get(),
+    apiKey: store.openAIApiKey.get(),
   });
   return new OpenAIApi(configuration);
 }
@@ -12,12 +12,12 @@ export function copy(text: string) {
   navigator.clipboard.writeText(text).finally();
 }
 
-export function chunk<T>(arr: T[], size: number): T[][] {
-  const chunkedArr: T[][] = [];
-  while (arr.length) {
-    chunkedArr.push(arr.splice(0, size));
+export function chunk<T>(array: T[], size: number): T[][] {
+  const result: T[][] = [];
+  while (array.length) {
+    result.push(array.splice(0, size));
   }
-  return chunkedArr;
+  return result;
 }
 
 export function dateTimeString(timestamp: number): string {
