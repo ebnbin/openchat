@@ -4,52 +4,45 @@ import ConversationItem, {ConversationEntity} from "../conversation/Conversation
 import {Virtuoso, VirtuosoHandle} from "react-virtuoso";
 import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
-interface ConversationListProps {
+interface ChatConversationListProps {
   conversationEntities: ConversationEntity[];
-  updateConversationEntitySave: (conversationId: number, saveTimestamp: number) => void;
-  deleteConversationEntity: (conversationEntity: ConversationEntity) => void;
   virtuosoRef: RefObject<VirtuosoHandle>;
   atBottomStateChange: (atBottom: boolean) => void;
-  controller: RefObject<AbortController | null>;
+  handleSaveClick: (conversationEntity: ConversationEntity) => void;
+  handleDeleteClick: (conversationEntity: ConversationEntity) => void;
+  abortController: RefObject<AbortController | null>;
 }
 
-export default function ConversationList(props: ConversationListProps) {
-  const { conversationEntities, deleteConversationEntity } = props;
-
-  const handleLikeClick = (conversationEntity: ConversationEntity) => {
-    props.updateConversationEntitySave(conversationEntity.conversation.id,
-      conversationEntity.conversation.save_timestamp === 0 ? Date.now() : 0);
-  }
-
+export default function ChatConversationList(props: ChatConversationListProps) {
   return (
     <Virtuoso
       ref={props.virtuosoRef}
-      data={[...conversationEntities, 0]}
-      totalCount={conversationEntities.length + 1}
+      data={[...props.conversationEntities, "paddingBottom"]}
+      totalCount={props.conversationEntities.length + 1}
       atBottomStateChange={props.atBottomStateChange}
-      atBottomThreshold={161}
+      atBottomThreshold={100}
       itemContent={(index, item) => {
-        if (item === 0) {
+        if (item === "paddingBottom") {
           return (
             <Box
               sx={{
                 height: "225px",
               }}
             />
-          )
+          );
         } else {
           const conversationEntity = item as ConversationEntity;
           return (
             <ConversationItem
               conversationEntity={conversationEntity}
               isSave={false}
-              abortController={props.controller}
+              abortController={props.abortController}
             >
               <ConversationItemFooter
                 conversationEntity={conversationEntity}
                 isSave={false}
-                handleSaveClick={() => handleLikeClick(conversationEntity)}
-                handleDeleteClick={() => deleteConversationEntity(conversationEntity)}
+                handleSaveClick={props.handleSaveClick}
+                handleDeleteClick={props.handleDeleteClick}
               />
             </ConversationItem>
           );

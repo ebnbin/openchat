@@ -1,7 +1,7 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation, FinishReason} from "../../utils/types";
-import ConversationList from "./ConversationList";
+import ChatConversationList from "./ChatConversationList";
 import InputCard from "../../components/InputCard";
 import {defaultOpenAIModel, maxContentWidth, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
@@ -151,12 +151,6 @@ export default function ChatPage(props: ChatProps) {
 
   const [conversationEntities, setConversationEntities] = useState<ConversationEntity[]>([]);
 
-  const updateConversationSaveTimestamp = (conversationId: number, saveTimestamp: number) => {
-    updateConversation(conversationId, {
-      save_timestamp: saveTimestamp,
-    });
-  }
-
   useEffect(() => {
     const conversationEntities = updateConversationEntities(props.chat, conversations, requestingConversationId);
     setConversationEntities(conversationEntities);
@@ -167,10 +161,6 @@ export default function ChatPage(props: ChatProps) {
       scrollToBottom(true);
     }
   }, [conversationEntities]);
-
-  const handleDeleteConversationClick = (conversationEntity: ConversationEntity) => {
-    deleteConversation(conversationEntity.conversation);
-  }
 
   const controllerRef = useRef<AbortController | null>(null);
 
@@ -263,15 +253,21 @@ export default function ChatPage(props: ChatProps) {
           display: props.children !== undefined ? "none" : "block",
         }}
       >
-        <ConversationList
+        <ChatConversationList
           conversationEntities={conversationEntities}
-          updateConversationEntitySave={updateConversationSaveTimestamp}
-          deleteConversationEntity={handleDeleteConversationClick}
           virtuosoRef={virtuosoRef}
           atBottomStateChange={(atBottom) => {
             setShowScrollToBottom(!atBottom && conversationEntities.length > 0)
           }}
-          controller={controllerRef}
+          handleSaveClick={(conversationEntity) => {
+            updateConversation(conversationEntity.conversation.id, {
+              save_timestamp: conversationEntity.conversation.save_timestamp === 0 ? Date.now() : 0,
+            });
+          }}
+          handleDeleteClick={(conversationEntity) => {
+            deleteConversation(conversationEntity.conversation);
+          }}
+          abortController={controllerRef}
         />
       </Box>
       <Box

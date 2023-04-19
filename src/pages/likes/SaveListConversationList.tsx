@@ -4,25 +4,25 @@ import {Virtuoso} from "react-virtuoso";
 import ConversationItem, {ConversationEntity} from "../conversation/ConversationItem";
 import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
-interface LikesConversationListProps {
+interface SaveListConversationListProps {
   conversationEntities: ConversationEntity[];
-  unlikeConversationEntity: (conversationEntity: ConversationEntity) => void;
+  handleRemoveSaveClick: (conversationEntity: ConversationEntity) => void;
 }
 
-export default function LikesConversationList(props: LikesConversationListProps) {
+export default function SaveListConversationList(props: SaveListConversationListProps) {
   return (
     <Virtuoso
-      data={[...props.conversationEntities, 0]}
+      data={[...props.conversationEntities, "paddingBottom"]}
       totalCount={props.conversationEntities.length + 1}
       itemContent={(index, item) => {
-        if (item === 0) {
+        if (item === "paddingBottom") {
           return (
             <Box
               sx={{
                 height: "100px",
               }}
             />
-          )
+          );
         } else {
           const conversationEntity = item as ConversationEntity;
           return (
@@ -33,7 +33,7 @@ export default function LikesConversationList(props: LikesConversationListProps)
               <ConversationItemFooter
                 conversationEntity={conversationEntity}
                 isSave={true}
-                handleRemoveClick={() => props.unlikeConversationEntity(conversationEntity)}
+                handleRemoveSaveClick={props.handleRemoveSaveClick}
               />
             </ConversationItem>
           );

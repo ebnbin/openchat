@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import store from "../../utils/store";
 import {Conversation} from "../../utils/types";
-import LikesConversationList from "./LikesConversationList";
+import SaveListConversationList from "./SaveListConversationList";
 import {ConversationEntity} from "../conversation/ConversationItem";
 
 function conversationsToConversationEntities(conversations: Conversation[]): ConversationEntity[] {
@@ -53,9 +53,9 @@ export default function LikesPage() {
           overflow: "auto",
         }}
       >
-        <LikesConversationList
+        <SaveListConversationList
           conversationEntities={conversationEntities}
-          unlikeConversationEntity={unlikeConversationEntity}
+          handleRemoveSaveClick={unlikeConversationEntity}
         />
       </Box>
     </Box>

@@ -7,9 +7,9 @@ import {ConversationEntity} from "./ConversationItem";
 interface ConversationItemFooterProps {
   conversationEntity: ConversationEntity;
   isSave: boolean; // Save list page or chat page
-  handleSaveClick?: () => void;
-  handleDeleteClick?: () => void;
-  handleRemoveClick?: () => void; // Remove from save list
+  handleSaveClick?: (conversationEntity: ConversationEntity) => void;
+  handleDeleteClick?: (conversationEntity: ConversationEntity) => void;
+  handleRemoveSaveClick?: (conversationEntity: ConversationEntity) => void;
 }
 
 export default function ConversationItemFooter(props: ConversationItemFooterProps) {
@@ -51,7 +51,7 @@ export default function ConversationItemFooter(props: ConversationItemFooterProp
           size={"small"}
           color={"info"}
           startIcon={props.conversationEntity.conversation.save_timestamp === 0 ? <BookmarkBorderRounded/> : <BookmarkAddedRounded/>}
-          onClick={props.handleSaveClick}
+          onClick={() => props.handleSaveClick && props.handleSaveClick(props.conversationEntity)}
           sx={{
             textTransform: "none",
             display: props.isSave || props.conversationEntity.isRequesting ? "none" : undefined,
@@ -64,7 +64,7 @@ export default function ConversationItemFooter(props: ConversationItemFooterProp
           size={"small"}
           color={"error"}
           startIcon={<DeleteRounded/>}
-          onClick={props.handleDeleteClick}
+          onClick={() => props.handleDeleteClick && props.handleDeleteClick(props.conversationEntity)}
           sx={{
             textTransform: "none",
             display: props.isSave || props.conversationEntity.isRequesting ? "none" : undefined,
@@ -77,7 +77,7 @@ export default function ConversationItemFooter(props: ConversationItemFooterProp
           size={"small"}
           color={"error"}
           startIcon={<BookmarkRemoveRounded/>}
-          onClick={props.handleRemoveClick}
+          onClick={() => props.handleRemoveSaveClick && props.handleRemoveSaveClick(props.conversationEntity)}
           sx={{
             textTransform: "none",
             display: props.isSave ? undefined : "none",
