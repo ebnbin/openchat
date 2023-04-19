@@ -1,7 +1,7 @@
 import Drawer from "@mui/material/Drawer";
 import * as React from "react";
 import {Chat} from "../../utils/types";
-import HomeDrawerContent2 from "./HomeDrawerContent2";
+import HomeDrawerContent from "./HomeDrawerContent";
 import {Card, useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../utils/utils";
 
@@ -48,15 +48,13 @@ export default function HomeDrawer(props: HomeDrawerProps) {
               "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
             }}
           >
-            <HomeDrawerContent2
+            <HomeDrawerContent
               chats={props.chats}
-              handleClose={() => {}}
-              selectedContentId={props.selectedChatId}
-              setSelectedContentId={handleItemClick}
+              pageId={props.selectedChatId}
+              handleChatItemClick={handleItemClick}
               handleNewChatClick={props.handleNewChatClick}
-              handleLikesClick={props.handleLikesClick}
-              handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
-              isPopover={false}
+              handleSaveListClick={props.handleLikesClick}
+              handleSettingsClick={() => props.setSettingsOpen(true)}
             />
           </Drawer>
         )
@@ -81,15 +79,13 @@ export default function HomeDrawer(props: HomeDrawerProps) {
                 borderRadius: "0px",
               }}
             >
-              <HomeDrawerContent2
+              <HomeDrawerContent
                 chats={props.chats}
-                handleClose={() => {}}
-                selectedContentId={props.selectedChatId}
-                setSelectedContentId={handleItemClick}
+                pageId={props.selectedChatId}
+                handleChatItemClick={handleItemClick}
                 handleNewChatClick={props.handleNewChatClick}
-                handleLikesClick={props.handleLikesClick}
-                handleSettingsDialogOpen={() => props.setSettingsOpen(true)}
-                isPopover={false}
+                handleSaveListClick={props.handleLikesClick}
+                handleSettingsClick={() => props.setSettingsOpen(true)}
               />
             </Card>
           </Drawer>

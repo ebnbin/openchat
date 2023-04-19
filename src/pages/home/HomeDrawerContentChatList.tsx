@@ -12,7 +12,7 @@ import {chunk} from "../../utils/utils";
 interface ChatItemProps {
   chat: Chat,
   selected: boolean,
-  handleItemClick: (chatId: number, pinned: boolean) => void,
+  handleChatItemClick: (chatId: number, pinned: boolean) => void,
   pinMode: boolean,
 }
 
@@ -22,7 +22,7 @@ function ChatGridItem(props: ChatItemProps) {
   return (
     <ListItemButton
       key={props.chat.id}
-      onClick={() => props.handleItemClick(props.chat.id, true)}
+      onClick={() => props.handleChatItemClick(props.chat.id, true)}
       selected={props.selected}
       sx={{
         color: props.pinMode ? theme.palette.text.disabled : undefined,
@@ -73,7 +73,7 @@ function ChatListItem(props: ChatItemProps) {
   return (
     <ListItemButton
       key={props.chat.id}
-      onClick={() => props.handleItemClick(props.chat.id, false)}
+      onClick={() => props.handleChatItemClick(props.chat.id, false)}
       selected={props.selected}
       sx={{
         color: props.pinMode ? theme.palette.text.disabled : undefined,
@@ -103,7 +103,7 @@ interface HomeDrawerContentChatListProps {
   chats: Chat[],
   pinChats: number[],
   pageId: number,
-  handleItemClick: (chatId: number, pinned: boolean) => void,
+  handleChatItemClick: (chatId: number, pinned: boolean) => void,
   pinMode: boolean,
 }
 
@@ -144,7 +144,7 @@ export default function HomeDrawerContentChatList(props: HomeDrawerContentChatLi
                 <ChatGridItem
                   chat={chat}
                   selected={chat.id === props.pageId}
-                  handleItemClick={props.handleItemClick}
+                  handleChatItemClick={props.handleChatItemClick}
                   pinMode={props.pinMode}
                 />
               )}
@@ -163,7 +163,7 @@ export default function HomeDrawerContentChatList(props: HomeDrawerContentChatLi
           key={chat.id}
           chat={chat}
           selected={chat.id === props.pageId}
-          handleItemClick={props.handleItemClick}
+          handleChatItemClick={props.handleChatItemClick}
           pinMode={props.pinMode}
         />
       ))}
