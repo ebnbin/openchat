@@ -2,95 +2,66 @@ import Drawer from "@mui/material/Drawer";
 import * as React from "react";
 import {Chat} from "../../utils/types";
 import HomeDrawerContent from "./HomeDrawerContent";
-import {Card, useMediaQuery} from "@mui/material";
+import {useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../utils/utils";
 
-export const drawerWidth = 300;
+const drawerWidth = 300;
 
 interface HomeDrawerProps {
   chats: Chat[],
-  selectedChatId: number,
-  setSelectedChatId: (selectedChatId: number) => void,
-  handleChatSettingsDialogOpen: () => void,
-  setSettingsOpen: (settingsOpen: boolean) => void,
+  pageId: number,
+  drawerOpen: boolean,
+  handleDrawerClose: () => void,
+  handleChatItemClick: (chatId: number) => void,
   handleNewChatClick: () => void,
-  handleLikesClick: () => void,
-  handleNewChatSettingsDialogOpen: () => void,
-  mobileOpen: boolean,
-  setMobileOpen: (mobileOpen: boolean) => void,
+  handleSaveListClick: () => void,
+  handleSettingsClick: () => void,
 }
 
 export default function HomeDrawer(props: HomeDrawerProps) {
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
-  const handleDrawerClose = () => {
-    props.setMobileOpen(false);
-  };
-
-  const handleItemClick = (chatId: number) => {
-    props.setSelectedChatId(chatId)
-    props.setMobileOpen(false)
-  }
-
-  return (
-    <>
-      {
-        !isWidePage && (
-          <Drawer
-            variant={"temporary"}
-            open={props.mobileOpen}
-            onClose={handleDrawerClose}
-            anchor={"right"}
-            ModalProps={{
-              keepMounted: false, // Better open performance on mobile.
-            }}
-            sx={{
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-            }}
-          >
-            <HomeDrawerContent
-              chats={props.chats}
-              pageId={props.selectedChatId}
-              handleChatItemClick={handleItemClick}
-              handleNewChatClick={props.handleNewChatClick}
-              handleSaveListClick={props.handleLikesClick}
-              handleSettingsClick={() => props.setSettingsOpen(true)}
-            />
-          </Drawer>
-        )
-      }
-      {
-        isWidePage && (
-          <Drawer
-            anchor={"right"}
-            variant={"permanent"}
-            open={true}
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-            }}
-          >
-            <Card
-              elevation={1}
-              sx={{
-                width: "100%",
-                height: "100%",
-                borderRadius: "0px",
-              }}
-            >
-              <HomeDrawerContent
-                chats={props.chats}
-                pageId={props.selectedChatId}
-                handleChatItemClick={handleItemClick}
-                handleNewChatClick={props.handleNewChatClick}
-                handleSaveListClick={props.handleLikesClick}
-                handleSettingsClick={() => props.setSettingsOpen(true)}
-              />
-            </Card>
-          </Drawer>
-        )
-      }
-    </>
-  )
+  return isWidePage ? (
+    <Drawer
+      variant={"permanent"}
+      anchor={"right"}
+      open={true}
+      sx={{
+        width: drawerWidth,
+        "& .MuiDrawer-paper": { width: drawerWidth },
+      }}
+    >
+      <HomeDrawerContent
+        chats={props.chats}
+        pageId={props.pageId}
+        handleChatItemClick={props.handleChatItemClick}
+        handleNewChatClick={props.handleNewChatClick}
+        handleSaveListClick={props.handleSaveListClick}
+        handleSettingsClick={props.handleSettingsClick}
+      />
+    </Drawer>
+  ) : (
+    <Drawer
+      variant={"temporary"}
+      anchor={"right"}
+      open={props.drawerOpen}
+      onClose={props.handleDrawerClose}
+      ModalProps={{
+        keepMounted: false,
+      }}
+      sx={{
+        width: drawerWidth,
+        "& .MuiDrawer-paper": { width: drawerWidth },
+      }}
+    >
+      <HomeDrawerContent
+        chats={props.chats}
+        pageId={props.pageId}
+        handleChatItemClick={props.handleChatItemClick}
+        handleNewChatClick={props.handleNewChatClick}
+        handleSaveListClick={props.handleSaveListClick}
+        handleSettingsClick={props.handleSettingsClick}
+      />
+    </Drawer>
+  );
 }

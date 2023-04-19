@@ -65,6 +65,7 @@ export default function HomePage(props: HomePageProps) {
   const [selectedChatId, _setSelectedChatId] = useState(pageNewChat);
 
   const updateSelectedChatId = (chatId: number) => {
+    setMobileOpen(false)
     _setSelectedChatId(chatId)
     store.reopenPageId.set(chatId)
   }
@@ -221,15 +222,16 @@ export default function HomePage(props: HomePageProps) {
         </Box>
         <HomeDrawer
           chats={chats}
-          selectedChatId={selectedChatId}
-          setSelectedChatId={updateSelectedChatId}
-          handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-          setSettingsOpen={setSettingsOpen}
+          pageId={selectedChatId}
+          drawerOpen={mobileOpen}
+          handleDrawerClose={() => setMobileOpen(false)}
+          handleChatItemClick={updateSelectedChatId}
           handleNewChatClick={handleNewChatClick}
-          handleLikesClick={handleLikesClick}
-          handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
+          handleSaveListClick={handleLikesClick}
+          handleSettingsClick={() => {
+            setSettingsOpen(true);
+            setMobileOpen(false);
+          }}
         />
       </Box>
       {dialogPage()}
