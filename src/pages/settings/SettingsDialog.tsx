@@ -12,7 +12,7 @@ import {
   OutlinedInput
 } from "@mui/material";
 import store from "../../utils/store";
-import {Chat, Theme} from "../../utils/types";
+import {Theme} from "../../utils/types";
 import SettingsItem from "../../components/SettingsItem";
 import {useDataTimestamp} from "../app/AppPage";
 import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons-material";
@@ -20,7 +20,6 @@ import {DeleteRounded, VisibilityOffRounded, VisibilityRounded} from "@mui/icons
 interface SettingsDialogProps {
   theme: string;
   setTheme: (theme: Theme) => void;
-  chats: Chat[];
   dialogOpen: boolean
   handleDialogClose: () => void
 }

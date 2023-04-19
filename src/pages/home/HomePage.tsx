@@ -4,37 +4,49 @@ import HomeAppBar from "./HomeAppBar";
 import ChatPage from "../chat/ChatPage";
 import {ChatSettingsDialog} from "../chatsettings/ChatSettingsDialog";
 import * as React from "react";
-import {Chat, Theme} from "../../utils/types";
+import {Chat} from "../../utils/types";
 import {useEffect, useState} from "react";
 import store from "../../utils/store";
 import Logo from "../../components/Logo";
 import SaveListPage from "../savelist/SaveListPage";
-import {useMediaQuery} from "@mui/material";
-import {widePageWidth} from "../../utils/utils";
-import {SettingsDialog} from "../settings/SettingsDialog";
 
 export const pageNewChat = 0;
 export const pageSaveList = -1;
 
 interface HomePageProps {
-  theme: string;
-  setTheme: (theme: Theme) => void;
+  handleSettingsDialogOpen: () => void;
 }
 
 export default function HomePage(props: HomePageProps) {
   const [chats, _setChats] = useState<Chat[]>([])
+  const [pageId, _setPageId] = useState(pageNewChat);
+  const [newChat, setNewChat] = useState(store.newChat())
 
   useEffect(() => {
     store.getChats()
       .then((chats) => {
         _setChats(chats)
-        _setSelectedChatId(startupPage(chats))
+        _setPageId(startupPage(chats))
       });
   }, []);
 
+  const startupPage = (chats: Chat[]): number => {
+    if (!store.reopenPage.get()) {
+      return pageNewChat;
+    }
+    const reopenPageId = store.reopenPageId.get();
+    if (reopenPageId === pageNewChat || reopenPageId === pageSaveList) {
+      return reopenPageId;
+    }
+    if (chats.some((chat) => chat.id === reopenPageId)) {
+      return reopenPageId;
+    }
+    return pageNewChat;
+  }
+
   const createChat = (chat: Chat) => {
     store.updateChatsCreateChat(chat, [chats, _setChats]);
-    updateSelectedChatId(chat.id)
+    updatePageId(chat.id);
   }
 
   const updateChat = (chatId: number, chat: Partial<Chat>) => {
@@ -42,85 +54,30 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const deleteChat = (chat: Chat) => {
-    toNewChatPage()
+    handleNewChatClick();
     store.updateChatsDeleteChat(chat.id, [chats, _setChats]);
     store.updateConversationsDeleteConversations(chat.id);
+    store.pinChats.set(store.pinChats.get().filter((pinChatId) => pinChatId !== chat.id));
   }
 
-  const startupPage = (chats: Chat[]) => {
-    const reopen = store.reopenPage.get();
-    if (!reopen) {
-      return pageNewChat;
-    }
-    const latestId = store.reopenPageId.get();
-    if (latestId === pageNewChat || latestId === pageSaveList) {
-      return latestId;
-    }
-    if (chats.some((chat) => chat.id === latestId)) {
-      return latestId;
-    }
-    return pageNewChat;
+  const updatePageId = (pageId: number) => {
+    _setPageId(pageId);
+    store.reopenPageId.set(pageId);
+    setDrawerOpen(false);
   }
-
-  const [selectedChatId, _setSelectedChatId] = useState(pageNewChat);
-
-  const updateSelectedChatId = (chatId: number) => {
-    setMobileOpen(false)
-    _setSelectedChatId(chatId)
-    store.reopenPageId.set(chatId)
-  }
-
-  const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = React.useState(false);
-  const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = React.useState(false);
 
   const handleNewChatClick = () => {
-    toNewChatPage()
+    setNewChat(store.newChat());
+    updatePageId(pageNewChat);
   }
 
-  const handleLikesClick = () => {
-    updateSelectedChatId(pageSaveList)
-    setMobileOpen(false)
-  }
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const toNewChatPage = () => {
-    setNewChat(store.newChat())
-    updateSelectedChatId(pageNewChat);
-    setMobileOpen(false)
-  }
-
-  const [newChat, setNewChat] = useState(store.newChat())
-
-  const dialogPage = () => {
-    if (selectedChatId === pageNewChat) {
-      return (
-        <ChatSettingsDialog
-          key={`ChatSettingsDialog${newChat.id}`}
-          chat={newChat}
-          isNew={true}
-          createChat={createChat}
-          dialogOpen={newChatSettingsDialogOpen}
-          handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
-        />
-      )
-    }
-    if (selectedChatId === pageSaveList) {
-      return undefined;
-    }
-    return (
-      <ChatSettingsDialog
-        key={`ChatSettingsDialog${selectedChatId}`}
-        chat={chats.find((chat) => chat.id === selectedChatId)!!}
-        isNew={false}
-        updateChat={updateChat}
-        deleteChat={deleteChat}
-        dialogOpen={chatSettingsDialogOpen}
-        handleDialogClose={() => setChatSettingsDialogOpen(false)}
-      />
-    )
-  }
+  const [chatSettingsDialogOpen, setChatSettingsDialogOpen] = useState(false);
+  const [newChatSettingsDialogOpen, setNewChatSettingsDialogOpen] = useState(false);
 
   const contentPage = () => {
-    if (selectedChatId === pageNewChat) {
+    if (pageId === pageNewChat) {
       return (
         <ChatPage
           key={`ChatPage${newChat.id}`}
@@ -139,54 +96,65 @@ export default function HomePage(props: HomePageProps) {
             <Logo/>
           </Box>
         </ChatPage>
-      )
+      );
     }
-    if (selectedChatId === pageSaveList) {
+    if (pageId === pageSaveList) {
       return (
         <SaveListPage/>
       );
     }
+    const chat = chats.find((chat) => chat.id === pageId);
+    if (chat === undefined) {
+      return undefined;
+    }
     return (
       <ChatPage
-        key={`ChatPage${selectedChatId}`}
-        chat={chats.find((chat) => chat.id === selectedChatId)!!}
+        key={`ChatPage${pageId}`}
+        chat={chat}
         updateChat={updateChat}
       />
-    )
+    );
   }
 
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
-
-  useEffect(() => {
-    function handleResize() {
-      setWidth(window.innerWidth);
-      setHeight(window.innerHeight);
+  const chatSettingsDialog = () => {
+    if (pageId === pageNewChat) {
+      return (
+        <ChatSettingsDialog
+          key={`ChatSettingsDialog${newChat.id}`}
+          chat={newChat}
+          isNew={true}
+          createChat={createChat}
+          dialogOpen={newChatSettingsDialogOpen}
+          handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
+        />
+      );
     }
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
-
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-
-  const handleSettingsClose = () => {
-    setSettingsOpen(false);
-  };
+    if (pageId === pageSaveList) {
+      return undefined;
+    }
+    const chat = chats.find((chat) => chat.id === pageId);
+    if (chat === undefined) {
+      return undefined;
+    }
+    return (
+      <ChatSettingsDialog
+        key={`ChatSettingsDialog${pageId}`}
+        chat={chat}
+        isNew={false}
+        updateChat={updateChat}
+        deleteChat={deleteChat}
+        dialogOpen={chatSettingsDialogOpen}
+        handleDialogClose={() => setChatSettingsDialogOpen(false)}
+      />
+    );
+  }
 
   return (
     <>
       <Box
         sx={{
-          width: width,
-          height: height,
+          width: "100%",
+          height: "100%",
           display: "flex",
           flexDirection: "row",
         }}
@@ -200,8 +168,8 @@ export default function HomePage(props: HomePageProps) {
         >
           <HomeAppBar
             chats={chats}
-            pageId={selectedChatId}
-            handleDrawerClick={() => setMobileOpen(true)}
+            pageId={pageId}
+            handleDrawerClick={() => setDrawerOpen(true)}
             handleChatSettingsClick={(pageId: number) => {
               if (pageId === pageNewChat) {
                 setNewChatSettingsDialogOpen(true)
@@ -214,7 +182,6 @@ export default function HomePage(props: HomePageProps) {
             style={{
               width: "100%",
               flexGrow: 1,
-              overflow: "auto",
             }}
           >
             {contentPage()}
@@ -222,28 +189,21 @@ export default function HomePage(props: HomePageProps) {
         </Box>
         <HomeDrawer
           chats={chats}
-          pageId={selectedChatId}
-          drawerOpen={mobileOpen}
-          handleDrawerClose={() => setMobileOpen(false)}
-          handleChatItemClick={updateSelectedChatId}
+          pageId={pageId}
+          drawerOpen={drawerOpen}
+          handleDrawerClose={() => setDrawerOpen(false)}
+          handleChatItemClick={updatePageId}
           handleNewChatClick={handleNewChatClick}
-          handleSaveListClick={handleLikesClick}
+          handleSaveListClick={() => {
+            updatePageId(pageSaveList);
+          }}
           handleSettingsClick={() => {
-            setSettingsOpen(true);
-            setMobileOpen(false);
+            props.handleSettingsDialogOpen();
+            setDrawerOpen(false);
           }}
         />
       </Box>
-      {dialogPage()}
-      {
-        <SettingsDialog
-          theme={props.theme}
-          setTheme={props.setTheme}
-          chats={chats}
-          dialogOpen={settingsOpen}
-          handleDialogClose={handleSettingsClose}
-        />
-      }
+      {chatSettingsDialog()}
     </>
   );
 }

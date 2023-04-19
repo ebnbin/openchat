@@ -4,9 +4,11 @@ import CssBaseline from "@mui/material/CssBaseline";
 import {useDarkMode} from "../../utils/utils";
 import HomePage from "../home/HomePage";
 import {blue, blueGrey, grey, orange, red} from "@mui/material/colors";
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import store from "../../utils/store";
 import {Theme} from "../../utils/types";
+import {SettingsDialog} from "../settings/SettingsDialog";
+import Box from "@mui/material/Box";
 
 const DataTimestampContext = createContext<any>(null);
 
@@ -14,7 +16,7 @@ export const useDataTimestamp = () => {
   return useContext(DataTimestampContext)
 }
 
-export const darkTheme = createTheme({
+const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
@@ -36,7 +38,7 @@ export const darkTheme = createTheme({
   },
 })
 
-export const lightTheme = createTheme({
+const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
@@ -83,6 +85,28 @@ export default function AppPage() {
   const isDarkMode = themeMode(storeTheme, isSystemDarkMode) === "dark"
   const theme = isDarkMode ? darkTheme : lightTheme
 
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+  const handleSettingsClose = () => {
+    setSettingsOpen(false);
+  };
+
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    function handleResize() {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <DataTimestampContext.Provider
       key={dataTimestamp.data}
@@ -92,9 +116,21 @@ export default function AppPage() {
         theme={theme}
       >
         <CssBaseline />
-        <HomePage
+        <Box
+          sx={{
+            width: width,
+            height: height,
+          }}
+        >
+          <HomePage
+            handleSettingsDialogOpen={() => setSettingsOpen(true)}
+          />
+        </Box>
+        <SettingsDialog
           theme={storeTheme}
           setTheme={setStoreTheme}
+          dialogOpen={settingsOpen}
+          handleDialogClose={handleSettingsClose}
         />
       </ThemeProvider>
     </DataTimestampContext.Provider>

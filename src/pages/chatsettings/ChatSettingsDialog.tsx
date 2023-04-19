@@ -18,7 +18,7 @@ interface ChatSettingsDialogProps {
   chat: Chat;
   isNew: boolean;
   updateChat?: (chatId: number, chat: Partial<Chat>) => void;
-  deleteChat?: (chat: Chat) => void; // New chat
+  deleteChat?: (chat: Chat) => void;
   createChat?: (chat: Chat) => void; // New chat
   dialogOpen: boolean;
   handleDialogClose: () => void;
