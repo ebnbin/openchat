@@ -8,7 +8,7 @@ import {Chat, Theme} from "../../utils/types";
 import {useEffect, useState} from "react";
 import store from "../../utils/store";
 import Logo from "../../components/Logo";
-import SaveListPage from "../likes/SaveListPage";
+import SaveListPage from "../savelist/SaveListPage";
 import {useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../utils/utils";
 import {SettingsDialog} from "../settings/SettingsDialog";
