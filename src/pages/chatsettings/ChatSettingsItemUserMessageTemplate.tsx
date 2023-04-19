@@ -13,10 +13,10 @@ export default function ChatSettingsItemUserMessageTemplate(props: ChatSettingsI
     <SettingsItem
       title={"User message template"}
       description={
-      <>
-        Template for each user message. <span style={{fontWeight: "bold"}}>{"{{input}}"}</span> represents your input.
-      </>
-    }
+        <>
+          Template for each user message. <span style={{fontWeight: "bold"}}>{"{{input}}"}</span> represents your input.
+        </>
+      }
     >
       <TextField
         variant={"outlined"}

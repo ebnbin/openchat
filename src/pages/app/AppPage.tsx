@@ -10,12 +10,6 @@ import {Theme} from "../../utils/types";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import Box from "@mui/material/Box";
 
-const DataTimestampContext = createContext<any>(null);
-
-export const useDataTimestamp = () => {
-  return useContext(DataTimestampContext)
-}
-
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -60,8 +54,18 @@ const lightTheme = createTheme({
   },
 })
 
+interface AppContextType {
+  reload: () => void;
+}
+
+const AppContext = createContext<AppContextType>({} as AppContextType);
+
+export function useAppContext() {
+  return useContext(AppContext);
+}
+
 export default function AppPage() {
-  const [dataTimestamp, setDataTimestamp] = useState({ data: Date.now() })
+  const [dataTimestamp, setDataTimestamp] = useState(0)
 
   const themeMode = (darkMode: string, isSystemDarkMode: boolean) => {
     switch (darkMode) {
@@ -108,10 +112,11 @@ export default function AppPage() {
   }, []);
 
   return (
-    <DataTimestampContext.Provider
-      key={dataTimestamp.data}
-      value={{dataTimestamp, setDataTimestamp}}
-    >
+    <AppContext.Provider
+      key={dataTimestamp}
+      value={{
+        reload: () => setDataTimestamp(Date.now()),
+      }}>
       <ThemeProvider
         theme={theme}
       >
@@ -133,6 +138,6 @@ export default function AppPage() {
           handleDialogClose={handleSettingsClose}
         />
       </ThemeProvider>
-    </DataTimestampContext.Provider>
+    </AppContext.Provider>
   );
 }
