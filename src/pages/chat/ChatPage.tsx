@@ -1,6 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
-import {Chat, Conversation, FinishReason, Usage} from "../../utils/types";
+import {Chat, Conversation, FinishReason} from "../../utils/types";
 import ChatConversationList from "./ChatConversationList";
 import InputCard from "../../components/InputCard";
 import {defaultOpenAIModel, maxContentWidth, openAIApi} from "../../utils/utils";
@@ -85,14 +85,14 @@ function getCharCount(requestingMessages: ChatCompletionRequestMessage[], respon
     .reduce((acc, message) => acc + (message.length + defaultOpenAIModel.extraCharsPerMessage), 0);
 }
 
-interface ChatProps {
+interface ChatPageProps {
   chat: Chat,
   updateChat: (chatId: number, chat: Partial<Chat>) => void,
   createChat?: (chat: Chat) => void, // New chat
   children?: React.ReactNode; // New chat welcome page
 }
 
-export default function ChatPage(props: ChatProps) {
+export default function ChatPage(props: ChatPageProps) {
   const [conversations, _setConversations] = useState<Conversation[]>([]);
 
   useEffect(() => {
@@ -163,10 +163,9 @@ export default function ChatPage(props: ChatProps) {
       conversation_count: props.chat.conversation_count + 1,
       update_timestamp: requestingConversation.id,
     });
-    store.usage.set({
-      ...store.usage.get(),
+    store.usage.update({
       conversation_count: store.usage.get().conversation_count + 1,
-    } as Usage);
+    });
     setRequestingConversationId(requestingConversation.id);
     createConversation(requestingConversation);
 
@@ -192,10 +191,9 @@ export default function ChatPage(props: ChatProps) {
           char_count: props.chat.char_count + charCount,
           token_count: props.chat.token_count + responseTotalTokens,
         });
-        store.usage.set({
-          ...store.usage.get(),
+        store.usage.update({
           token_count: store.usage.get().token_count + responseTotalTokens,
-        } as Usage);
+        });
         setRequestingConversationId(0);
         updateConversation(requestingConversation.id, {
           assistant_message: responseMessageContent,

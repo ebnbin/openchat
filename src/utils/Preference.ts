@@ -64,6 +64,18 @@ export default class Preference<T> {
     localStorage.setItem(this.key, storeValue);
   }
 
+  update(value: Partial<T>): T {
+    if (typeof value !== "object") {
+      throw new Error();
+    }
+    const newValue = {
+      ...this.get(),
+      ...value,
+    };
+    this.set(newValue);
+    return newValue;
+  }
+
   remove() {
     this.cacheValue = this.defaultValue;
     this.cached = false;
