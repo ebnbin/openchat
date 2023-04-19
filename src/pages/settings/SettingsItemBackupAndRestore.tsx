@@ -133,7 +133,7 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
       title={"Backup and restore (Beta)"}
       description={<>
         Backup and restore your chats and conversations using GitHub
-        Gist. <Link href={'https://github.com/settings/tokens'} target={'_blank'}>{"Find your GitHub tokens here"}</Link>
+        Gist. <Link href={"https://github.com/settings/tokens"} target={"_blank"}>{"Find your GitHub tokens here"}</Link>
       </>}
     >
       <TextField

@@ -29,7 +29,7 @@ export default function SettingsItemOpenAIApi() {
       title={"OpenAI API"}
       description={<>
         Your API key is stored on this device and never transmitted to anyone except
-        OpenAI. <Link href={'https://platform.openai.com/account/api-keys'} target={'_blank'}>{"Find your OpenAI API keys here"}</Link>
+        OpenAI. <Link href={"https://platform.openai.com/account/api-keys"} target={"_blank"}>{"Find your OpenAI API keys here"}</Link>
       </>}
     >
       <TextField
@@ -84,8 +84,8 @@ export default function SettingsItemOpenAIApi() {
             {`${usage.conversation_count} conversations; ${usage.token_count} tokens\nEstimated cost: $${(usage.token_count / 1000 * 0.002).toFixed(2)}`}&nbsp;
             <Link
               variant={"body2"}
-              href={'https://platform.openai.com/account/usage'}
-              target={'_blank'}
+              href={"https://platform.openai.com/account/usage"}
+              target={"_blank"}
             >
               {"Find your API usage here"}
             </Link>
