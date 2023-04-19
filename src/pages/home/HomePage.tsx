@@ -13,8 +13,8 @@ import {useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../utils/utils";
 import {SettingsDialog} from "../settings/SettingsDialog";
 
-export const contentNewChat = 0;
-export const contentLikes = -1;
+export const pageNewChat = 0;
+export const pageSaveList = -1;
 
 interface HomePageProps {
   theme: string;
@@ -50,19 +50,19 @@ export default function HomePage(props: HomePageProps) {
   const startupPage = (chats: Chat[]) => {
     const reopen = store.reopenPage.get();
     if (!reopen) {
-      return contentNewChat;
+      return pageNewChat;
     }
     const latestId = store.reopenPageId.get();
-    if (latestId === contentNewChat || latestId === contentLikes) {
+    if (latestId === pageNewChat || latestId === pageSaveList) {
       return latestId;
     }
     if (chats.some((chat) => chat.id === latestId)) {
       return latestId;
     }
-    return contentNewChat;
+    return pageNewChat;
   }
 
-  const [selectedChatId, _setSelectedChatId] = useState(contentNewChat);
+  const [selectedChatId, _setSelectedChatId] = useState(pageNewChat);
 
   const updateSelectedChatId = (chatId: number) => {
     _setSelectedChatId(chatId)
@@ -77,20 +77,20 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const handleLikesClick = () => {
-    updateSelectedChatId(contentLikes)
+    updateSelectedChatId(pageSaveList)
     setMobileOpen(false)
   }
 
   const toNewChatPage = () => {
     setNewChat(store.newChat())
-    updateSelectedChatId(contentNewChat);
+    updateSelectedChatId(pageNewChat);
     setMobileOpen(false)
   }
 
   const [newChat, setNewChat] = useState(store.newChat())
 
   const dialogPage = () => {
-    if (selectedChatId === contentNewChat) {
+    if (selectedChatId === pageNewChat) {
       return (
         <ChatSettingsDialog
           key={`ChatSettingsDialog${newChat.id}`}
@@ -102,7 +102,7 @@ export default function HomePage(props: HomePageProps) {
         />
       )
     }
-    if (selectedChatId === contentLikes) {
+    if (selectedChatId === pageSaveList) {
       return undefined;
     }
     return (
@@ -119,7 +119,7 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const contentPage = () => {
-    if (selectedChatId === contentNewChat) {
+    if (selectedChatId === pageNewChat) {
       return (
         <ChatPage
           key={`ChatPage${newChat.id}`}
@@ -140,7 +140,7 @@ export default function HomePage(props: HomePageProps) {
         </ChatPage>
       )
     }
-    if (selectedChatId === contentLikes) {
+    if (selectedChatId === pageSaveList) {
       return (
         <SaveListPage/>
       );
@@ -199,11 +199,15 @@ export default function HomePage(props: HomePageProps) {
         >
           <HomeAppBar
             chats={chats}
-            contentId={selectedChatId}
-            handleChatSettingsDialogOpen={() => setChatSettingsDialogOpen(true)}
-            selectedContentId={selectedChatId}
-            handleNewChatSettingsDialogOpen={() => setNewChatSettingsDialogOpen(true)}
-            setDrawerOpen={setMobileOpen}
+            pageId={selectedChatId}
+            handleDrawerClick={() => setMobileOpen(true)}
+            handleChatSettingsClick={(pageId: number) => {
+              if (pageId === pageNewChat) {
+                setNewChatSettingsDialogOpen(true)
+                return;
+              }
+              setChatSettingsDialogOpen(true);
+            }}
           />
           <Box
             style={{

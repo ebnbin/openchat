@@ -8,27 +8,25 @@ import * as React from "react";
 import {useMediaQuery} from "@mui/material";
 import {Chat} from "../../utils/types";
 import {widePageWidth} from "../../utils/utils";
-import {contentLikes, contentNewChat} from "./HomePage";
+import {pageSaveList, pageNewChat} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ChatIcon from "../../components/ChatIcon";
 
 interface HomeAppBarProps {
   chats: Chat[],
-  contentId: number,
-  handleChatSettingsDialogOpen: () => void,
-  setDrawerOpen: (drawerOpen: boolean) => void,
-  selectedContentId: number,
-  handleNewChatSettingsDialogOpen: () => void,
+  pageId: number,
+  handleDrawerClick: () => void,
+  handleChatSettingsClick: (pageId: number) => void,
 }
 
 export default function HomeAppBar(props: HomeAppBarProps) {
   const isWidePage = useMediaQuery(`(min-width:${widePageWidth}px)`)
 
   const icon = () => {
-    if (props.contentId === contentNewChat) {
+    if (props.pageId === pageNewChat) {
       return undefined;
     }
-    if (props.contentId === contentLikes) {
+    if (props.pageId === pageSaveList) {
       return (
         <ListItemIcon>
           <BookmarksRounded
@@ -39,7 +37,10 @@ export default function HomeAppBar(props: HomeAppBarProps) {
         </ListItemIcon>
       );
     }
-    const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
+    const chat = props.chats.find((chat) => chat.id === props.pageId);
+    if (chat === undefined) {
+      return undefined;
+    }
     return (
       <ListItemIcon>
         <ChatIcon
@@ -48,87 +49,70 @@ export default function HomeAppBar(props: HomeAppBarProps) {
           iconColor={chat.icon_color}
         />
       </ListItemIcon>
-    )
+    );
   }
 
   const title = () => {
-    if (props.contentId === contentNewChat) {
+    if (props.pageId === pageNewChat) {
       return "OpenChat";
     }
-    if (props.contentId === contentLikes) {
+    if (props.pageId === pageSaveList) {
       return "Save list";
     }
-    const chat = props.chats.find((chat) => chat.id === props.contentId)!!;
+    const chat = props.chats.find((chat) => chat.id === props.pageId);
+    if (chat === undefined) {
+      return "OpenChat";
+    }
     if (chat.title === "") {
       return "New chat";
     }
     return chat.title;
   }
 
-  const chatSettingsVisibility = () => {
-    if (props.contentId === contentLikes) {
-      return "hidden";
-    }
-    return undefined;
-  }
-
-  const handleChatSettingsOnClick = () => {
-    if (props.contentId === contentNewChat || props.contentId === contentLikes) {
-      return undefined;
-    }
-    return props.handleChatSettingsDialogOpen();
-  }
-
   return (
-    <Box
+    <AppBar
+      position={"sticky"}
+      color={"default"}
       sx={{
-        height: "56px",
-        flexShrink: 0,
+        height: "48px",
       }}
     >
-      <AppBar
-        position={"sticky"}
-        color={"default"}
-        elevation={4}
+      <Toolbar
+        variant={"dense"}
       >
-        <Toolbar
-          variant={"dense"}
+        {icon()}
+        <Typography
+          variant={"h6"}
+          noWrap={true}
         >
-          {icon()}
-          <Typography
-            variant={"h6"}
-            noWrap={true}
-          >
-            {title()}
-          </Typography>
-          <Box
-            sx={{
-              height: "56px",
-              flexGrow: 1,
-            }}
-          />
-          <IconButton
-            edge={isWidePage ? "end" : undefined}
-            color={"inherit"}
-            onClick={props.selectedContentId === contentNewChat ? props.handleNewChatSettingsDialogOpen : handleChatSettingsOnClick}
-            sx={{
-              visibility: chatSettingsVisibility(),
-            }}
-          >
-            <EditRounded/>
-          </IconButton>
-          <IconButton
-            edge={"end"}
-            color={"inherit"}
-            onClick={() => props.setDrawerOpen(true)}
-            sx={{
-              display: isWidePage ? "none" : undefined,
-            }}
-          >
-            <MenuRounded/>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    </Box>
+          {title()}
+        </Typography>
+        <Box
+          sx={{
+            flexGrow: 1,
+          }}
+        />
+        <IconButton
+          edge={isWidePage ? "end" : undefined}
+          color={"inherit"}
+          onClick={() => props.handleChatSettingsClick(props.pageId)}
+          sx={{
+            display: props.pageId === pageSaveList ? "none" : undefined,
+          }}
+        >
+          <EditRounded/>
+        </IconButton>
+        <IconButton
+          edge={"end"}
+          color={"inherit"}
+          onClick={props.handleDrawerClick}
+          sx={{
+            display: isWidePage ? "none" : undefined,
+          }}
+        >
+          <MenuRounded/>
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
 }

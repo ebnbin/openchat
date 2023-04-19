@@ -9,7 +9,7 @@ import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ChatIcon from "../../components/ChatIcon";
 import ListItem from "@mui/material/ListItem";
-import {contentLikes} from "./HomePage";
+import {pageSaveList} from "./HomePage";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import {Chat} from "../../utils/types";
@@ -114,7 +114,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            height: "56px",
+            height: "48px",
             paddingX: "4px",
           }}
         >
@@ -138,7 +138,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
               props.handleLikesClick();
               handlePopoverClose();
             }}
-            color={props.selectedContentId === contentLikes ? "primary" : "default"}
+            color={props.selectedContentId === pageSaveList ? "primary" : "default"}
             sx={{
               width: "48px",
               height: "48px",
@@ -162,7 +162,7 @@ export default function HomeDrawerContent2(props: HomeDrawerContent2Props) {
           alignItems: "center",
           display: updatingPins ? "flex" : "none",
           flexDirection: "row",
-          height: "56px",
+          height: "48px",
           paddingX: "4px",
         }}
       >
