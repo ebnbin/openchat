@@ -1,5 +1,4 @@
 import {Configuration, OpenAIApi} from "openai";
-import { useState, useEffect } from "react";
 import store from "./store";
 
 export function openAIApi(): OpenAIApi {
@@ -11,28 +10,6 @@ export function openAIApi(): OpenAIApi {
 
 export function copy(text: string) {
   navigator.clipboard.writeText(text).finally();
-}
-
-export function useDarkMode(): boolean {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const handleDarkModeChange = (event: MediaQueryListEvent) => {
-      setIsDarkMode(event.matches);
-    }
-
-    const darkModeMediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
-
-    setIsDarkMode(darkModeMediaQueryList.matches);
-
-    darkModeMediaQueryList.addEventListener("change", handleDarkModeChange);
-
-    return () => {
-      darkModeMediaQueryList.removeEventListener("change", handleDarkModeChange);
-    }
-  }, []);
-
-  return isDarkMode;
 }
 
 export function chunk<T>(arr: T[], size: number): T[][] {
