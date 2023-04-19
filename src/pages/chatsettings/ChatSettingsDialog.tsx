@@ -1,17 +1,17 @@
-import {Chat, IconColor, IconTextSize} from "../../utils/types";
-import React, {ChangeEvent, useEffect, useState} from "react";
+import {Chat} from "../../utils/types";
+import React, {useState} from "react";
 import {
   Button, Dialog, DialogActions,
   DialogContent,
-  DialogTitle, IconButton, Slider,
-  TextField
+  DialogTitle
 } from "@mui/material";
-import {defaultOpenAIModel} from "../../utils/utils";
-import SettingsItem from "../../components/SettingsItem";
-import {DeleteRounded, FormatSizeRounded, PaletteRounded} from "@mui/icons-material";
-import Box from "@mui/material/Box";
-import IconColorPicker from "../../components/IconColorPicker";
-import ChatIcon from "../../components/ChatIcon";
+import ChatSettingsItemTitle from "./ChatSettingsItemTitle";
+import ChatSettingsItemIcon from "./ChatSettingsItemIcon";
+import ChatSettingsItemContextThreshold from "./ChatSettingsItemContextThreshold";
+import ChatSettingsItemSystemMessage from "./ChatSettingsItemSystemMessage";
+import ChatSettingsItemUserMessageTemplate from "./ChatSettingsItemUserMessageTemplate";
+import ChatSettingsItemInfo from "./ChatSettingsItemInfo";
+import ChatSettingsItemDeleteChat from "./ChatSettingsItemDeleteChat";
 
 interface ChatSettingsDialogProps {
   chat: Chat;
@@ -25,84 +25,6 @@ interface ChatSettingsDialogProps {
 
 export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
   const [chat, setChat] = useState(props.chat)
-
-  const handleIconTextChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChat({
-      ...chat,
-      icon_text: event.target.value,
-    })
-  }
-
-  const handleIconTextSizeClick = () => {
-    const currentSize = chat.icon_text_size;
-    let nextSize;
-    switch (currentSize) {
-      case "small":
-        nextSize = "medium";
-        break;
-      case "medium":
-        nextSize = "large";
-        break;
-      case "large":
-        nextSize = "small";
-        break;
-      default:
-        nextSize = "medium";
-        break;
-    }
-    setChat({
-      ...chat,
-      icon_text_size: nextSize as IconTextSize,
-    })
-  }
-
-  const iconTextSizeValue = (iconTextSize: string): string => {
-    switch (iconTextSize) {
-      case "small":
-        return "16px";
-      case "medium":
-        return "24px";
-      case "large":
-        return "32px";
-      default:
-        return "24px";
-    }
-  }
-
-  const handleIconColorChange = (color: IconColor) => {
-    setChat({
-      ...chat,
-      icon_color: color,
-    })
-  }
-
-  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChat({
-      ...chat,
-      title: event.target.value,
-    })
-  }
-
-  const handleContextThresholdChange = (event: Event, newValue: number | number[]) => {
-    setChat({
-      ...chat,
-      context_threshold: newValue as number,
-    })
-  }
-
-  const handleSystemMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChat({
-      ...chat,
-      system_message: event.target.value,
-    })
-  }
-
-  const handleUserMessageTemplateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChat({
-      ...chat,
-      user_message_template: event.target.value,
-    })
-  }
 
   const handleDeleteClick = () => {
     if (props.isNew) {
@@ -134,22 +56,12 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
     props.handleDialogClose();
   }
 
-  const [chatInfo, setChatInfo] = useState("")
-
-  useEffect(() => {
-    let info = `Model: ${defaultOpenAIModel.model} (${defaultOpenAIModel.maxTokens} tokens)`;
-    if (props.isNew) {
-      setChatInfo(info);
-      return;
-    }
-    setChatInfo(info);
-  }, [props.chat.id, props.isNew, props.dialogOpen]);
-
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const updateChat = (chatPartial: Partial<Chat>) => {
+    setChat({
+      ...chat,
+      ...chatPartial,
+    })
+  }
 
   return (
     <Dialog
@@ -163,130 +75,35 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
       <DialogContent
         dividers={true}
       >
-        <SettingsItem
-          title={"Title"}
-        >
-          <TextField
-            variant={"outlined"}
-            size={"small"}
-            fullWidth={true}
-            placeholder={"New chat"}
-            value={chat.title}
-            onChange={handleTitleChange}
-          />
-        </SettingsItem>
-        <SettingsItem
-          title={"Icon"}
-        >
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            sx={{
-              marginBottom: "8px",
-            }}
-          >
-            <ChatIcon
-              iconText={chat.icon_text}
-              iconTextSize={chat.icon_text_size}
-              iconColor={chat.icon_color}
-            />
-            <TextField
-              variant={"outlined"}
-              size={"small"}
-              fullWidth={true}
-              placeholder={"Icon text"}
-              value={chat.icon_text}
-              onChange={handleIconTextChange}
-              sx={{
-                flexGrow: 1,
-                marginX: "8px"
-              }}
-            />
-            <IconButton
-              onClick={handleIconTextSizeClick}
-              sx={{
-                width: "40px",
-                height: "40px",
-              }}
-            >
-              <FormatSizeRounded
-                sx={{
-                  width: iconTextSizeValue(chat.icon_text_size),
-                  height: iconTextSizeValue(chat.icon_text_size),
-                }}
-              />
-            </IconButton>
-            <IconButton
-              onClick={handleButtonClick}
-            >
-              <PaletteRounded/>
-            </IconButton>
-            <IconColorPicker
-              anchorEl={anchorEl}
-              setAnchorEl={setAnchorEl}
-              setIconColor={handleIconColorChange}
-            />
-          </Box>
-        </SettingsItem>
-        <SettingsItem
-          title={"Context threshold"}
-          description={`Conversation histories that can be remembered as context for the next conversation\nCurrent value: ${(chat.context_threshold * 100).toFixed(0)}% of maximum tokens (about ${(defaultOpenAIModel.maxTokens * chat.context_threshold / 4 * 3).toFixed(0)} words)`}
-        >
-          <Slider
-            min={0}
-            max={0.9}
-            step={0.1}
-            marks={true}
-            value={chat.context_threshold}
-            onChange={handleContextThresholdChange}
-          />
-        </SettingsItem>
-        <SettingsItem
-          title={"System prompt"}
-          description={"The system prompt helps set the behavior of the assistant"}
-        >
-          <TextField
-            variant={"outlined"}
-            size={"small"}
-            fullWidth={true}
-            multiline={true}
-            maxRows={8}
-            placeholder={"You are a helpful assistant."}
-            value={chat.system_message}
-            onChange={handleSystemMessageChange}
-          />
-        </SettingsItem>
-        <SettingsItem
-          title={"User message template"}
-          description={"Template for each user message. {{message}} represents the input message"}
-        >
-          <TextField
-            variant={"outlined"}
-            size={"small"}
-            fullWidth={true}
-            multiline={true}
-            maxRows={8}
-            placeholder={"```javascript\n{{message}}\n```"}
-            value={chat.user_message_template}
-            onChange={handleUserMessageTemplateChange}
-          />
-        </SettingsItem>
-        <SettingsItem
-          description={chatInfo}
+        <ChatSettingsItemTitle
+          chat={chat}
+          updateChat={updateChat}
+        />
+        <ChatSettingsItemIcon
+          chat={chat}
+          updateChat={updateChat}
+        />
+        <ChatSettingsItemSystemMessage
+          chat={chat}
+          updateChat={updateChat}
+        />
+        <ChatSettingsItemUserMessageTemplate
+          chat={chat}
+          updateChat={updateChat}
+        />
+        <ChatSettingsItemContextThreshold
+          chat={chat}
+          updateChat={updateChat}
+        />
+        <ChatSettingsItemInfo
+          chat={chat}
+          updateChat={updateChat}
         />
         {props.isNew ? undefined : (
-          <SettingsItem>
-            <Button
-              variant={"outlined"}
-              size={"small"}
-              color={"error"}
-              fullWidth={true}
-              startIcon={<DeleteRounded />}
-              onClick={handleDeleteClick}
-            >
-              Delete chat
-            </Button>
-          </SettingsItem>
+          <ChatSettingsItemDeleteChat
+            chat={chat}
+            deleteChat={handleDeleteClick}
+          />
         )}
       </DialogContent>
       <DialogActions>

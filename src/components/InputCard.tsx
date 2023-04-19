@@ -20,7 +20,7 @@ export default function InputCard(props: InputCardProps) {
   const [input, setInput] = useState("")
   const [snackbarOpen, setSnackbarOpen] = useState(false)
 
-  const message = props.messageTemplate === "" ? input : props.messageTemplate.replaceAll("{{message}}", input);
+  const message = props.messageTemplate === "" ? input : props.messageTemplate.replaceAll("{{input}}", input);
   const canRequest = !props.isRequesting && message !== "";
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

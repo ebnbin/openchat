@@ -108,6 +108,7 @@ function handleResponseUpdateChat(
     conversation_count: store.usage.get().conversation_count + 1,
   })
   updateChat(chat.id, {
+    conversation_count: chat.conversation_count + 1,
     token_count: chat.token_count + responseTotalTokens,
     char_count: chat.char_count + charCount,
   })
