@@ -37,9 +37,6 @@ export default function HomePage(props: HomePageProps) {
       return pageNewChat;
     }
     const reopenPageId = store.reopenPageId.get();
-    if (reopenPageId === pageNewChat || reopenPageId === pageSearch || reopenPageId === pageSaveList) {
-      return reopenPageId;
-    }
     if (chats.some((chat) => chat.id === reopenPageId)) {
       return reopenPageId;
     }
@@ -64,7 +61,7 @@ export default function HomePage(props: HomePageProps) {
 
   const updatePageId = (pageId: number) => {
     _setPageId(pageId);
-    store.reopenPageId.set(pageId);
+    store.reopenPageId.set(pageId > 0 ? pageId : 0);
     setDrawerOpen(false);
   }
 
