@@ -1,5 +1,5 @@
 import {Chat, Conversation, Data, Theme, Usage} from "./types";
-import {del, get, set, update} from "idb-keyval";
+import {clear, createStore, del, get, set, update, UseStore} from "idb-keyval";
 import Preference from "./Preference";
 import {Dispatch, SetStateAction} from "react";
 
@@ -21,11 +21,16 @@ class Store {
 
   //*******************************************************************************************************************
 
+  readonly idbStore: UseStore = createStore("openchat", "data")
+
+  //*******************************************************************************************************************
+
   async migrate() {
     const currentVersion = 502; // 0.5.2
     const storedVersion = this.version.get();
-    // TODO
     if (storedVersion < currentVersion) {
+      localStorage.clear();
+      await clear(this.idbStore);
       this.version.set(currentVersion);
     }
   }
@@ -65,7 +70,7 @@ class Store {
   //*******************************************************************************************************************
 
   getChats(): Promise<Chat[]> {
-    return get<Chat[]>("chats")
+    return get<Chat[]>("chats", this.idbStore)
       .then((chats) => chats || []);
   }
 
@@ -78,7 +83,7 @@ class Store {
 
     update<Chat[]>("chats", (chats) => {
       return chats ? [...chats, chat] : [chat];
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   updateChatsUpdateChat(chatId: number, chat: Partial<Chat>, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
@@ -109,7 +114,7 @@ class Store {
         }
         return foundChat;
       });
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   updateChatsDeleteChat(chatId: number, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
@@ -124,13 +129,13 @@ class Store {
         return [];
       }
       return chats.filter((foundChat) => foundChat.id !== chatId);
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   //*******************************************************************************************************************
 
   getConversations(chatId?: number): Promise<Conversation[]> {
-    return get<Conversation[]>("conversations")
+    return get<Conversation[]>("conversations", this.idbStore)
       .then((conversations) => conversations || [])
       .then((conversations) => {
         if (chatId) {
@@ -155,7 +160,7 @@ class Store {
 
     update<Conversation[]>("conversations", (conversations) => {
       return conversations ? [...conversations, conversation] : [conversation];
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   updateConversationsUpdateConversation(conversationId: number, conversation: Partial<Conversation>, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
@@ -186,7 +191,7 @@ class Store {
         }
         return foundConversation;
       });
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   updateConversationsRemoveSavedConversation(conversation: Conversation, state?: [Conversation[], Dispatch<SetStateAction<Conversation[]>>]) {
@@ -225,7 +230,7 @@ class Store {
         return [];
       }
       return conversations.filter((foundConversation) => foundConversation.id !== conversationId);
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   updateConversationsDeleteConversations(chatId: number) {
@@ -234,7 +239,7 @@ class Store {
         return [];
       }
       return conversations.filter((foundConversation) => foundConversation.chat_id !== chatId || foundConversation.save_timestamp !== 0);
-    }).finally();
+    }, this.idbStore).finally();
   }
 
   //*******************************************************************************************************************
@@ -253,16 +258,16 @@ class Store {
 
   restoreData(data: Data): Promise<void> {
     return Promise.all([
-      set("chats", data.chats),
-      set("conversations", data.conversations),
+      set("chats", data.chats, this.idbStore),
+      set("conversations", data.conversations, this.idbStore),
     ]).then(() => {
     });
   }
 
   deleteData(): Promise<void> {
     return Promise.all([
-      del("chats"),
-      del("conversations"),
+      del("chats", this.idbStore),
+      del("conversations", this.idbStore),
     ]).then(() => {
     });
   }
