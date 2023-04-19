@@ -8,7 +8,7 @@ import {Chat, Theme} from "../../utils/types";
 import {useEffect, useState} from "react";
 import store from "../../utils/store";
 import Logo from "../../components/Logo";
-import LikesPage from "../likes/LikesPage";
+import SaveListPage from "../likes/SaveListPage";
 import {useMediaQuery} from "@mui/material";
 import {widePageWidth} from "../../utils/utils";
 import {SettingsDialog} from "../settings/SettingsDialog";
@@ -142,7 +142,7 @@ export default function HomePage(props: HomePageProps) {
     }
     if (selectedChatId === contentLikes) {
       return (
-        <LikesPage/>
+        <SaveListPage/>
       );
     }
     return (
