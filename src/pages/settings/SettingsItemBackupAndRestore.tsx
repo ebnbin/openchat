@@ -1,7 +1,7 @@
 import {
   Button,
   IconButton,
-  InputAdornment,
+  InputAdornment, Link,
   TextField
 } from "@mui/material";
 import SettingsItem from "../../components/SettingsItem";
@@ -45,7 +45,17 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
   const [toastColor, setToastColor] = useState<AlertColor>("success")
   const [toastText, setToastText] = useState("")
 
+  function toast(color: AlertColor, text: string) {
+    setToastOpen(true)
+    setToastColor(color)
+    setToastText(text)
+  }
+
   const backupData = () => {
+    if (githubToken === "") {
+      toast("error", "GitHub token is not set");
+      return;
+    }
     store.backupData().then(data => {
       setIsRequesting(true)
       let response: Promise<AxiosResponse<any, any>>;
@@ -77,21 +87,21 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
       response
         .then((response) => {
           setIsRequesting(false);
+          toast("success", "Backup success");
           setGithubGistId(response.data.id);
-          setToastOpen(true);
-          setToastColor("success");
-          setToastText("Backup success");
         })
         .catch(() => {
           setIsRequesting(false);
-          setToastOpen(true);
-          setToastColor("error");
-          setToastText("Backup error");
+          toast("error", "Backup error");
         });
     })
   }
 
   const restoreData = () => {
+    if (githubToken === "") {
+      toast("error", "GitHub token is not set");
+      return;
+    }
     setIsRequesting(true);
     axios.get(`https://api.github.com/gists/${githubGistId}`, {
       headers: {
@@ -101,33 +111,30 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
       .then((response) => {
         const json = response.data.files["openchat_data.json"]?.content ?? "";
         if (json === "") {
-          setToastOpen(true);
-          setToastColor("warning");
-          setToastText("No backup data");
           setIsRequesting(false);
+          toast("warning", "No backup data");
         } else {
           store.restoreData(JSON.parse(json))
             .then(() => {
               setIsRequesting(false);
-              setToastOpen(true);
-              setToastColor("success");
-              setToastText("Restore success");
               props.handleDialogClose();
               appContext.reload("success", "Restore success");
             });
         }
       })
       .catch(() => {
-        setToastOpen(true);
-        setToastColor("error");
-        setToastText("Restore error");
         setIsRequesting(false);
+        toast("error", "Restore error")
       });
   }
 
   return (
     <SettingsItem
-      title={"Backup and restore"}
+      title={"Backup and restore (Beta)"}
+      description={<>
+        Backup and restore your chats and conversations using GitHub
+        Gist. <Link href={'https://github.com/settings/tokens'} target={'_blank'}>{"Find your GitHub tokens here"}</Link>
+      </>}
     >
       <TextField
         variant={"outlined"}
@@ -164,6 +171,7 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
         size={"small"}
         label={"GitHub gist id"}
         placeholder={"********************************"}
+        helperText={"Leave it blank to create a new gist"}
         fullWidth={true}
         value={githubGistId}
         onChange={(event) => setGithubGistId(event.target.value)}

@@ -27,12 +27,10 @@ export default function SettingsItemOpenAIAPI() {
   return (
     <SettingsItem
       title={"OpenAI API"}
-      description={
-        <>
-          Your API key is stored on this device and never transmitted to anyone except
-          OpenAI. <Link href={'https://platform.openai.com/account/api-keys'} target={'_blank'}>{"Find your API keys here"}</Link>
-        </>
-      }
+      description={<>
+        Your API key is stored on this device and never transmitted to anyone except
+        OpenAI. <Link href={'https://platform.openai.com/account/api-keys'} target={'_blank'}>{"Find your OpenAI API keys here"}</Link>
+      </>}
     >
       <TextField
         variant={"outlined"}
