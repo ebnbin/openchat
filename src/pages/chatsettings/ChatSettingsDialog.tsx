@@ -10,7 +10,6 @@ import ChatSettingsItemIcon from "./ChatSettingsItemIcon";
 import ChatSettingsItemContextThreshold from "./ChatSettingsItemContextThreshold";
 import ChatSettingsItemSystemMessage from "./ChatSettingsItemSystemMessage";
 import ChatSettingsItemUserMessageTemplate from "./ChatSettingsItemUserMessageTemplate";
-import ChatSettingsItemInfo from "./ChatSettingsItemInfo";
 import ChatSettingsItemDeleteChat from "./ChatSettingsItemDeleteChat";
 import ChatSettingsItemTemperature from "./ChatSettingsItemTemperature";
 
@@ -100,10 +99,6 @@ export function ChatSettingsDialog(props: ChatSettingsDialogProps) {
           updateChat={updateChat}
         />
         <ChatSettingsItemContextThreshold
-          chat={chat}
-          updateChat={updateChat}
-        />
-        <ChatSettingsItemInfo
           chat={chat}
           updateChat={updateChat}
         />
