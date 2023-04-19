@@ -35,7 +35,6 @@ export default function ChatConversationList(props: ChatConversationListProps) {
           return (
             <ConversationItem
               conversationEntity={conversationEntity}
-              isSave={false}
               abortControllerRef={props.abortControllerRef}
             >
               <ConversationItemFooter

@@ -2,14 +2,12 @@ import {Box} from "@mui/material";
 import React from "react";
 import {Virtuoso} from "react-virtuoso";
 import ConversationItem, {ConversationEntity} from "../conversation/ConversationItem";
-import ConversationItemFooter from "../conversation/ConversationItemFooter";
 
-interface SaveListConversationListProps {
+interface SearchPageConversationListProps {
   conversationEntities: ConversationEntity[];
-  handleRemoveSaveClick: (conversationEntity: ConversationEntity) => void;
 }
 
-export default function SaveListConversationList(props: SaveListConversationListProps) {
+export default function SearchPageConversationList(props: SearchPageConversationListProps) {
   return (
     <Virtuoso
       data={[...props.conversationEntities, "paddingBottom"]}
@@ -19,7 +17,7 @@ export default function SaveListConversationList(props: SaveListConversationList
           return (
             <Box
               sx={{
-                height: "100px",
+                height: "164px",
               }}
             />
           );
@@ -28,13 +26,7 @@ export default function SaveListConversationList(props: SaveListConversationList
           return (
             <ConversationItem
               conversationEntity={conversationEntity}
-            >
-              <ConversationItemFooter
-                conversationEntity={conversationEntity}
-                isSave={true}
-                handleRemoveSaveClick={props.handleRemoveSaveClick}
-              />
-            </ConversationItem>
+            />
           );
         }
       }}

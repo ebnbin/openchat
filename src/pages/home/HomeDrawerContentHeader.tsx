@@ -1,13 +1,21 @@
 import Box from "@mui/material/Box";
 import {Chip, IconButton} from "@mui/material";
-import {AddRounded, BookmarksRounded, CloseRounded, DashboardCustomizeRounded, DoneRounded} from "@mui/icons-material";
-import {pageSaveList} from "./HomePage";
+import {
+  AddRounded,
+  BookmarksRounded,
+  CloseRounded,
+  DashboardCustomizeRounded,
+  DoneRounded,
+  SearchRounded
+} from "@mui/icons-material";
+import {pageSaveList, pageSearch} from "./HomePage";
 import React from "react";
 
 interface HomeDrawerContentHeaderProps {
   pageId: number,
   pinMode: boolean,
   handleNewChatClick: () => void,
+  handleSearchClick: () => void,
   handleSaveListClick: () => void,
   handlePinModeClick: () => void,
   handlePinModeSaveClick: () => void,
@@ -37,6 +45,16 @@ export default function HomeDrawerContentHeader(props: HomeDrawerContentHeaderPr
             flexGrow: 1,
           }}
         />
+        <IconButton
+          onClick={props.handleSearchClick}
+          color={props.pageId === pageSearch ? "primary" : "default"}
+          sx={{
+            width: "48px",
+            height: "48px",
+          }}
+        >
+          <SearchRounded/>
+        </IconButton>
         <IconButton
           onClick={props.handleSaveListClick}
           color={props.pageId === pageSaveList ? "primary" : "default"}

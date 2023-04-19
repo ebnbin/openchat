@@ -9,9 +9,11 @@ import {useEffect, useState} from "react";
 import store from "../../utils/store";
 import Logo from "../../components/Logo";
 import SaveListPage from "../savelist/SaveListPage";
+import SearchPage from "../search/SearchPage";
 
 export const pageNewChat = 0;
 export const pageSaveList = -1;
+export const pageSearch = -2;
 
 interface HomePageProps {
   handleSettingsDialogOpen: () => void;
@@ -35,7 +37,7 @@ export default function HomePage(props: HomePageProps) {
       return pageNewChat;
     }
     const reopenPageId = store.reopenPageId.get();
-    if (reopenPageId === pageNewChat || reopenPageId === pageSaveList) {
+    if (reopenPageId === pageNewChat || reopenPageId === pageSearch || reopenPageId === pageSaveList) {
       return reopenPageId;
     }
     if (chats.some((chat) => chat.id === reopenPageId)) {
@@ -98,6 +100,11 @@ export default function HomePage(props: HomePageProps) {
         </ChatPage>
       );
     }
+    if (pageId === pageSearch) {
+      return (
+        <SearchPage/>
+      );
+    }
     if (pageId === pageSaveList) {
       return (
         <SaveListPage/>
@@ -128,6 +135,9 @@ export default function HomePage(props: HomePageProps) {
           handleDialogClose={() => setNewChatSettingsDialogOpen(false)}
         />
       );
+    }
+    if (pageId === pageSearch) {
+      return undefined;
     }
     if (pageId === pageSaveList) {
       return undefined;
@@ -194,9 +204,8 @@ export default function HomePage(props: HomePageProps) {
           handleDrawerClose={() => setDrawerOpen(false)}
           handleChatItemClick={updatePageId}
           handleNewChatClick={handleNewChatClick}
-          handleSaveListClick={() => {
-            updatePageId(pageSaveList);
-          }}
+          handleSearchClick={() => updatePageId(pageSearch)}
+          handleSaveListClick={() => updatePageId(pageSaveList)}
           handleSettingsClick={() => {
             props.handleSettingsDialogOpen();
             setDrawerOpen(false);

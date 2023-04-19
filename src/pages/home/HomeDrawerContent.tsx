@@ -12,6 +12,7 @@ interface HomeDrawerContentProps {
   pageId: number,
   handleChatItemClick: (chatId: number) => void,
   handleNewChatClick: () => void,
+  handleSearchClick: () => void,
   handleSaveListClick: () => void,
   handleSettingsClick: () => void,
 }
@@ -48,6 +49,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
         pageId={props.pageId}
         pinMode={pinMode}
         handleNewChatClick={props.handleNewChatClick}
+        handleSearchClick={props.handleSearchClick}
         handleSaveListClick={props.handleSaveListClick}
         handlePinModeClick={() => {
           setPinMode(true);

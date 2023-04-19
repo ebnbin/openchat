@@ -11,9 +11,8 @@ export interface ConversationEntity {
 
 interface ConversationItemProps {
   conversationEntity: ConversationEntity;
-  isSave: boolean;
   abortControllerRef?: RefObject<AbortController | null>;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function ConversationItem(props: ConversationItemProps) {
@@ -22,7 +21,7 @@ export default function ConversationItem(props: ConversationItemProps) {
       elevation={1}
       sx={{
         borderRadius: "0px",
-        marginBottom: props.isSave ? "16px" : "2px",
+        marginBottom: "2px",
       }}
     >
       <MessageItem

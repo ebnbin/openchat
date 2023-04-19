@@ -41,5 +41,5 @@ export default function SaveListPage() {
         handleRemoveSaveClick={handleRemoveSaveClick}
       />
     </Box>
-  )
+  );
 }

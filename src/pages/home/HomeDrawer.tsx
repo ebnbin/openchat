@@ -14,6 +14,7 @@ interface HomeDrawerProps {
   handleDrawerClose: () => void,
   handleChatItemClick: (chatId: number) => void,
   handleNewChatClick: () => void,
+  handleSearchClick: () => void,
   handleSaveListClick: () => void,
   handleSettingsClick: () => void,
 }
@@ -36,6 +37,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
         pageId={props.pageId}
         handleChatItemClick={props.handleChatItemClick}
         handleNewChatClick={props.handleNewChatClick}
+        handleSearchClick={props.handleSearchClick}
         handleSaveListClick={props.handleSaveListClick}
         handleSettingsClick={props.handleSettingsClick}
       />
@@ -59,6 +61,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
         pageId={props.pageId}
         handleChatItemClick={props.handleChatItemClick}
         handleNewChatClick={props.handleNewChatClick}
+        handleSearchClick={props.handleSearchClick}
         handleSaveListClick={props.handleSaveListClick}
         handleSettingsClick={props.handleSettingsClick}
       />
