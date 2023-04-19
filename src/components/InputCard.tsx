@@ -1,9 +1,10 @@
 import React, {useState} from "react";
-import {Alert, Card, IconButton, InputAdornment, Snackbar, TextField, useMediaQuery} from "@mui/material";
+import {Card, IconButton, InputAdornment, TextField, useMediaQuery} from "@mui/material";
 import {ExpandCircleDownRounded, SendRounded} from "@mui/icons-material";
 import store from "../utils/store";
 import Box from "@mui/material/Box";
 import {narrowPageWidth} from "../utils/utils";
+import Toast from "./Toast";
 
 interface InputCardProps {
   isRequesting: boolean;
@@ -16,9 +17,9 @@ interface InputCardProps {
 export default function InputCard(props: InputCardProps) {
   const isNarrowPage = !useMediaQuery(`(min-width:${narrowPageWidth}px)`)
 
-  const [composition, setComposition] = useState(false)
-  const [input, setInput] = useState("")
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [composition, setComposition] = useState(false);
+  const [input, setInput] = useState("");
+  const [toastOpen, setToastOpen] = useState(false);
 
   const message = props.messageTemplate === "" ? input : props.messageTemplate.replaceAll("{{input}}", input);
   const canRequest = !props.isRequesting && message !== "";
@@ -42,7 +43,7 @@ export default function InputCard(props: InputCardProps) {
       return;
     }
     if (store.openAIAPIKey.get() === "") {
-      setSnackbarOpen(true)
+      setToastOpen(true)
       return
     }
     const currentMessage = message;
@@ -117,21 +118,12 @@ export default function InputCard(props: InputCardProps) {
           />
         </Card>
       </Box>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          severity={"error"}
-        >
-          {"OpenAI API key is not set"}
-        </Alert>
-      </Snackbar>
+      <Toast
+        open={toastOpen}
+        handleClose={() => setToastOpen(false)}
+        color={"error"}
+        text={"OpenAI API key is not set"}
+      />
     </>
   );
 }

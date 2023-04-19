@@ -7,9 +7,11 @@ import {Theme} from "../../utils/types";
 import {SettingsDialog} from "../settings/SettingsDialog";
 import Box from "@mui/material/Box";
 import AppThemePage from "./AppThemePage";
+import Toast from "../../components/Toast";
+import {AlertColor} from "@mui/material/Alert/Alert";
 
 interface AppContextType {
-  reload: () => void;
+  reload: (toastColor?: AlertColor, toastText?: string) => void;
 }
 
 const AppContext = createContext<AppContextType>({} as AppContextType);
@@ -53,11 +55,22 @@ export default function AppPage() {
 
   const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
 
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastColor, setToastColor] = useState<AlertColor>("success");
+  const [toastText, setToastText] = useState("");
+
   return initialized ? (
     <AppContext.Provider
       key={appTimestamp}
       value={{
-        reload: () => setAppTimestamp(Date.now()),
+        reload: (alertColor, alertText) => {
+          setAppTimestamp(Date.now());
+          if (alertColor !== undefined && alertText !== undefined) {
+            setToastColor(alertColor);
+            setToastText(alertText);
+            setToastOpen(true);
+          }
+        },
       }}>
       <AppThemePage
         theme={theme}
@@ -78,6 +91,12 @@ export default function AppPage() {
           setTheme={updateTheme}
           dialogOpen={settingsDialogOpen}
           handleDialogClose={() => setSettingsDialogOpen(false)}
+        />
+        <Toast
+          open={toastOpen}
+          handleClose={() => setToastOpen(false)}
+          color={toastColor}
+          text={toastText}
         />
       </AppThemePage>
     </AppContext.Provider>

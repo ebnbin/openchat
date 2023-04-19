@@ -1,8 +1,7 @@
 import {
-  Alert, Button,
+  Button,
   IconButton,
   InputAdornment,
-  Snackbar,
   TextField
 } from "@mui/material";
 import SettingsItem from "../../components/SettingsItem";
@@ -18,6 +17,7 @@ import {useAppContext} from "../app/AppPage";
 import axios, {AxiosResponse} from "axios";
 import {AlertColor} from "@mui/material/Alert/Alert";
 import Box from "@mui/material/Box";
+import Toast from "../../components/Toast";
 
 interface SettingsItemBackupAndRestoreProps {
   handleDialogClose: () => void;
@@ -41,9 +41,9 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
 
   const [isRequesting, setIsRequesting] = useState(false)
   const [gitHubTokenVisibility, setGitHubTokenVisibility] = React.useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
-  const [snackbarSecurity, setSnackbarSecurity] = useState<AlertColor>("success")
-  const [snackbarText, setSnackbarText] = useState("")
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastColor, setToastColor] = useState<AlertColor>("success")
+  const [toastText, setToastText] = useState("")
 
   const backupData = () => {
     store.backupData().then(data => {
@@ -78,15 +78,15 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
         .then((response) => {
           setIsRequesting(false);
           setGithubGistId(response.data.id);
-          setSnackbarOpen(true);
-          setSnackbarSecurity("success");
-          setSnackbarText("Backup success");
+          setToastOpen(true);
+          setToastColor("success");
+          setToastText("Backup success");
         })
         .catch(() => {
           setIsRequesting(false);
-          setSnackbarOpen(true);
-          setSnackbarSecurity("error");
-          setSnackbarText("Backup error");
+          setToastOpen(true);
+          setToastColor("error");
+          setToastText("Backup error");
         });
     })
   }
@@ -101,26 +101,26 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
       .then((response) => {
         const json = response.data.files["openchat_data.json"]?.content ?? "";
         if (json === "") {
-          setSnackbarOpen(true);
-          setSnackbarSecurity("warning");
-          setSnackbarText("No backup data");
+          setToastOpen(true);
+          setToastColor("warning");
+          setToastText("No backup data");
           setIsRequesting(false);
         } else {
           store.restoreData(JSON.parse(json))
             .then(() => {
               setIsRequesting(false);
-              setSnackbarOpen(true);
-              setSnackbarSecurity("success");
-              setSnackbarText("Restore success");
+              setToastOpen(true);
+              setToastColor("success");
+              setToastText("Restore success");
               props.handleDialogClose();
-              appContext.reload();
+              appContext.reload("success", "Restore success");
             });
         }
       })
       .catch(() => {
-        setSnackbarOpen(true);
-        setSnackbarSecurity("error");
-        setSnackbarText("Restore error");
+        setToastOpen(true);
+        setToastColor("error");
+        setToastText("Restore error");
         setIsRequesting(false);
       });
   }
@@ -200,21 +200,12 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
           {"Restore"}
         </Button>
       </Box>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          severity={snackbarSecurity}
-        >
-          {snackbarText}
-        </Alert>
-      </Snackbar>
+      <Toast
+        open={toastOpen}
+        handleClose={() => setToastOpen(false)}
+        color={toastColor}
+        text={toastText}
+      />
     </SettingsItem>
   );
 }
