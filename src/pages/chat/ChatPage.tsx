@@ -200,6 +200,7 @@ export default function ChatPage(props: ChatProps) {
       .createChatCompletion({
         model: defaultOpenAIModel.model,
         messages: requestingMessages,
+        temperature: props.chat.temperature,
       }, {
         signal: controllerRef.current.signal,
       })
