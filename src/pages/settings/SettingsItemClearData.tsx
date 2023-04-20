@@ -1,9 +1,10 @@
-import {Button, Chip, Dialog, DialogActions, DialogContent} from "@mui/material";
+import {Chip} from "@mui/material";
 import SettingsItem from "../../components/SettingsItem";
 import React, {useState} from "react";
 import {DeleteRounded} from "@mui/icons-material";
 import store from "../../utils/store";
 import {useAppContext} from "../app/AppPage";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface SettingsItemClearDataProps {
   handleDialogClose: () => void;
@@ -15,7 +16,6 @@ export default function SettingsItemClearData(props: SettingsItemClearDataProps)
   const handleDeleteDataClick = () => {
     store.deleteData()
       .then(() => {
-        setConfirmDialogOpen(false);
         props.handleDialogClose();
         appContext.reload();
       });
@@ -32,25 +32,12 @@ export default function SettingsItemClearData(props: SettingsItemClearDataProps)
         icon={<DeleteRounded/>}
         onClick={() => setConfirmDialogOpen(true)}
       />
-      <Dialog
+      <ConfirmDialog
         open={confirmDialogOpen}
-        onClose={() => setConfirmDialogOpen(false)}>
-        <DialogContent>
-          {"Are you sure you want to delete all chats and conversations?"}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setConfirmDialogOpen(false)}
-          >
-            {"Cancel"}
-          </Button>
-          <Button
-            onClick={handleDeleteDataClick}
-          >
-            {"Delete"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        handleClose={() => setConfirmDialogOpen(false)}
+        message={"Are you sure you want to delete all chats and conversations?"}
+        handleConfirmClick={handleDeleteDataClick}
+      />
     </SettingsItem>
   );
 }

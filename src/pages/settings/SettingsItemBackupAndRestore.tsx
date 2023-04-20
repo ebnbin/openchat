@@ -18,6 +18,7 @@ import axios, {AxiosResponse} from "axios";
 import {AlertColor} from "@mui/material/Alert/Alert";
 import Box from "@mui/material/Box";
 import Toast from "../../components/Toast";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface SettingsItemBackupAndRestoreProps {
   handleDialogClose: () => void;
@@ -56,6 +57,14 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
       toast("error", "GitHub token is not set");
       return;
     }
+    if (githubGistId === "") {
+      realBackupData();
+    } else {
+      showConfirmDialog("backup");
+    }
+  }
+
+  const realBackupData = () => {
     store.backupData().then(data => {
       setIsRequesting(true)
       let response: Promise<AxiosResponse<any, any>>;
@@ -102,6 +111,10 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
       toast("error", "GitHub token is not set");
       return;
     }
+    showConfirmDialog("restore");
+  }
+
+  const realRestoreData = () => {
     setIsRequesting(true);
     axios.get(`https://api.github.com/gists/${githubGistId}`, {
       headers: {
@@ -126,6 +139,22 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
         setIsRequesting(false);
         toast("error", "Restore error")
       });
+  }
+
+  const handleConfirmClick = () => {
+    if (confirmDialogType === "backup") {
+      realBackupData();
+    } else {
+      realRestoreData();
+    }
+  }
+
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [confirmDialogType, setConfirmDialogType] = useState<"backup" | "restore">("backup");
+
+  function showConfirmDialog(type: "backup" | "restore") {
+    setConfirmDialogOpen(true);
+    setConfirmDialogType(type);
   }
 
   return (
@@ -171,7 +200,7 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
         size={"small"}
         label={"GitHub gist id"}
         placeholder={"********************************"}
-        helperText={"Leave it blank to create a new gist"}
+        helperText={"Leave it blank to create a new backup"}
         fullWidth={true}
         value={githubGistId}
         onChange={(event) => setGithubGistId(event.target.value)}
@@ -208,6 +237,14 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
           {"Restore"}
         </Button>
       </Box>
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        handleClose={() => setConfirmDialogOpen(false)}
+        message={confirmDialogType === "backup"
+          ? "Your data will overwrite the existing backup. Are you sure?"
+          : "Your data will be overwritten by the backup. Are you sure?"}
+        handleConfirmClick={handleConfirmClick}
+      />
       <Toast
         open={toastOpen}
         handleClose={() => setToastOpen(false)}
