@@ -20,6 +20,9 @@ export default function ChatSettingsItemTitle(props: ChatSettingsItemTitleProps)
         placeholder={"New chat"}
         value={props.chat.title}
         onChange={(event) => props.updateChat({title: event.target.value})}
+        sx={{
+          marginTop: "8px",
+        }}
       />
     </SettingsItem>
   );

@@ -208,7 +208,7 @@ export default function SettingsItemBackupAndRestore(props: SettingsItemBackupAn
           shrink: true,
         }}
         sx={{
-          marginTop: "8px",
+          marginTop: "16px",
         }}
       />
       <Box

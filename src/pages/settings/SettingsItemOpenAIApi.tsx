@@ -54,6 +54,9 @@ export default function SettingsItemOpenAIApi() {
             </InputAdornment>
           ),
         }}
+        sx={{
+          marginTop: "8px",
+        }}
       />
       <Box
         sx={{

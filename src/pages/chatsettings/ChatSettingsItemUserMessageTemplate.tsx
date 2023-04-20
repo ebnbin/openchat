@@ -27,6 +27,9 @@ export default function ChatSettingsItemUserMessageTemplate(props: ChatSettingsI
         placeholder={"```javascript\n{{input}}\n```"}
         value={props.chat.user_message_template}
         onChange={(event) => props.updateChat({user_message_template: event.target.value})}
+        sx={{
+          marginTop: "8px",
+        }}
       />
     </SettingsItem>
   );

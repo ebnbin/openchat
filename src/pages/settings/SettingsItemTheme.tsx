@@ -56,7 +56,11 @@ export default function SettingsItemTheme(props: SettingsItemThemeProps) {
           {"Dark"}
         </Button>
       </ButtonGroup>
-      <Box>
+      <Box
+        sx={{
+          marginTop: "8px",
+        }}
+      >
         <FormControlLabel
           control={
             <Checkbox

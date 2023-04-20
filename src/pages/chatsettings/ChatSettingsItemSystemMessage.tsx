@@ -23,6 +23,9 @@ export default function ChatSettingsItemSystemMessage(props: ChatSettingsItemSys
         placeholder={"You are a helpful assistant."}
         value={props.chat.system_message}
         onChange={(event) => props.updateChat({system_message: event.target.value})}
+        sx={{
+          marginTop: "8px",
+        }}
       />
     </SettingsItem>
   );
