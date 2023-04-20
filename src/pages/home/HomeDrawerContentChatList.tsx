@@ -112,12 +112,16 @@ export default function HomeDrawerContentChatList(props: HomeDrawerContentChatLi
     Array.from(props.chatPinTimestamps.entries())
       .filter((entry) => entry[1] !== 0)
       .sort((a, b) => a[1] - b[1])
-      .map((entry) => props.chats.find((chat) => chat.id === entry[0])!),
+      .map((entry) => props.chats.find((chat) => chat.id === entry[0])!)
+      .filter((chat) => chat !== undefined)
+      .map((chat) => chat!),
     3,
   );
   const unpinnedChats = Array.from(props.chatPinTimestamps.entries())
     .filter((entry) => entry[1] === 0)
-    .map((entry) => props.chats.find((chat) => chat.id === entry[0])!)
+    .map((entry) => props.chats.find((chat) => chat.id === entry[0]))
+    .filter((chat) => chat !== undefined)
+    .map((chat) => chat!)
     .sort((a, b) => b.update_timestamp - a.update_timestamp);
 
   return (

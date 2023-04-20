@@ -1,8 +1,9 @@
 import {Chat} from "../../utils/types";
 import {Chip} from "@mui/material";
 import SettingsItem from "../../components/SettingsItem";
-import React from "react";
+import React, {useState} from "react";
 import {DeleteRounded} from "@mui/icons-material";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface ChatSettingsItemDeleteChatProps {
   chat: Chat;
@@ -10,6 +11,8 @@ interface ChatSettingsItemDeleteChatProps {
 }
 
 export default function ChatSettingsItemDeleteChat(props: ChatSettingsItemDeleteChatProps) {
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
   return (
     <SettingsItem>
       <Chip
@@ -17,7 +20,13 @@ export default function ChatSettingsItemDeleteChat(props: ChatSettingsItemDelete
         color={"error"}
         label={"Delete chat"}
         icon={<DeleteRounded/>}
-        onClick={props.deleteChat}
+        onClick={() => setConfirmDialogOpen(true)}
+      />
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        handleClose={() => setConfirmDialogOpen(false)}
+        message={"Are your sure you want to delete this chat?"}
+        handleConfirmClick={props.deleteChat}
       />
     </SettingsItem>
   );
