@@ -25,7 +25,7 @@ class Store {
   //*******************************************************************************************************************
 
   async migrate() {
-    const currentVersion = 502; // 0.5.2
+    const currentVersion = 10000; // 1.0.0
     const storedVersion = this.version.get();
     if (storedVersion < currentVersion) {
       localStorage.clear();
