@@ -1,37 +1,39 @@
 import Box from "@mui/material/Box";
 import {Divider} from "@mui/material";
 import {Chat} from "../../utils/types";
-import React, {useState} from "react";
-import store from "../../utils/store";
+import React, {useEffect, useState} from "react";
 import HomeDrawerContentChatList from "./HomeDrawerContentChatList";
 import HomeDrawerContentHeader from "./HomeDrawerContentHeader";
 import HomeDrawerContentFooter from "./HomeDrawerContentFooter";
 
+function updateChatPinTimestamps(chats: Chat[]): Map<number, number> {
+  return new Map(chats.map((chat) => [chat.id, chat.pin_timestamp]));
+}
+
 interface HomeDrawerContentProps {
   chats: Chat[];
-  pageId: number,
-  handleChatItemClick: (chatId: number) => void,
-  handleNewChatClick: () => void,
-  handleSearchClick: () => void,
-  handleSaveListClick: () => void,
-  handleSettingsClick: () => void,
+  updateChats: (chatUpdater: (chatId: number) => Partial<Chat>) => void;
+  pageId: number;
+  handleChatItemClick: (chatId: number) => void;
+  handleNewChatClick: () => void;
+  handleSearchClick: () => void;
+  handleSaveListClick: () => void;
+  handleSettingsClick: () => void;
 }
 
 export default function HomeDrawerContent(props: HomeDrawerContentProps) {
-  const [pinChats, _setPinChats] = useState<number[]>(store.pinChats.get());
+  const [chatPinTimestamps, _setChatPinTimestamps] = useState<Map<number, number>>(new Map());
   const [pinMode, setPinMode] = useState(false);
+
+  useEffect(() => {
+    _setChatPinTimestamps(updateChatPinTimestamps(props.chats));
+  }, [props.chats]);
 
   const handleChatItemClick = (chatId: number, pinned: boolean) => {
     if (pinMode) {
-      if (pinned) {
-        _setPinChats((prev) => {
-          return prev.filter((id) => id !== chatId);
-        });
-      } else {
-        _setPinChats((prev) => {
-          return [...prev, chatId];
-        });
-      }
+      const copyChatPinTimestamps = new Map(chatPinTimestamps);
+      copyChatPinTimestamps.set(chatId, pinned ? 0 : Date.now());
+      _setChatPinTimestamps(copyChatPinTimestamps);
     } else {
       props.handleChatItemClick(chatId);
     }
@@ -56,11 +58,15 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
         }}
         handlePinModeSaveClick={() => {
           setPinMode(false);
-          store.pinChats.set(pinChats);
+          props.updateChats((chatId: number) => {
+            return {
+              pin_timestamp: chatPinTimestamps.get(chatId) ?? 0,
+            };
+          });
         }}
         handlePinModeCloseClick={() => {
           setPinMode(false);
-          _setPinChats(store.pinChats.get());
+          _setChatPinTimestamps(updateChatPinTimestamps(props.chats));
         }}
       />
       <Divider/>
@@ -74,7 +80,7 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
       >
         <HomeDrawerContentChatList
           chats={props.chats}
-          pinChats={pinChats}
+          chatPinTimestamps={chatPinTimestamps}
           pageId={props.pageId}
           handleChatItemClick={handleChatItemClick}
           pinMode={pinMode}

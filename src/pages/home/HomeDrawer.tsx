@@ -9,6 +9,7 @@ const drawerWidth = 300;
 
 interface HomeDrawerProps {
   chats: Chat[],
+  updateChats: (chatUpdater: (chatId: number) => Partial<Chat>) => void;
   pageId: number,
   drawerOpen: boolean,
   handleDrawerClose: () => void,
@@ -34,6 +35,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
     >
       <HomeDrawerContent
         chats={props.chats}
+        updateChats={props.updateChats}
         pageId={props.pageId}
         handleChatItemClick={props.handleChatItemClick}
         handleNewChatClick={props.handleNewChatClick}
@@ -58,6 +60,7 @@ export default function HomeDrawer(props: HomeDrawerProps) {
     >
       <HomeDrawerContent
         chats={props.chats}
+        updateChats={props.updateChats}
         pageId={props.pageId}
         handleChatItemClick={props.handleChatItemClick}
         handleNewChatClick={props.handleNewChatClick}

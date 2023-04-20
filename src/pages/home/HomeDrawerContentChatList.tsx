@@ -100,22 +100,24 @@ function ChatListItem(props: ChatItemProps) {
 //*********************************************************************************************************************
 
 interface HomeDrawerContentChatListProps {
-  chats: Chat[],
-  pinChats: number[],
-  pageId: number,
-  handleChatItemClick: (chatId: number, pinned: boolean) => void,
-  pinMode: boolean,
+  chats: Chat[];
+  chatPinTimestamps: Map<number, number>;
+  pageId: number;
+  handleChatItemClick: (chatId: number, pinned: boolean) => void;
+  pinMode: boolean;
 }
 
 export default function HomeDrawerContentChatList(props: HomeDrawerContentChatListProps) {
   const pinnedChats = chunk(
-    [...props.pinChats]
-      .map((chatId) => props.chats.find((chat) => chat.id === chatId))
-      .filter((chat) => chat !== undefined) as Chat[],
+    Array.from(props.chatPinTimestamps.entries())
+      .filter((entry) => entry[1] !== 0)
+      .sort((a, b) => a[1] - b[1])
+      .map((entry) => props.chats.find((chat) => chat.id === entry[0])!),
     3,
   );
-  const unpinnedChats = [...props.chats]
-    .filter((chat) => !props.pinChats.includes(chat.id))
+  const unpinnedChats = Array.from(props.chatPinTimestamps.entries())
+    .filter((entry) => entry[1] === 0)
+    .map((entry) => props.chats.find((chat) => chat.id === entry[0])!)
     .sort((a, b) => b.update_timestamp - a.update_timestamp);
 
   return (

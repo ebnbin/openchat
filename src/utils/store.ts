@@ -17,7 +17,6 @@ class Store {
     conversation_count: 0,
     token_count: 0,
   } as Usage);
-  readonly pinChats: Preference<number[]> = new Preference("pin_chats", []);
 
   //*******************************************************************************************************************
 
@@ -50,6 +49,7 @@ class Store {
       user_message_template: "",
       temperature: 1,
       context_threshold: 0.6,
+      pin_timestamp: 0,
       conversation_count: 0,
       char_count: 0,
       token_count: 0,
@@ -129,6 +129,31 @@ class Store {
         return [];
       }
       return chats.filter((foundChat) => foundChat.id !== chatId);
+    }, this.idbStore).finally();
+  }
+
+  updateChats(chatUpdater: (chatId: number) => Partial<Chat>, state?: [Chat[], Dispatch<SetStateAction<Chat[]>>]) {
+    if (state) {
+      state[1]((chats) => {
+        return chats.map((foundChat) => {
+          return {
+            ...foundChat,
+            ...chatUpdater(foundChat.id),
+          };
+        });
+      });
+    }
+
+    update<Chat[]>("chats", (chats) => {
+      if (!chats) {
+        return [];
+      }
+      return chats.map((foundChat) => {
+        return {
+          ...foundChat,
+          ...chatUpdater(foundChat.id),
+        };
+      });
     }, this.idbStore).finally();
   }
 

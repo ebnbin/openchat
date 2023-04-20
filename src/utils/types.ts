@@ -27,6 +27,7 @@ export interface Chat {
   user_message_template: string;
   temperature: number;
   context_threshold: number;
+  pin_timestamp: number;
   conversation_count: number;
   char_count: number;
   token_count: number;

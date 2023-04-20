@@ -56,7 +56,10 @@ export default function HomePage(props: HomePageProps) {
     handleNewChatClick();
     store.updateChatsDeleteChat(chat.id, [chats, _setChats]);
     store.updateConversationsDeleteConversations(chat.id);
-    store.pinChats.set(store.pinChats.get().filter((pinChatId) => pinChatId !== chat.id));
+  }
+
+  const updateChats = (chatUpdater: ((chatId: number) => Partial<Chat>)) => {
+    store.updateChats(chatUpdater, [chats, _setChats]);
   }
 
   const updatePageId = (pageId: number) => {
@@ -196,6 +199,7 @@ export default function HomePage(props: HomePageProps) {
         </Box>
         <HomeDrawer
           chats={chats}
+          updateChats={updateChats}
           pageId={pageId}
           drawerOpen={drawerOpen}
           handleDrawerClose={() => setDrawerOpen(false)}
