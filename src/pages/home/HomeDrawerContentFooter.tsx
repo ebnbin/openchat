@@ -1,9 +1,12 @@
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import {SettingsRounded} from "@mui/icons-material";
+import {GitHub, SettingsRounded} from "@mui/icons-material";
 import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
 import React from "react";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import {Divider} from "@mui/material";
 
 interface HomeDrawerContentFooterProps {
   pinMode: boolean,
@@ -12,27 +15,48 @@ interface HomeDrawerContentFooterProps {
 
 export default function HomeDrawerContentFooter(props: HomeDrawerContentFooterProps) {
   return (
-    <ListItem
-      disablePadding={true}
-      dense={true}
+    <Box
+      sx={{
+        display: props.pinMode ? "none" : "flex",
+        flexDirection: "column",
+      }}
     >
-      <ListItemButton
-        onClick={props.handleSettingsClick}
+      <Divider/>
+      <Box
         sx={{
-          display: props.pinMode ? "none" : undefined,
+          display: "flex",
+          flexDirection: "row",
+          height: "48px",
         }}
       >
-        <ListItemIcon>
-          <SettingsRounded
-            sx={{
-              marginLeft: "8px",
-            }}
-          />
-        </ListItemIcon>
-        <ListItemText
-          primary={"Settings"}
-        />
-      </ListItemButton>
-    </ListItem>
+        <ListItem
+          disablePadding={true}
+        >
+          <ListItemButton
+            onClick={props.handleSettingsClick}
+          >
+            <ListItemIcon>
+              <SettingsRounded
+                sx={{
+                  marginLeft: "8px",
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary={"Settings"}
+            />
+          </ListItemButton>
+        </ListItem>
+        <IconButton
+          onClick={() => window.open("https://github.com/ebnbin/openchat", "_blank")}
+          sx={{
+            width: "48px",
+            height: "48px",
+          }}
+        >
+          <GitHub/>
+        </IconButton>
+      </Box>
+    </Box>
   );
 }

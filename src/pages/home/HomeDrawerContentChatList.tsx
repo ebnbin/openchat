@@ -25,7 +25,7 @@ function ChatGridItem(props: ChatItemProps) {
       onClick={() => props.handleChatItemClick(props.chat.id, true)}
       selected={props.selected}
       sx={{
-        color: props.pinMode ? theme.palette.text.disabled : undefined,
+        color: props.pinMode ? theme.palette.primary.main : undefined,
         display: "flex",
         flexDirection: "column",
         height: "100px",
@@ -76,7 +76,7 @@ function ChatListItem(props: ChatItemProps) {
       onClick={() => props.handleChatItemClick(props.chat.id, false)}
       selected={props.selected}
       sx={{
-        color: props.pinMode ? theme.palette.text.disabled : undefined,
+        color: props.pinMode ? theme.palette.primary.main : undefined,
       }}
     >
       <ListItemIcon>

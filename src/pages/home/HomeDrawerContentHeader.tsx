@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import {Chip, IconButton} from "@mui/material";
+import {Chip, IconButton, useTheme} from "@mui/material";
 import {
   AddRounded,
   BookmarksRounded,
@@ -8,8 +8,9 @@ import {
   DoneRounded,
   SearchRounded
 } from "@mui/icons-material";
-import {pageSaveList, pageSearch} from "./HomePage";
+import {pageNewChat, pageSaveList, pageSearch} from "./HomePage";
 import React from "react";
+import Typography from "@mui/material/Typography";
 
 interface HomeDrawerContentHeaderProps {
   pageId: number,
@@ -23,6 +24,8 @@ interface HomeDrawerContentHeaderProps {
 }
 
 export default function HomeDrawerContentHeader(props: HomeDrawerContentHeaderProps) {
+  const theme = useTheme();
+
   return (
     <>
       <Box
@@ -31,17 +34,16 @@ export default function HomeDrawerContentHeader(props: HomeDrawerContentHeaderPr
           flexDirection: "row",
           alignItems: "center",
           height: "48px",
-          paddingX: "8px",
         }}
       >
         <Chip
           variant={"outlined"}
-          color={"primary"}
+          color={props.pageId === pageNewChat ? "primary" : "default"}
           label={"New chat"}
           icon={<AddRounded/>}
           onClick={props.handleNewChatClick}
           sx={{
-            marginX: "8px",
+            marginX: "16px",
             flexGrow: 1,
           }}
         />
@@ -81,18 +83,19 @@ export default function HomeDrawerContentHeader(props: HomeDrawerContentHeaderPr
           flexDirection: "row",
           alignItems: "center",
           height: "48px",
-          paddingX: "8px",
         }}
       >
-        <Chip
-          variant={"filled"}
-          label={"Customize your pins"}
-          color={"info"}
+        <Typography
+          variant={"body2"}
+          color={theme.palette.primary.main}
           sx={{
-            marginX: "8px",
+            marginX: "16px",
             flexGrow: 1,
+            textAlign: "center",
           }}
-        />
+        >
+          {"Customize your pins"}
+        </Typography>
         <IconButton
           onClick={props.handlePinModeCloseClick}
           sx={{

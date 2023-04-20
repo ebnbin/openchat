@@ -86,7 +86,6 @@ export default function HomeDrawerContent(props: HomeDrawerContentProps) {
           pinMode={pinMode}
         />
       </Box>
-      <Divider/>
       <HomeDrawerContentFooter
         pinMode={pinMode}
         handleSettingsClick={props.handleSettingsClick}
