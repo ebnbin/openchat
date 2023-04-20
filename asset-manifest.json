@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/openchat/static/css/main.e302da5d.css",
-    "main.js": "/openchat/static/js/main.d3fddee6.js",
+    "main.css": "/openchat/static/css/main.f28f5133.css",
+    "main.js": "/openchat/static/js/main.4f324dd7.js",
     "static/js/787.41416d47.chunk.js": "/openchat/static/js/787.41416d47.chunk.js",
     "static/media/KaTeX_AMS-Regular.ttf": "/openchat/static/media/KaTeX_AMS-Regular.853be92419a6c3766b9a.ttf",
     "static/media/KaTeX_Main-Regular.ttf": "/openchat/static/media/KaTeX_Main-Regular.9eba1d77abcf2aa6e94e.ttf",
@@ -64,12 +64,12 @@
     "static/media/KaTeX_Size3-Regular.woff": "/openchat/static/media/KaTeX_Size3-Regular.7947224e8a9914fa332b.woff",
     "static/media/KaTeX_Size3-Regular.woff2": "/openchat/static/media/KaTeX_Size3-Regular.e1951519f6f0596f7356.woff2",
     "index.html": "/openchat/index.html",
-    "main.e302da5d.css.map": "/openchat/static/css/main.e302da5d.css.map",
-    "main.d3fddee6.js.map": "/openchat/static/js/main.d3fddee6.js.map",
+    "main.f28f5133.css.map": "/openchat/static/css/main.f28f5133.css.map",
+    "main.4f324dd7.js.map": "/openchat/static/js/main.4f324dd7.js.map",
     "787.41416d47.chunk.js.map": "/openchat/static/js/787.41416d47.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e302da5d.css",
-    "static/js/main.d3fddee6.js"
+    "static/css/main.f28f5133.css",
+    "static/js/main.4f324dd7.js"
   ]
 }
