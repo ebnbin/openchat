@@ -5,7 +5,7 @@ import {Conversation} from "../../utils/types";
 import SearchPageConversationList from "./SearchPageConversationList";
 import {ConversationEntity} from "../conversation/ConversationItem";
 import {maxContentWidth} from "../../utils/utils";
-import SearchInputCard from "../../components/SearchInputCard";
+import SearchInputCard from "./SearchInputCard";
 
 export default function SearchPage() {
   const [allConversations, _setAllConversations] = useState<Conversation[]>([]);

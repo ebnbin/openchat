@@ -1,4 +1,4 @@
-import MessageRole from "../../components/MessageRole";
+import MessageRole from "./MessageRole";
 import Box from "@mui/material/Box";
 import {Button} from "@mui/material";
 import {ContentCopyRounded} from "@mui/icons-material";

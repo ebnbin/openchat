@@ -2,7 +2,7 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import {Chat, Conversation, FinishReason} from "../../utils/types";
 import ChatConversationList from "./ChatConversationList";
-import InputCard from "../../components/InputCard";
+import ChatInputCard from "./ChatInputCard";
 import {defaultOpenAIModel, maxContentWidth, openAIApi} from "../../utils/utils";
 import store from "../../utils/store";
 import {ChatCompletionRequestMessage} from "openai";
@@ -266,7 +266,7 @@ export default function ChatPage(props: ChatPageProps) {
             margin: "0 auto",
           }}
         >
-          <InputCard
+          <ChatInputCard
             isRequesting={requestingConversationId !== 0}
             messageTemplate={props.chat.user_message_template}
             onRequest={onRequest}

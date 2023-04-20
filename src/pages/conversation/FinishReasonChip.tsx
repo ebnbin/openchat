@@ -1,6 +1,6 @@
 import React from "react";
 import {Chip} from "@mui/material";
-import {FinishReason} from "../utils/types";
+import {FinishReason} from "../../utils/types";
 
 interface FinishReasonChipProps {
   finishReason: FinishReason;

@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {Card, IconButton, InputAdornment, TextField, useMediaQuery} from "@mui/material";
 import {ExpandCircleDownRounded, SendRounded} from "@mui/icons-material";
-import store from "../utils/store";
+import store from "../../utils/store";
 import Box from "@mui/material/Box";
-import {narrowPageWidth} from "../utils/utils";
-import Toast from "./Toast";
+import {narrowPageWidth} from "../../utils/utils";
+import Toast from "../../components/Toast";
 
-interface InputCardProps {
+interface ChatInputCardProps {
   isRequesting: boolean;
   messageTemplate: string;
   onRequest: (message: string) => void;
@@ -14,7 +14,7 @@ interface InputCardProps {
   scrollToBottom: () => void;
 }
 
-export default function InputCard(props: InputCardProps) {
+export default function ChatInputCard(props: ChatInputCardProps) {
   const isNarrowPage = !useMediaQuery(`(min-width:${narrowPageWidth}px)`)
 
   const [composition, setComposition] = useState(false);

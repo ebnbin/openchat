@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Card, TextField, useMediaQuery} from "@mui/material";
-import {narrowPageWidth} from "../utils/utils";
+import {narrowPageWidth} from "../../utils/utils";
 
 interface SearchInputCardProps {
   handleInputChange: (text: string) => void;

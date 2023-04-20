@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import {Avatar, Typography, useTheme} from "@mui/material";
 import {FaceRounded} from "@mui/icons-material";
-import chatGPTLogo from "../assets/chatgpt_logo.png";
+import chatGPTLogo from "../../assets/chatgpt_logo.png";
 import React from "react";
 
 interface MessageRoleProps {
