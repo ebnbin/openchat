@@ -39,3 +39,7 @@ This is my first React project.
 ![screenshot_a.png](img/screenshot_c.png)
 
 ![screenshot_a.png](img/screenshot_d.png)
+
+## License
+
+[MIT](LICENSE)
